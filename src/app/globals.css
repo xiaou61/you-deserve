@@ -1,0 +1,311 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@700;900&display=swap");
+@import "tailwindcss";
+
+:root {
+  --page: #f4f7f1;
+  --ink: #171714;
+  --smoke: #eef1ea;
+  --mint: #bdf4d0;
+  --teal: #13897d;
+  --coral: #e84c3d;
+  --amber: #f6c644;
+  --amber-strong: #b67b00;
+  --font-sans: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --font-display: "Noto Serif SC", "Noto Sans SC", serif;
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-ink: var(--ink);
+  --color-smoke: var(--smoke);
+  --color-mint: var(--mint);
+  --color-teal: var(--teal);
+  --color-coral: var(--coral);
+  --color-amber: var(--amber);
+  --color-amber-strong: var(--amber-strong);
+  --shadow-soft: 0 20px 80px rgb(23 23 20 / 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgb(189 244 208 / 0.72), transparent 30rem),
+    radial-gradient(circle at top right, rgb(246 198 68 / 0.38), transparent 28rem),
+    linear-gradient(135deg, #f4f7f1 0%, #fbfcf7 48%, #edf4f3 100%);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.display-title {
+  font-family: var(--font-display);
+}
+
+.nav-link {
+  border-radius: 999px;
+  color: rgb(23 23 20 / 0.66);
+  font-size: 0.925rem;
+  font-weight: 900;
+  padding: 0.55rem 0.9rem;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.nav-link:hover {
+  background: white;
+  color: var(--ink);
+}
+
+.icon-button {
+  height: 2.5rem;
+  place-items: center;
+  width: 2.5rem;
+  border: 1px solid rgb(23 23 20 / 0.1);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.75);
+  color: var(--ink);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.icon-button:hover {
+  transform: translateY(-2px);
+  border-color: var(--ink);
+  background: white;
+}
+
+.hero-panel {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 0.92), rgb(255 255 255 / 0.58)),
+    linear-gradient(90deg, rgb(232 76 61 / 0.08), rgb(19 137 125 / 0.12));
+  border: 1px solid rgb(23 23 20 / 0.1);
+  box-shadow: var(--shadow-soft);
+}
+
+.hero-panel::after {
+  position: absolute;
+  right: -4rem;
+  bottom: -4rem;
+  width: 18rem;
+  height: 18rem;
+  border: 1.6rem solid rgb(23 23 20 / 0.06);
+  border-radius: 999px;
+  content: "";
+}
+
+.metric-tile {
+  border: 1px solid rgb(23 23 20 / 0.08);
+  border-radius: 1.25rem;
+  background: rgb(255 255 255 / 0.72);
+  padding: 1rem;
+}
+
+.metric-tile span {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.metric-tile p {
+  margin-top: 0.45rem;
+  color: rgb(23 23 20 / 0.56);
+  font-size: 0.875rem;
+  font-weight: 900;
+}
+
+.study-board {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.9)),
+    repeating-linear-gradient(90deg, rgb(23 23 20 / 0.03) 0 1px, transparent 1px 46px);
+}
+
+.filter-chip {
+  min-height: 2.55rem;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: white;
+  color: rgb(23 23 20 / 0.62);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 900;
+  padding: 0.55rem 0.9rem;
+  text-align: left;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.filter-chip:hover,
+.filter-chip.is-active {
+  transform: translateY(-1px);
+  border-color: rgb(23 23 20 / 0.16);
+  background: var(--ink);
+  color: white;
+}
+
+.question-card {
+  display: block;
+  min-height: 14rem;
+  border: 1px solid rgb(23 23 20 / 0.1);
+  border-radius: 1.5rem;
+  background: white;
+  padding: 1.25rem;
+  box-shadow: 0 16px 46px rgb(23 23 20 / 0.07);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.question-card:hover {
+  transform: translateY(-4px);
+  border-color: rgb(232 76 61 / 0.42);
+  box-shadow: 0 24px 70px rgb(23 23 20 / 0.13);
+}
+
+.article-shell {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.94)),
+    linear-gradient(90deg, rgb(189 244 208 / 0.14), rgb(246 198 68 / 0.12));
+}
+
+.question-body {
+  color: rgb(23 23 20 / 0.82);
+  font-size: 1.05rem;
+  line-height: 2;
+}
+
+.question-body > * + * {
+  margin-top: 1.15rem;
+}
+
+.question-body h2 {
+  margin-top: 2.5rem;
+  border-top: 1px solid rgb(23 23 20 / 0.1);
+  padding-top: 2rem;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.45rem);
+  font-weight: 900;
+  line-height: 1.18;
+}
+
+.question-body h2:first-child {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.question-body h3 {
+  margin-top: 1.8rem;
+  color: var(--teal);
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.question-body p {
+  margin-top: 1rem;
+}
+
+.question-body ul,
+.question-body ol {
+  margin-top: 1rem;
+  padding-left: 1.3rem;
+}
+
+.question-body li + li {
+  margin-top: 0.45rem;
+}
+
+.question-body strong {
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.question-body code {
+  border: 1px solid rgb(23 23 20 / 0.1);
+  border-radius: 0.5rem;
+  background: var(--smoke);
+  color: var(--coral);
+  font-size: 0.92em;
+  font-weight: 800;
+  padding: 0.08rem 0.35rem;
+}
+
+.question-body pre {
+  overflow-x: auto;
+  border-radius: 1.25rem;
+  background: #181813;
+  color: #f9f7ee;
+  padding: 1.1rem;
+}
+
+.question-body pre code {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.question-body table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  border-radius: 1rem;
+}
+
+.question-body th,
+.question-body td {
+  border: 1px solid rgb(23 23 20 / 0.12);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.question-body th {
+  background: var(--smoke);
+  color: var(--ink);
+  font-weight: 900;
+}
+
+@media (max-width: 640px) {
+  .hero-panel {
+    border-radius: 1.5rem;
+  }
+
+  .hero-panel::after {
+    width: 10rem;
+    height: 10rem;
+    border-width: 1rem;
+  }
+
+  .question-card {
+    min-height: auto;
+  }
+}
