@@ -1,5 +1,6 @@
 node_modules
 .next
+.spec-workflow
 out
 dist
 coverage
