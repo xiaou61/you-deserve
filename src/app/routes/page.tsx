@@ -123,9 +123,9 @@ export default function RoutesPage() {
                       <p className="text-sm font-black text-ink/55">对应题目</p>
                       <Link
                         className="inline-flex items-center gap-1 text-sm font-black text-coral"
-                        href={`/#questions`}
+                        href={`/routes/${stage.id}`}
                       >
-                        去题库筛选
+                        刷本阶段
                         <ArrowUpRight className="h-4 w-4" />
                       </Link>
                     </div>

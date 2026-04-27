@@ -5,9 +5,11 @@ import {
   Cable,
   Container,
   Database,
+  GitBranch,
   Leaf,
   Network,
-  RadioTower
+  RadioTower,
+  Share2
 } from "lucide-react";
 
 export type RoadmapStage = {
@@ -56,8 +58,8 @@ export const roadmapStages: RoadmapStage[] = [
     subtitle: "从会用框架到能解释框架",
     description:
       "重点掌握 IoC、AOP、Bean 生命周期、事务、MVC 流程、自动配置和安全基础。项目经历里很多问题最终都会回到 Spring。",
-    categories: ["Spring"],
-    mustKnow: ["IoC", "AOP", "Bean 生命周期", "事务失效", "MVC 执行链", "自动配置"],
+    categories: ["Spring", "MyBatis"],
+    mustKnow: ["IoC", "AOP", "Bean 生命周期", "事务失效", "MVC 执行链", "MyBatis"],
     output: "能解释一个请求如何穿过 Spring，并能定位常见事务/代理问题。",
     sourceLabel: "Spring Framework Reference",
     sourceUrl: "https://docs.spring.io/spring-framework/reference/",
@@ -103,6 +105,19 @@ export const roadmapStages: RoadmapStage[] = [
     icon: Cable
   },
   {
+    id: "distributed",
+    title: "分布式与微服务",
+    subtitle: "项目追问的分水岭",
+    description:
+      "补齐 CAP、BASE、分布式事务、限流、熔断、注册发现、网关和一致性哈希。这里决定项目回答能不能从单体 CRUD 走到系统设计。",
+    categories: ["分布式系统"],
+    mustKnow: ["CAP/BASE", "分布式事务", "限流算法", "熔断降级", "注册发现", "一致性哈希"],
+    output: "能解释系统拆分后出现的问题，以及常见治理手段的取舍。",
+    sourceLabel: "Spring Cloud Docs",
+    sourceUrl: "https://docs.spring.io/spring-cloud/docs/current/reference/html/",
+    icon: Share2
+  },
+  {
     id: "network-os",
     title: "计网与操作系统",
     subtitle: "基础题里的稳定得分点",
@@ -114,6 +129,19 @@ export const roadmapStages: RoadmapStage[] = [
     sourceLabel: "MDN HTTP Docs",
     sourceUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP",
     icon: Network
+  },
+  {
+    id: "algorithm",
+    title: "算法与手撕题",
+    subtitle: "笔试和一面稳定过线",
+    description:
+      "不追求刷爆题库，先拿下数组、链表、哈希、栈队列、二分、排序、TopK、LRU 这些后端面试最常见模板。",
+    categories: ["数据结构与算法"],
+    mustKnow: ["数组双指针", "链表", "哈希表", "二分", "TopK", "LRU"],
+    output: "能把常见手撕题写出可运行代码，并说清楚复杂度。",
+    sourceLabel: "VisuAlgo",
+    sourceUrl: "https://visualgo.net/en",
+    icon: GitBranch
   },
   {
     id: "engineering",
@@ -129,3 +157,7 @@ export const roadmapStages: RoadmapStage[] = [
     icon: Container
   }
 ];
+
+export function getRoadmapStageById(id: string): RoadmapStage | undefined {
+  return roadmapStages.find((stage) => stage.id === id);
+}
