@@ -19,7 +19,9 @@ export function SiteHeader() {
           <Link className="nav-link" href="/#questions">
             题库
           </Link>
-          <span className="nav-link text-ink/38">路线</span>
+          <Link className="nav-link" href="/routes">
+            路线
+          </Link>
           <span className="nav-link text-ink/38">复习</span>
         </nav>
 

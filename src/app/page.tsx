@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowUpRight, BookMarked, Flame, GraduationCap, Layers3 } from "lucide-react";
 
 import { QuestionExplorer } from "@/components/question-explorer";
@@ -56,7 +57,7 @@ export default function Home() {
             </div>
             <div className="mt-8 grid gap-3">
               {featured.map((question, index) => (
-                <a
+                <Link
                   className="group flex items-center justify-between rounded-2xl bg-white/8 px-4 py-3 transition hover:bg-white/14"
                   href={`/questions/${question.slug}`}
                   key={question.slug}
@@ -66,7 +67,7 @@ export default function Home() {
                     <p className="mt-1 font-bold leading-snug">{question.title}</p>
                   </div>
                   <ArrowUpRight className="h-4 w-4 text-white/45 transition group-hover:text-amber" />
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -83,7 +84,7 @@ export default function Home() {
             </div>
             <div className="mt-5 grid grid-cols-3 gap-2 text-center text-sm">
               <div className="rounded-2xl bg-smoke px-2 py-4">
-                <p className="text-2xl font-black text-coral">12</p>
+                <p className="text-2xl font-black text-coral">{questions.length}</p>
                 <p className="mt-1 text-ink/55">待刷</p>
               </div>
               <div className="rounded-2xl bg-smoke px-2 py-4">
@@ -104,9 +105,9 @@ export default function Home() {
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               {routes.map((route) => (
-                <span className="rounded-full bg-smoke px-3 py-1.5 text-sm font-bold text-ink/70" key={route}>
+                <Link className="rounded-full bg-smoke px-3 py-1.5 text-sm font-bold text-ink/70 transition hover:bg-ink hover:text-white" href="/routes" key={route}>
                   {route}
-                </span>
+                </Link>
               ))}
             </div>
           </div>
