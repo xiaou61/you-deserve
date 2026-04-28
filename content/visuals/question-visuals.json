@@ -4,11 +4,31 @@
     "title": "JVM 内存像一家公司",
     "summary": "线程私有区像每个员工自己的桌面，共享区像公司公共仓库和资料室。",
     "nodes": [
-      { "label": "程序计数器", "detail": "线程私有，记位置", "tone": "safe" },
-      { "label": "虚拟机栈", "detail": "线程私有，放栈帧", "tone": "safe" },
-      { "label": "本地方法栈", "detail": "线程私有，管 native", "tone": "safe" },
-      { "label": "堆", "detail": "线程共享，放对象", "tone": "main" },
-      { "label": "方法区", "detail": "线程共享，放类信息", "tone": "main" }
+      {
+        "label": "程序计数器",
+        "detail": "线程私有，记位置",
+        "tone": "safe"
+      },
+      {
+        "label": "虚拟机栈",
+        "detail": "线程私有，放栈帧",
+        "tone": "safe"
+      },
+      {
+        "label": "本地方法栈",
+        "detail": "线程私有，管 native",
+        "tone": "safe"
+      },
+      {
+        "label": "堆",
+        "detail": "线程共享，放对象",
+        "tone": "main"
+      },
+      {
+        "label": "方法区",
+        "detail": "线程共享，放类信息",
+        "tone": "main"
+      }
     ],
     "prompt": "画一张温暖清晰的 JVM 内存结构图，分为线程私有和线程共享两块，用员工桌面、公共仓库、资料室做类比，中文短标签。",
     "takeaway": "私有三件套跟线程走，共享两大块被所有线程一起用。"
@@ -18,11 +38,31 @@
     "title": "类加载是一条进厂流水线",
     "summary": "从 class 文件被找到，到类信息可用，中间要经历加载、验证、准备、解析、初始化。",
     "nodes": [
-      { "label": "加载", "detail": "找到 class", "tone": "safe" },
-      { "label": "验证", "detail": "检查安全", "tone": "safe" },
-      { "label": "准备", "detail": "静态变量默认值", "tone": "safe" },
-      { "label": "解析", "detail": "符号引用转直接引用", "tone": "main" },
-      { "label": "初始化", "detail": "执行 clinit", "tone": "warn" }
+      {
+        "label": "加载",
+        "detail": "找到 class",
+        "tone": "safe"
+      },
+      {
+        "label": "验证",
+        "detail": "检查安全",
+        "tone": "safe"
+      },
+      {
+        "label": "准备",
+        "detail": "静态变量默认值",
+        "tone": "safe"
+      },
+      {
+        "label": "解析",
+        "detail": "符号引用转直接引用",
+        "tone": "main"
+      },
+      {
+        "label": "初始化",
+        "detail": "执行 clinit",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张从左到右的 Java 类加载流程图，节点为加载、验证、准备、解析、初始化，用工厂流水线类比，初始化节点突出。",
     "takeaway": "准备阶段给默认值，初始化阶段才执行静态赋值和静态代码块。"
@@ -32,11 +72,31 @@
     "title": "GC Roots 像找人关系网",
     "summary": "从一批根对象出发，能沿引用链找到的对象还活着，找不到的才可能被回收。",
     "nodes": [
-      { "label": "栈中引用", "detail": "局部变量", "tone": "main" },
-      { "label": "静态变量", "detail": "类持有引用", "tone": "main" },
-      { "label": "常量引用", "detail": "常量池相关", "tone": "safe" },
-      { "label": "JNI 引用", "detail": "native 持有", "tone": "safe" },
-      { "label": "不可达对象", "detail": "可能回收", "tone": "warn" }
+      {
+        "label": "栈中引用",
+        "detail": "局部变量",
+        "tone": "main"
+      },
+      {
+        "label": "静态变量",
+        "detail": "类持有引用",
+        "tone": "main"
+      },
+      {
+        "label": "常量引用",
+        "detail": "常量池相关",
+        "tone": "safe"
+      },
+      {
+        "label": "JNI 引用",
+        "detail": "native 持有",
+        "tone": "safe"
+      },
+      {
+        "label": "不可达对象",
+        "detail": "可能回收",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张可达性分析结构图，GC Roots 在中心，引用链连接存活对象，断开的对象标红为可回收，中文短标签。",
     "takeaway": "不是没人引用就看一个点，而是从根出发看整条引用链。"
@@ -46,11 +106,31 @@
     "title": "HashMap 扩容像换大货架",
     "summary": "元素超过阈值后数组扩成两倍，节点根据 hash 位决定留在原位置还是搬到新位置。",
     "nodes": [
-      { "label": "元素增加", "detail": "size 变大", "tone": "safe" },
-      { "label": "超过阈值", "detail": "触发 resize", "tone": "warn" },
-      { "label": "数组翻倍", "detail": "容量 x2", "tone": "main" },
-      { "label": "节点迁移", "detail": "原位或新位", "tone": "main" },
-      { "label": "链表/树保留", "detail": "结构继续用", "tone": "safe" }
+      {
+        "label": "元素增加",
+        "detail": "size 变大",
+        "tone": "safe"
+      },
+      {
+        "label": "超过阈值",
+        "detail": "触发 resize",
+        "tone": "warn"
+      },
+      {
+        "label": "数组翻倍",
+        "detail": "容量 x2",
+        "tone": "main"
+      },
+      {
+        "label": "节点迁移",
+        "detail": "原位或新位",
+        "tone": "main"
+      },
+      {
+        "label": "链表/树保留",
+        "detail": "结构继续用",
+        "tone": "safe"
+      }
     ],
     "prompt": "画一张 HashMap 扩容流程图，用货架扩容类比，展示旧数组到新数组，节点根据 hash 位留原位或移动。",
     "takeaway": "扩容不是重新乱放，而是按新增高位判断原位或原位加旧容量。"
@@ -60,11 +140,31 @@
     "title": "ConcurrentHashMap 像分区仓库",
     "summary": "它通过 CAS、synchronized 和分桶结构降低并发冲突，让多个线程尽量操作不同桶。",
     "nodes": [
-      { "label": "数组桶", "detail": "分散 key", "tone": "main" },
-      { "label": "CAS", "detail": "空桶抢占", "tone": "safe" },
-      { "label": "synchronized", "detail": "锁住桶头", "tone": "warn" },
-      { "label": "链表/红黑树", "detail": "处理冲突", "tone": "main" },
-      { "label": "协助扩容", "detail": "多线程搬迁", "tone": "safe" }
+      {
+        "label": "数组桶",
+        "detail": "分散 key",
+        "tone": "main"
+      },
+      {
+        "label": "CAS",
+        "detail": "空桶抢占",
+        "tone": "safe"
+      },
+      {
+        "label": "synchronized",
+        "detail": "锁住桶头",
+        "tone": "warn"
+      },
+      {
+        "label": "链表/红黑树",
+        "detail": "处理冲突",
+        "tone": "main"
+      },
+      {
+        "label": "协助扩容",
+        "detail": "多线程搬迁",
+        "tone": "safe"
+      }
     ],
     "prompt": "画一张 ConcurrentHashMap 结构图，多个桶像仓库分区，线程分别进入不同桶，CAS 和桶锁用小标记表示。",
     "takeaway": "它不是整张表一把大锁，而是尽量把冲突压到桶级别。"
@@ -74,11 +174,31 @@
     "title": "AQS 像排队叫号器",
     "summary": "state 表示资源状态，CLH 队列保存等待线程，抢不到锁就入队排队。",
     "nodes": [
-      { "label": "state", "detail": "资源状态", "tone": "main" },
-      { "label": "CAS 抢锁", "detail": "成功就执行", "tone": "safe" },
-      { "label": "CLH 队列", "detail": "失败就排队", "tone": "main" },
-      { "label": "park 等待", "detail": "挂起线程", "tone": "warn" },
-      { "label": "unpark 唤醒", "detail": "释放后通知", "tone": "safe" }
+      {
+        "label": "state",
+        "detail": "资源状态",
+        "tone": "main"
+      },
+      {
+        "label": "CAS 抢锁",
+        "detail": "成功就执行",
+        "tone": "safe"
+      },
+      {
+        "label": "CLH 队列",
+        "detail": "失败就排队",
+        "tone": "main"
+      },
+      {
+        "label": "park 等待",
+        "detail": "挂起线程",
+        "tone": "warn"
+      },
+      {
+        "label": "unpark 唤醒",
+        "detail": "释放后通知",
+        "tone": "safe"
+      }
     ],
     "prompt": "画一张 AQS 结构图，中心是 state，右侧是等待队列，线程抢锁失败后排队等待，释放后唤醒队头。",
     "takeaway": "AQS 的核心就是一个状态值加一条等待队列。"
@@ -88,11 +208,31 @@
     "title": "线程池像前台接单系统",
     "summary": "任务来了先找核心员工，忙不过来进队列，再不够加临时工，最后触发拒绝策略。",
     "nodes": [
-      { "label": "提交任务", "detail": "execute", "tone": "safe" },
-      { "label": "核心线程", "detail": "先处理", "tone": "main" },
-      { "label": "阻塞队列", "detail": "排队等", "tone": "safe" },
-      { "label": "最大线程", "detail": "临时加人", "tone": "warn" },
-      { "label": "拒绝策略", "detail": "兜底处理", "tone": "warn" }
+      {
+        "label": "提交任务",
+        "detail": "execute",
+        "tone": "safe"
+      },
+      {
+        "label": "核心线程",
+        "detail": "先处理",
+        "tone": "main"
+      },
+      {
+        "label": "阻塞队列",
+        "detail": "排队等",
+        "tone": "safe"
+      },
+      {
+        "label": "最大线程",
+        "detail": "临时加人",
+        "tone": "warn"
+      },
+      {
+        "label": "拒绝策略",
+        "detail": "兜底处理",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张线程池任务流转图，任务从提交进入核心线程、队列、最大线程、拒绝策略，用前台接单类比。",
     "takeaway": "核心线程、队列、最大线程、拒绝策略是一条顺序链。"
@@ -102,11 +242,31 @@
     "title": "Bean 生命周期像员工入职",
     "summary": "Spring 先实例化对象，再注入属性、执行初始化扩展，最后放入容器供业务使用。",
     "nodes": [
-      { "label": "实例化", "detail": "new 对象", "tone": "safe" },
-      { "label": "属性注入", "detail": "填依赖", "tone": "main" },
-      { "label": "Aware 回调", "detail": "拿上下文", "tone": "safe" },
-      { "label": "初始化前后", "detail": "后置处理器", "tone": "main" },
-      { "label": "销毁", "detail": "释放资源", "tone": "warn" }
+      {
+        "label": "实例化",
+        "detail": "new 对象",
+        "tone": "safe"
+      },
+      {
+        "label": "属性注入",
+        "detail": "填依赖",
+        "tone": "main"
+      },
+      {
+        "label": "Aware 回调",
+        "detail": "拿上下文",
+        "tone": "safe"
+      },
+      {
+        "label": "初始化前后",
+        "detail": "后置处理器",
+        "tone": "main"
+      },
+      {
+        "label": "销毁",
+        "detail": "释放资源",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张 Spring Bean 生命周期流程图，用员工入职到离职类比，突出属性注入和 BeanPostProcessor 前后处理。",
     "takeaway": "BeanPostProcessor 是很多框架增强能力插进去的关键点。"
@@ -116,11 +276,31 @@
     "title": "Spring MVC 请求像办事大厅",
     "summary": "请求先进 DispatcherServlet，再找 HandlerMapping、HandlerAdapter，最后返回视图或 JSON。",
     "nodes": [
-      { "label": "DispatcherServlet", "detail": "统一入口", "tone": "main" },
-      { "label": "HandlerMapping", "detail": "找处理器", "tone": "safe" },
-      { "label": "HandlerAdapter", "detail": "调用方法", "tone": "safe" },
-      { "label": "Controller", "detail": "执行业务", "tone": "main" },
-      { "label": "返回响应", "detail": "JSON/视图", "tone": "safe" }
+      {
+        "label": "DispatcherServlet",
+        "detail": "统一入口",
+        "tone": "main"
+      },
+      {
+        "label": "HandlerMapping",
+        "detail": "找处理器",
+        "tone": "safe"
+      },
+      {
+        "label": "HandlerAdapter",
+        "detail": "调用方法",
+        "tone": "safe"
+      },
+      {
+        "label": "Controller",
+        "detail": "执行业务",
+        "tone": "main"
+      },
+      {
+        "label": "返回响应",
+        "detail": "JSON/视图",
+        "tone": "safe"
+      }
     ],
     "prompt": "画一张 Spring MVC 时序图，角色为浏览器、DispatcherServlet、HandlerMapping、HandlerAdapter、Controller，箭头清晰。",
     "takeaway": "DispatcherServlet 是总前台，Mapping 找人，Adapter 负责调用。"
@@ -130,11 +310,31 @@
     "title": "自动配置像智能装机",
     "summary": "Spring Boot 根据依赖、条件注解和配置项，自动装配常用 Bean。",
     "nodes": [
-      { "label": "引入 starter", "detail": "带依赖", "tone": "safe" },
-      { "label": "读取配置类", "detail": "自动配置候选", "tone": "main" },
-      { "label": "条件判断", "detail": "Conditional", "tone": "warn" },
-      { "label": "创建 Bean", "detail": "装进容器", "tone": "main" },
-      { "label": "用户覆盖", "detail": "自定义优先", "tone": "safe" }
+      {
+        "label": "引入 starter",
+        "detail": "带依赖",
+        "tone": "safe"
+      },
+      {
+        "label": "读取配置类",
+        "detail": "自动配置候选",
+        "tone": "main"
+      },
+      {
+        "label": "条件判断",
+        "detail": "Conditional",
+        "tone": "warn"
+      },
+      {
+        "label": "创建 Bean",
+        "detail": "装进容器",
+        "tone": "main"
+      },
+      {
+        "label": "用户覆盖",
+        "detail": "自定义优先",
+        "tone": "safe"
+      }
     ],
     "prompt": "画一张 Spring Boot 自动配置流程图，依赖 starter 进入条件判断，满足条件后创建 Bean，用户自定义可覆盖。",
     "takeaway": "自动配置不是魔法，是条件注解决定配不配。"
@@ -144,11 +344,31 @@
     "title": "事务失效多半是代理没拦住",
     "summary": "Spring 声明式事务依赖 AOP 代理，自调用、异常被吞、非 public 方法都容易让事务失效。",
     "nodes": [
-      { "label": "外部调用", "detail": "经过代理", "tone": "safe" },
-      { "label": "开启事务", "detail": "拦截增强", "tone": "main" },
-      { "label": "执行业务", "detail": "数据库操作", "tone": "safe" },
-      { "label": "异常判断", "detail": "决定回滚", "tone": "warn" },
-      { "label": "提交/回滚", "detail": "事务结束", "tone": "main" }
+      {
+        "label": "外部调用",
+        "detail": "经过代理",
+        "tone": "safe"
+      },
+      {
+        "label": "开启事务",
+        "detail": "拦截增强",
+        "tone": "main"
+      },
+      {
+        "label": "执行业务",
+        "detail": "数据库操作",
+        "tone": "safe"
+      },
+      {
+        "label": "异常判断",
+        "detail": "决定回滚",
+        "tone": "warn"
+      },
+      {
+        "label": "提交/回滚",
+        "detail": "事务结束",
+        "tone": "main"
+      }
     ],
     "prompt": "画一张 Spring 事务代理流程图，突出外部调用经过代理才能开启事务，自调用绕过代理用红色警示。",
     "takeaway": "事务生效先看有没有经过代理，再看异常是否能触发回滚。"
@@ -158,11 +378,31 @@
     "title": "B+ 树像图书馆目录",
     "summary": "非叶子节点只做导航，真实数据在叶子节点，叶子之间有链表方便范围查询。",
     "nodes": [
-      { "label": "根节点", "detail": "第一层目录", "tone": "main" },
-      { "label": "中间节点", "detail": "继续导航", "tone": "safe" },
-      { "label": "叶子节点", "detail": "存数据/主键", "tone": "main" },
-      { "label": "叶子链表", "detail": "范围查询快", "tone": "safe" },
-      { "label": "磁盘页", "detail": "减少 IO", "tone": "warn" }
+      {
+        "label": "根节点",
+        "detail": "第一层目录",
+        "tone": "main"
+      },
+      {
+        "label": "中间节点",
+        "detail": "继续导航",
+        "tone": "safe"
+      },
+      {
+        "label": "叶子节点",
+        "detail": "存数据/主键",
+        "tone": "main"
+      },
+      {
+        "label": "叶子链表",
+        "detail": "范围查询快",
+        "tone": "safe"
+      },
+      {
+        "label": "磁盘页",
+        "detail": "减少 IO",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张 MySQL B+ 树索引结构图，三层树，非叶子节点做目录，叶子节点横向链表连接，中文标注。",
     "takeaway": "B+ 树适合数据库，是因为层高低、范围查方便、磁盘 IO 少。"
@@ -172,11 +412,31 @@
     "title": "MVCC 像试卷版本快照",
     "summary": "每条记录带隐藏版本信息，事务通过 ReadView 判断自己能看到哪个版本。",
     "nodes": [
-      { "label": "当前记录", "detail": "最新版本", "tone": "main" },
-      { "label": "undo log", "detail": "历史版本链", "tone": "safe" },
-      { "label": "ReadView", "detail": "可见性规则", "tone": "main" },
-      { "label": "快照读", "detail": "不加锁读旧版", "tone": "safe" },
-      { "label": "当前读", "detail": "读最新并加锁", "tone": "warn" }
+      {
+        "label": "当前记录",
+        "detail": "最新版本",
+        "tone": "main"
+      },
+      {
+        "label": "undo log",
+        "detail": "历史版本链",
+        "tone": "safe"
+      },
+      {
+        "label": "ReadView",
+        "detail": "可见性规则",
+        "tone": "main"
+      },
+      {
+        "label": "快照读",
+        "detail": "不加锁读旧版",
+        "tone": "safe"
+      },
+      {
+        "label": "当前读",
+        "detail": "读最新并加锁",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张 MVCC 版本链结构图，一条记录连接多个历史版本，事务 ReadView 像滤镜决定可见版本。",
     "takeaway": "MVCC 的关键是版本链加 ReadView，不是复制整张表。"
@@ -186,9 +446,33 @@
     "title": "三种日志分工不同",
     "summary": "redo 保证崩溃恢复，undo 支持回滚和 MVCC，binlog 用于复制和归档。",
     "columns": [
-      { "title": "redo log", "items": ["InnoDB 层", "崩溃恢复", "物理日志", "保证已提交不丢"] },
-      { "title": "undo log", "items": ["InnoDB 层", "事务回滚", "历史版本", "支撑 MVCC"] },
-      { "title": "binlog", "items": ["Server 层", "主从复制", "逻辑日志", "归档恢复"] }
+      {
+        "title": "redo log",
+        "items": [
+          "InnoDB 层",
+          "崩溃恢复",
+          "物理日志",
+          "保证已提交不丢"
+        ]
+      },
+      {
+        "title": "undo log",
+        "items": [
+          "InnoDB 层",
+          "事务回滚",
+          "历史版本",
+          "支撑 MVCC"
+        ]
+      },
+      {
+        "title": "binlog",
+        "items": [
+          "Server 层",
+          "主从复制",
+          "逻辑日志",
+          "归档恢复"
+        ]
+      }
     ],
     "prompt": "画一张 redo、undo、binlog 三栏对比图，用不同颜色展示职责：崩溃恢复、回滚版本、复制归档。",
     "takeaway": "redo 管不丢，undo 管后悔，binlog 管同步。"
@@ -198,11 +482,31 @@
     "title": "主从复制像抄作业",
     "summary": "主库写 binlog，从库 IO 线程拉取，中继日志保存，SQL 线程回放。",
     "nodes": [
-      { "label": "主库写入", "detail": "产生 binlog", "tone": "main" },
-      { "label": "IO 线程", "detail": "拉取日志", "tone": "safe" },
-      { "label": "relay log", "detail": "中继保存", "tone": "safe" },
-      { "label": "SQL 线程", "detail": "回放执行", "tone": "main" },
-      { "label": "主从延迟", "detail": "可能读旧", "tone": "warn" }
+      {
+        "label": "主库写入",
+        "detail": "产生 binlog",
+        "tone": "main"
+      },
+      {
+        "label": "IO 线程",
+        "detail": "拉取日志",
+        "tone": "safe"
+      },
+      {
+        "label": "relay log",
+        "detail": "中继保存",
+        "tone": "safe"
+      },
+      {
+        "label": "SQL 线程",
+        "detail": "回放执行",
+        "tone": "main"
+      },
+      {
+        "label": "主从延迟",
+        "detail": "可能读旧",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张 MySQL 主从复制时序图，主库 binlog 到从库 relay log，再由 SQL 线程回放，标出主从延迟风险。",
     "takeaway": "复制是异步链路，读写分离一定要考虑延迟。"
@@ -212,11 +516,31 @@
     "title": "慢 SQL 排查像看病",
     "summary": "先定位慢语句，再看执行计划、索引、扫描行数和业务数据量，最后验证优化效果。",
     "nodes": [
-      { "label": "发现慢 SQL", "detail": "日志/监控", "tone": "warn" },
-      { "label": "EXPLAIN", "detail": "看执行计划", "tone": "main" },
-      { "label": "查索引", "detail": "是否命中", "tone": "safe" },
-      { "label": "看扫描行数", "detail": "rows/filter", "tone": "main" },
-      { "label": "验证优化", "detail": "回归指标", "tone": "safe" }
+      {
+        "label": "发现慢 SQL",
+        "detail": "日志/监控",
+        "tone": "warn"
+      },
+      {
+        "label": "EXPLAIN",
+        "detail": "看执行计划",
+        "tone": "main"
+      },
+      {
+        "label": "查索引",
+        "detail": "是否命中",
+        "tone": "safe"
+      },
+      {
+        "label": "看扫描行数",
+        "detail": "rows/filter",
+        "tone": "main"
+      },
+      {
+        "label": "验证优化",
+        "detail": "回归指标",
+        "tone": "safe"
+      }
     ],
     "prompt": "画一张慢 SQL 排查流程图，从慢查询日志到 EXPLAIN、索引、扫描行数、优化验证，像医生诊断。",
     "takeaway": "慢 SQL 不靠猜，执行计划和数据分布会告诉你方向。"
@@ -226,9 +550,33 @@
     "title": "缓存三兄弟别混",
     "summary": "穿透是查不存在，击穿是热点 key 失效，雪崩是大量 key 同时失效或缓存集群故障。",
     "columns": [
-      { "title": "穿透", "items": ["查不存在数据", "缓存和 DB 都没有", "空值缓存", "布隆过滤器"] },
-      { "title": "击穿", "items": ["热点 key 过期", "大量请求打 DB", "互斥锁", "逻辑过期"] },
-      { "title": "雪崩", "items": ["大量 key 同时失效", "缓存整体不可用", "过期打散", "限流降级"] }
+      {
+        "title": "穿透",
+        "items": [
+          "查不存在数据",
+          "缓存和 DB 都没有",
+          "空值缓存",
+          "布隆过滤器"
+        ]
+      },
+      {
+        "title": "击穿",
+        "items": [
+          "热点 key 过期",
+          "大量请求打 DB",
+          "互斥锁",
+          "逻辑过期"
+        ]
+      },
+      {
+        "title": "雪崩",
+        "items": [
+          "大量 key 同时失效",
+          "缓存整体不可用",
+          "过期打散",
+          "限流降级"
+        ]
+      }
     ],
     "prompt": "画一张缓存穿透、击穿、雪崩三栏对比图，用请求箭头打到数据库的不同方式区分。",
     "takeaway": "看请求怎么打到数据库，就能分清三类缓存问题。"
@@ -238,11 +586,31 @@
     "title": "Cache Aside 是旁路缓存",
     "summary": "读先查缓存，未命中再查库写回；写先更新库，再删除缓存。",
     "nodes": [
-      { "label": "读缓存", "detail": "先找 Redis", "tone": "main" },
-      { "label": "未命中", "detail": "查数据库", "tone": "warn" },
-      { "label": "写回缓存", "detail": "下次命中", "tone": "safe" },
-      { "label": "写数据库", "detail": "先改真相源", "tone": "main" },
-      { "label": "删缓存", "detail": "避免脏读", "tone": "warn" }
+      {
+        "label": "读缓存",
+        "detail": "先找 Redis",
+        "tone": "main"
+      },
+      {
+        "label": "未命中",
+        "detail": "查数据库",
+        "tone": "warn"
+      },
+      {
+        "label": "写回缓存",
+        "detail": "下次命中",
+        "tone": "safe"
+      },
+      {
+        "label": "写数据库",
+        "detail": "先改真相源",
+        "tone": "main"
+      },
+      {
+        "label": "删缓存",
+        "detail": "避免脏读",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张 Cache Aside 读写流程图，上半部分读路径，下半部分写路径，突出写库后删缓存。",
     "takeaway": "旁路缓存的数据库是真相源，缓存是加速层。"
@@ -252,11 +620,31 @@
     "title": "Redis 分布式锁像抢会议室",
     "summary": "用 SET NX EX 抢锁，业务执行完用 Lua 校验 value 后释放，避免误删别人锁。",
     "nodes": [
-      { "label": "SET NX EX", "detail": "抢锁带过期", "tone": "main" },
-      { "label": "执行业务", "detail": "持锁期间", "tone": "safe" },
-      { "label": "校验 value", "detail": "确认是自己", "tone": "warn" },
-      { "label": "Lua 删除", "detail": "原子释放", "tone": "main" },
-      { "label": "锁过期风险", "detail": "业务超时", "tone": "warn" }
+      {
+        "label": "SET NX EX",
+        "detail": "抢锁带过期",
+        "tone": "main"
+      },
+      {
+        "label": "执行业务",
+        "detail": "持锁期间",
+        "tone": "safe"
+      },
+      {
+        "label": "校验 value",
+        "detail": "确认是自己",
+        "tone": "warn"
+      },
+      {
+        "label": "Lua 删除",
+        "detail": "原子释放",
+        "tone": "main"
+      },
+      {
+        "label": "锁过期风险",
+        "detail": "业务超时",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张 Redis 分布式锁时序图，客户端抢锁、执行业务、Lua 校验释放，标红锁过期和误删风险。",
     "takeaway": "加锁要唯一值和过期时间，解锁要先校验再删除。"
@@ -266,9 +654,33 @@
     "title": "主从、哨兵、Cluster 是三层能力",
     "summary": "主从管复制，哨兵管故障转移，Cluster 管分片扩容。",
     "columns": [
-      { "title": "主从", "items": ["一个主多个从", "读扩展", "数据备份", "不自动切主"] },
-      { "title": "哨兵", "items": ["监控主从", "发现故障", "自动选主", "不做分片"] },
-      { "title": "Cluster", "items": ["16384 槽", "多主分片", "可扩容", "跨槽受限"] }
+      {
+        "title": "主从",
+        "items": [
+          "一个主多个从",
+          "读扩展",
+          "数据备份",
+          "不自动切主"
+        ]
+      },
+      {
+        "title": "哨兵",
+        "items": [
+          "监控主从",
+          "发现故障",
+          "自动选主",
+          "不做分片"
+        ]
+      },
+      {
+        "title": "Cluster",
+        "items": [
+          "16384 槽",
+          "多主分片",
+          "可扩容",
+          "跨槽受限"
+        ]
+      }
     ],
     "prompt": "画一张 Redis 主从、哨兵、Cluster 三栏结构对比图，用门店、巡检员、多门店分区类比。",
     "takeaway": "主从复制，哨兵切主，Cluster 分片。"
@@ -278,11 +690,31 @@
     "title": "Consumer Group 像分工取快递",
     "summary": "同一消费组内，一个分区同一时刻只给一个消费者处理，用来实现并行和负载均衡。",
     "nodes": [
-      { "label": "Topic", "detail": "消息主题", "tone": "main" },
-      { "label": "Partition", "detail": "并行单位", "tone": "safe" },
-      { "label": "Consumer Group", "detail": "一组消费者", "tone": "main" },
-      { "label": "Consumer", "detail": "处理分区", "tone": "safe" },
-      { "label": "Rebalance", "detail": "重新分配", "tone": "warn" }
+      {
+        "label": "Topic",
+        "detail": "消息主题",
+        "tone": "main"
+      },
+      {
+        "label": "Partition",
+        "detail": "并行单位",
+        "tone": "safe"
+      },
+      {
+        "label": "Consumer Group",
+        "detail": "一组消费者",
+        "tone": "main"
+      },
+      {
+        "label": "Consumer",
+        "detail": "处理分区",
+        "tone": "safe"
+      },
+      {
+        "label": "Rebalance",
+        "detail": "重新分配",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张 Kafka Consumer Group 结构图，Topic 分成多个 Partition，消费者组内消费者分别消费不同分区。",
     "takeaway": "组内分摊，组间广播；并行度受分区数影响。"
@@ -292,11 +724,31 @@
     "title": "ISR 是跟得上的副本名单",
     "summary": "Leader 负责读写，ISR 里是同步进度足够接近的 follower，影响可靠性。",
     "nodes": [
-      { "label": "Leader", "detail": "对外读写", "tone": "main" },
-      { "label": "Follower A", "detail": "同步正常", "tone": "safe" },
-      { "label": "Follower B", "detail": "同步正常", "tone": "safe" },
-      { "label": "落后副本", "detail": "踢出 ISR", "tone": "warn" },
-      { "label": "acks=all", "detail": "等 ISR 确认", "tone": "main" }
+      {
+        "label": "Leader",
+        "detail": "对外读写",
+        "tone": "main"
+      },
+      {
+        "label": "Follower A",
+        "detail": "同步正常",
+        "tone": "safe"
+      },
+      {
+        "label": "Follower B",
+        "detail": "同步正常",
+        "tone": "safe"
+      },
+      {
+        "label": "落后副本",
+        "detail": "踢出 ISR",
+        "tone": "warn"
+      },
+      {
+        "label": "acks=all",
+        "detail": "等 ISR 确认",
+        "tone": "main"
+      }
     ],
     "prompt": "画一张 Kafka ISR 结构图，Leader 在中心，ISR 副本围绕同步，落后副本标红移出 ISR。",
     "takeaway": "ISR 不是所有副本，而是当前跟得上的副本。"
@@ -306,11 +758,31 @@
     "title": "可靠消息是一条接力链",
     "summary": "生产确认、Broker 持久化、消费者确认、失败重试和死信队列共同保证消息尽量不丢。",
     "nodes": [
-      { "label": "生产者确认", "detail": "发送成功", "tone": "main" },
-      { "label": "Broker 持久化", "detail": "落盘副本", "tone": "safe" },
-      { "label": "消费者处理", "detail": "执行业务", "tone": "main" },
-      { "label": "ACK 确认", "detail": "成功提交", "tone": "safe" },
-      { "label": "重试/死信", "detail": "失败兜底", "tone": "warn" }
+      {
+        "label": "生产者确认",
+        "detail": "发送成功",
+        "tone": "main"
+      },
+      {
+        "label": "Broker 持久化",
+        "detail": "落盘副本",
+        "tone": "safe"
+      },
+      {
+        "label": "消费者处理",
+        "detail": "执行业务",
+        "tone": "main"
+      },
+      {
+        "label": "ACK 确认",
+        "detail": "成功提交",
+        "tone": "safe"
+      },
+      {
+        "label": "重试/死信",
+        "detail": "失败兜底",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张 MQ 可靠消息链路图，生产者、Broker、消费者、ACK、重试和死信队列按顺序连接。",
     "takeaway": "可靠消息不是一个配置，是发送、存储、消费、补偿的整条链路。"
@@ -320,11 +792,31 @@
     "title": "本地消息表像待办账本",
     "summary": "业务数据和消息记录放在同一个本地事务里，再由任务异步投递消息。",
     "nodes": [
-      { "label": "本地事务", "detail": "业务+消息表", "tone": "main" },
-      { "label": "提交成功", "detail": "账本落库", "tone": "safe" },
-      { "label": "投递任务", "detail": "扫描待发送", "tone": "main" },
-      { "label": "发送 MQ", "detail": "异步通知", "tone": "safe" },
-      { "label": "失败重试", "detail": "补偿兜底", "tone": "warn" }
+      {
+        "label": "本地事务",
+        "detail": "业务+消息表",
+        "tone": "main"
+      },
+      {
+        "label": "提交成功",
+        "detail": "账本落库",
+        "tone": "safe"
+      },
+      {
+        "label": "投递任务",
+        "detail": "扫描待发送",
+        "tone": "main"
+      },
+      {
+        "label": "发送 MQ",
+        "detail": "异步通知",
+        "tone": "safe"
+      },
+      {
+        "label": "失败重试",
+        "detail": "补偿兜底",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张本地消息表时序图，业务写库和消息表在同一事务，后台任务扫描发送 MQ，失败可重试。",
     "takeaway": "先把消息写进本地账本，再慢慢可靠投递。"
@@ -334,10 +826,26 @@
     "title": "三次握手是在互相确认收发能力",
     "summary": "客户端和服务端通过 SYN、SYN+ACK、ACK 确认双方发送和接收都正常。",
     "nodes": [
-      { "label": "SYN", "detail": "客户端能发", "tone": "main" },
-      { "label": "SYN+ACK", "detail": "服务端能收能发", "tone": "safe" },
-      { "label": "ACK", "detail": "客户端能收", "tone": "safe" },
-      { "label": "连接建立", "detail": "双方确认", "tone": "main" }
+      {
+        "label": "SYN",
+        "detail": "客户端能发",
+        "tone": "main"
+      },
+      {
+        "label": "SYN+ACK",
+        "detail": "服务端能收能发",
+        "tone": "safe"
+      },
+      {
+        "label": "ACK",
+        "detail": "客户端能收",
+        "tone": "safe"
+      },
+      {
+        "label": "连接建立",
+        "detail": "双方确认",
+        "tone": "main"
+      }
     ],
     "prompt": "画一张 TCP 三次握手时序图，客户端和服务端两条竖线，SYN、SYN+ACK、ACK 三个箭头，中文解释收发能力。",
     "takeaway": "三次不是凑数，是让双方都确认彼此能发也能收。"
@@ -347,11 +855,31 @@
     "title": "TLS 握手是在安全交换会话钥匙",
     "summary": "客户端和服务端协商版本算法，验证证书，再生成后续通信使用的对称密钥。",
     "nodes": [
-      { "label": "ClientHello", "detail": "带随机数和套件", "tone": "main" },
-      { "label": "ServerHello", "detail": "选择算法", "tone": "safe" },
-      { "label": "证书校验", "detail": "确认身份", "tone": "warn" },
-      { "label": "密钥协商", "detail": "生成会话密钥", "tone": "main" },
-      { "label": "加密通信", "detail": "对称加密", "tone": "safe" }
+      {
+        "label": "ClientHello",
+        "detail": "带随机数和套件",
+        "tone": "main"
+      },
+      {
+        "label": "ServerHello",
+        "detail": "选择算法",
+        "tone": "safe"
+      },
+      {
+        "label": "证书校验",
+        "detail": "确认身份",
+        "tone": "warn"
+      },
+      {
+        "label": "密钥协商",
+        "detail": "生成会话密钥",
+        "tone": "main"
+      },
+      {
+        "label": "加密通信",
+        "detail": "对称加密",
+        "tone": "safe"
+      }
     ],
     "prompt": "画一张 TLS 握手时序图，展示 ClientHello、ServerHello、证书校验、密钥协商、加密通信。",
     "takeaway": "非对称主要用来安全协商，对称密钥负责后续高效传输。"
@@ -361,9 +889,33 @@
     "title": "分布式事务是在多个系统间对齐结果",
     "summary": "常见方案有 2PC、TCC、本地消息表、事务消息，取舍在一致性、侵入性和复杂度。",
     "columns": [
-      { "title": "强一致", "items": ["2PC", "同步阻塞", "一致性强", "性能压力大"] },
-      { "title": "业务补偿", "items": ["TCC", "侵入较高", "控制力强", "适合核心链路"] },
-      { "title": "最终一致", "items": ["消息表/MQ", "异步补偿", "吞吐更好", "短暂不一致"] }
+      {
+        "title": "强一致",
+        "items": [
+          "2PC",
+          "同步阻塞",
+          "一致性强",
+          "性能压力大"
+        ]
+      },
+      {
+        "title": "业务补偿",
+        "items": [
+          "TCC",
+          "侵入较高",
+          "控制力强",
+          "适合核心链路"
+        ]
+      },
+      {
+        "title": "最终一致",
+        "items": [
+          "消息表/MQ",
+          "异步补偿",
+          "吞吐更好",
+          "短暂不一致"
+        ]
+      }
     ],
     "prompt": "画一张分布式事务方案对比图，三栏展示 2PC、TCC、最终一致，标出一致性和复杂度取舍。",
     "takeaway": "分布式事务没有银弹，面试要讲清业务能接受哪种一致性。"
@@ -373,11 +925,31 @@
     "title": "分布式 ID 是全局不撞号",
     "summary": "常见方案包括 UUID、数据库号段、雪花算法，核心是唯一、趋势递增和高可用。",
     "nodes": [
-      { "label": "时间戳", "detail": "趋势递增", "tone": "main" },
-      { "label": "机器号", "detail": "区分节点", "tone": "safe" },
-      { "label": "序列号", "detail": "同毫秒自增", "tone": "main" },
-      { "label": "时钟回拨", "detail": "风险点", "tone": "warn" },
-      { "label": "全局唯一", "detail": "最终目标", "tone": "safe" }
+      {
+        "label": "时间戳",
+        "detail": "趋势递增",
+        "tone": "main"
+      },
+      {
+        "label": "机器号",
+        "detail": "区分节点",
+        "tone": "safe"
+      },
+      {
+        "label": "序列号",
+        "detail": "同毫秒自增",
+        "tone": "main"
+      },
+      {
+        "label": "时钟回拨",
+        "detail": "风险点",
+        "tone": "warn"
+      },
+      {
+        "label": "全局唯一",
+        "detail": "最终目标",
+        "tone": "safe"
+      }
     ],
     "prompt": "画一张雪花算法 ID 结构图，把 ID 拆成时间戳、机器号、序列号，旁边标注时钟回拨风险。",
     "takeaway": "雪花 ID 靠时间、机器、序列三段组合避免撞号。"
@@ -387,11 +959,31 @@
     "title": "订单状态机像快递进度",
     "summary": "订单只能按允许的状态流转，不能从任意状态跳到任意状态。",
     "nodes": [
-      { "label": "待支付", "detail": "创建订单", "tone": "main" },
-      { "label": "已支付", "detail": "支付成功", "tone": "safe" },
-      { "label": "待发货", "detail": "准备履约", "tone": "safe" },
-      { "label": "已完成", "detail": "确认收货", "tone": "main" },
-      { "label": "取消/退款", "detail": "异常分支", "tone": "warn" }
+      {
+        "label": "待支付",
+        "detail": "创建订单",
+        "tone": "main"
+      },
+      {
+        "label": "已支付",
+        "detail": "支付成功",
+        "tone": "safe"
+      },
+      {
+        "label": "待发货",
+        "detail": "准备履约",
+        "tone": "safe"
+      },
+      {
+        "label": "已完成",
+        "detail": "确认收货",
+        "tone": "main"
+      },
+      {
+        "label": "取消/退款",
+        "detail": "异常分支",
+        "tone": "warn"
+      }
     ],
     "prompt": "画一张订单状态机流程图，状态从待支付到已支付、待发货、已完成，并展示取消退款异常分支。",
     "takeaway": "状态机的重点是限制合法流转，避免状态乱跳。"
@@ -401,13 +993,1317 @@
     "title": "库存扣减怕超卖",
     "summary": "高并发扣库存要用条件更新、预扣、锁或队列控制并发，核心是不能扣成负数。",
     "nodes": [
-      { "label": "查询库存", "detail": "确认可卖", "tone": "safe" },
-      { "label": "条件扣减", "detail": "stock > 0", "tone": "main" },
-      { "label": "订单创建", "detail": "占用库存", "tone": "safe" },
-      { "label": "支付超时", "detail": "释放库存", "tone": "warn" },
-      { "label": "防超卖", "detail": "最终目标", "tone": "main" }
+      {
+        "label": "查询库存",
+        "detail": "确认可卖",
+        "tone": "safe"
+      },
+      {
+        "label": "条件扣减",
+        "detail": "stock > 0",
+        "tone": "main"
+      },
+      {
+        "label": "订单创建",
+        "detail": "占用库存",
+        "tone": "safe"
+      },
+      {
+        "label": "支付超时",
+        "detail": "释放库存",
+        "tone": "warn"
+      },
+      {
+        "label": "防超卖",
+        "detail": "最终目标",
+        "tone": "main"
+      }
     ],
     "prompt": "画一张库存扣减时序图，用户下单、条件扣减库存、创建订单、支付超时释放库存，突出防超卖。",
     "takeaway": "库存扣减最怕并发把库存扣成负数，条件更新是基础兜底。"
+  },
+  "dubbo-service-governance": {
+    "type": "structure",
+    "title": "Dubbo 服务治理一般会问什么：结构一眼看懂",
+    "summary": "Dubbo 服务治理围绕注册发现、负载均衡、超时重试、路由、降级和版本分组展开。",
+    "nodes": [
+      {
+        "label": "消费者",
+        "tone": "main"
+      },
+      {
+        "label": "注册中心",
+        "tone": "safe"
+      },
+      {
+        "label": "提供者列表",
+        "tone": "safe"
+      },
+      {
+        "label": "负载均衡",
+        "tone": "safe"
+      },
+      {
+        "label": "超时/重试/降级",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：消费者 -> 注册中心 -> 提供者列表 -> 负载均衡 -> 超时/重试/降级。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "RPC 不是本地调用，治理才是重点。"
+  },
+  "fencing-token": {
+    "type": "sequence",
+    "title": "分布式锁里的 fencing token 是什么：交互一眼看懂",
+    "summary": "fencing token 是递增令牌，用来让资源方拒绝过期锁持有者的写入，补充分布式锁的安全性。",
+    "nodes": [
+      {
+        "label": "A 拿 token1 卡顿",
+        "tone": "main"
+      },
+      {
+        "label": "B 拿 token2 写入",
+        "tone": "safe"
+      },
+      {
+        "label": "A 恢复写入被资源方拒绝",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "适合画时序图：A 拿 token1 卡顿 -> B 拿 token2 写入 -> A 恢复写入被资源方拒绝。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "锁负责排队，token 负责防插队。"
+  },
+  "gateway-rate-limiter": {
+    "type": "structure",
+    "title": "网关限流一般怎么做：结构一眼看懂",
+    "summary": "网关限流通常按用户、IP、接口或租户生成限流 key，再用令牌桶等算法保护后端。",
+    "nodes": [
+      {
+        "label": "客户端",
+        "tone": "main"
+      },
+      {
+        "label": "网关限流器",
+        "tone": "safe"
+      },
+      {
+        "label": "Redis 令牌桶",
+        "tone": "safe"
+      },
+      {
+        "label": "后端服务",
+        "tone": "safe"
+      },
+      {
+        "label": "超限分支返回 429",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "适合画结构图：客户端 -> 网关限流器 -> Redis 令牌桶 -> 后端服务，超限分支返回 429。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "入口先控流，服务才不抖。"
+  },
+  "nacos-config-center": {
+    "type": "structure",
+    "title": "配置中心解决什么问题？Nacos 配置怎么理解：结构一眼看懂",
+    "summary": "配置中心把分散在各服务里的配置集中管理，并支持动态下发、环境隔离和变更审计。",
+    "nodes": [
+      {
+        "label": "配置中心在中间",
+        "tone": "main"
+      },
+      {
+        "label": "开发/测试/生产服务分别订阅不同",
+        "detail": "namespace/group/dataId",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：配置中心在中间，开发/测试/生产服务分别订阅不同 namespace/group/dataId。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "配置中心是统一公告栏：集中发、按环境看、改了能追。"
+  },
+  "nacos-service-discovery": {
+    "type": "sequence",
+    "title": "Nacos 注册发现大致怎么工作：交互一眼看懂",
+    "summary": "服务启动后注册到 Nacos，调用方从 Nacos 获取实例列表，并结合负载均衡选择目标实例。",
+    "nodes": [
+      {
+        "label": "服务提供者注册",
+        "tone": "main"
+      },
+      {
+        "label": "Nacos 保存",
+        "tone": "safe"
+      },
+      {
+        "label": "消费者订阅",
+        "tone": "safe"
+      },
+      {
+        "label": "拉取实例",
+        "tone": "safe"
+      },
+      {
+        "label": "发起调用",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画时序图：服务提供者注册 -> Nacos 保存 -> 消费者订阅 -> 拉取实例 -> 发起调用。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "注册中心是通讯录：谁在线、在哪儿、能不能打。"
+  },
+  "rpc-serialization-protocol": {
+    "type": "flow",
+    "title": "RPC 为什么要关注序列化协议：流程一眼看懂",
+    "summary": "RPC 需要把对象变成可传输的字节，序列化协议会影响性能、体积、兼容性和跨语言能力。",
+    "nodes": [
+      {
+        "label": "调用方对象",
+        "tone": "main"
+      },
+      {
+        "label": "序列化字节",
+        "tone": "safe"
+      },
+      {
+        "label": "网络传输",
+        "tone": "safe"
+      },
+      {
+        "label": "反序列化对象",
+        "tone": "safe"
+      },
+      {
+        "label": "服务方法执行",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：调用方对象 -> 序列化字节 -> 网络传输 -> 反序列化对象 -> 服务方法执行。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "RPC 传的不是对象，是对象打包后的字节。"
+  },
+  "seata-at-transaction": {
+    "type": "sequence",
+    "title": "Seata AT 模式大致怎么保证分布式事务：交互一眼看懂",
+    "summary": "Seata AT 模式通过全局事务协调、本地事务提交和 undo log 回滚来实现最终一致的分布式事务。",
+    "nodes": [
+      {
+        "label": "业务服务",
+        "tone": "main"
+      },
+      {
+        "label": "TC 开全局事务",
+        "tone": "safe"
+      },
+      {
+        "label": "分支提交并写 undo log",
+        "tone": "safe"
+      },
+      {
+        "label": "全局提交或回滚",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "适合画时序图：业务服务 -> TC 开全局事务 -> 分支提交并写 undo log -> 全局提交或回滚。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "AT 像留小票：先办事，失败按小票退款。"
+  },
+  "sentinel-circuit-breaker": {
+    "type": "flow",
+    "title": "熔断和降级有什么区别？Sentinel 怎么做：流程一眼看懂",
+    "summary": "熔断是发现依赖异常后短时间切断调用，降级是返回兜底结果保证主流程可用。",
+    "nodes": [
+      {
+        "label": "关闭正常调用",
+        "tone": "main"
+      },
+      {
+        "label": "指标异常",
+        "tone": "warn"
+      },
+      {
+        "label": "打开熔断",
+        "tone": "safe"
+      },
+      {
+        "label": "fallback",
+        "tone": "safe"
+      },
+      {
+        "label": "半开探测",
+        "tone": "safe"
+      },
+      {
+        "label": "恢复",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画状态图：关闭正常调用 -> 指标异常 -> 打开熔断 -> fallback -> 半开探测 -> 恢复。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "熔断先断线，降级给兜底。"
+  },
+  "sentinel-flow-control": {
+    "type": "flow",
+    "title": "Sentinel 流控规则怎么理解：流程一眼看懂",
+    "summary": "Sentinel 流控基于实时统计和规则判断是否放行请求，用来保护热点资源。",
+    "nodes": [
+      {
+        "label": "请求进入资源",
+        "tone": "main"
+      },
+      {
+        "label": "实时统计",
+        "tone": "safe"
+      },
+      {
+        "label": "命中流控规则",
+        "tone": "safe"
+      },
+      {
+        "label": "放行或快速失败",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "适合画流程图：请求进入资源 -> 实时统计 -> 命中流控规则 -> 放行或快速失败。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "Sentinel 像窗口叫号：超出承载就先拦住。"
+  },
+  "spring-cloud-gateway-route": {
+    "type": "flow",
+    "title": "Spring Cloud Gateway 的路由是怎么匹配的：流程一眼看懂",
+    "summary": "理解网关路由由 predicate 判断请求是否命中，再通过 filter 处理请求和响应。",
+    "nodes": [
+      {
+        "label": "客户端请求",
+        "tone": "main"
+      },
+      {
+        "label": "路由匹配",
+        "tone": "safe"
+      },
+      {
+        "label": "前置过滤器",
+        "tone": "safe"
+      },
+      {
+        "label": "后端服务",
+        "tone": "safe"
+      },
+      {
+        "label": "后置过滤器",
+        "tone": "safe"
+      },
+      {
+        "label": "返回响应",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：客户端请求 -> 路由匹配 -> 前置过滤器 -> 后端服务 -> 后置过滤器 -> 返回响应。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "Route 是路线，Predicate 是验票，Filter 是过安检。"
+  },
+  "docker-multi-stage-build": {
+    "type": "flow",
+    "title": "Docker 多阶段构建有什么用：流程一眼看懂",
+    "summary": "多阶段构建把编译环境和运行环境分离，减少最终镜像体积并降低安全暴露面。",
+    "nodes": [
+      {
+        "label": "源码",
+        "tone": "main"
+      },
+      {
+        "label": "构建镜像编译",
+        "tone": "safe"
+      },
+      {
+        "label": "产物 jar",
+        "tone": "safe"
+      },
+      {
+        "label": "运行镜像",
+        "tone": "safe"
+      },
+      {
+        "label": "部署",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：源码 -> 构建镜像编译 -> 产物 jar -> 运行镜像 -> 部署。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "构建像厨房，运行只交成品。"
+  },
+  "k8s-configmap-secret": {
+    "type": "structure",
+    "title": "K8s 里的 ConfigMap 和 Secret 有什么区别：结构一眼看懂",
+    "summary": "ConfigMap 存普通配置，Secret 存敏感配置，但 Secret 也需要配合权限和加密保护。",
+    "nodes": [
+      {
+        "label": "Pod 从 ConfigMap",
+        "detail": "读取普通配置",
+        "tone": "main"
+      },
+      {
+        "label": "从 Secret 读取密码",
+        "tone": "safe"
+      },
+      {
+        "label": "两者挂载到容器",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：Pod 从 ConfigMap 读取普通配置，从 Secret 读取密码，两者挂载到容器。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "公告放 ConfigMap，钥匙放 Secret。"
+  },
+  "k8s-ingress": {
+    "type": "structure",
+    "title": "K8s Ingress 是什么？和 Service 有什么区别：结构一眼看懂",
+    "summary": "Service 给集群内部或一组 Pod 提供稳定入口，Ingress 管理外部 HTTP/HTTPS 访问规则。",
+    "nodes": [
+      {
+        "label": "外部用户",
+        "tone": "main"
+      },
+      {
+        "label": "Ingress Controll",
+        "detail": "er",
+        "tone": "safe"
+      },
+      {
+        "label": "Ingress 规则",
+        "tone": "safe"
+      },
+      {
+        "label": "Service",
+        "tone": "safe"
+      },
+      {
+        "label": "Pod",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：外部用户 -> Ingress Controller -> Ingress 规则 -> Service -> Pod。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "Service 管内部入口，Ingress 管外部进门路线。"
+  },
+  "k8s-liveness-readiness-startup": {
+    "type": "compare",
+    "title": "K8s 里的 liveness、readiness、startup 探针有什么区别：差异一眼看懂",
+    "summary": "三类探针分别负责判断容器是否存活、是否可接流量、启动阶段是否完成。",
+    "columns": [
+      {
+        "title": "liveness",
+        "items": ["判断是否活着", "失败会重启容器", "适合检测死锁卡死"]
+      },
+      {
+        "title": "readiness",
+        "items": ["判断能否接流量", "失败会摘出 Service", "适合等依赖就绪"]
+      },
+      {
+        "title": "startup",
+        "items": ["判断启动是否完成", "保护慢启动应用", "成功前压住其他探针"]
+      }
+    ],
+    "prompt": "适合画对比图：三列分别展示触发场景、失败动作、适用例子。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "活没活看 liveness，能不能接客看 readiness，开没开业看 startup。"
+  },
+  "linux-disk-full": {
+    "type": "flow",
+    "title": "服务器磁盘满了怎么排查：流程一眼看懂",
+    "summary": "磁盘满要先定位分区和大目录，再检查日志、临时文件、删除未释放和 inode 耗尽。",
+    "nodes": [
+      {
+        "label": "df 定分区",
+        "tone": "main"
+      },
+      {
+        "label": "du 找目录",
+        "tone": "safe"
+      },
+      {
+        "label": "查日志/临时文件",
+        "tone": "safe"
+      },
+      {
+        "label": "查 inode",
+        "tone": "safe"
+      },
+      {
+        "label": "查 deleted 文件",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：df 定分区 -> du 找目录 -> 查日志/临时文件 -> 查 inode -> 查 deleted 文件。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "磁盘满三查：空间、大文件、inode。"
+  },
+  "linux-high-cpu": {
+    "type": "flow",
+    "title": "线上 CPU 飙高怎么排查：流程一眼看懂",
+    "summary": "CPU 飙高要先定位进程，再定位线程，最后结合栈信息判断是死循环、热点计算还是 GC。",
+    "nodes": [
+      {
+        "label": "top",
+        "tone": "main"
+      },
+      {
+        "label": "top -Hp",
+        "tone": "safe"
+      },
+      {
+        "label": "线程 id 转换",
+        "tone": "safe"
+      },
+      {
+        "label": "jstack",
+        "tone": "safe"
+      },
+      {
+        "label": "根因分类",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：top -> top -Hp -> 线程 id 转换 -> jstack -> 根因分类。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "CPU 排障四步：找进程、找线程、找栈、找原因。"
+  },
+  "linux-high-memory": {
+    "type": "structure",
+    "title": "线上内存持续上涨怎么排查：结构一眼看懂",
+    "summary": "内存上涨要区分堆内、堆外、缓存和容器限制，再结合 GC、dump 和监控定位。",
+    "nodes": [
+      {
+        "label": "总内存拆成 heap",
+        "tone": "main"
+      },
+      {
+        "label": "direct memory",
+        "tone": "safe"
+      },
+      {
+        "label": "thread stack",
+        "tone": "safe"
+      },
+      {
+        "label": "native",
+        "tone": "safe"
+      },
+      {
+        "label": "page cache",
+        "tone": "safe"
+      },
+      {
+        "label": "container limit",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：总内存拆成 heap、direct memory、thread stack、native、page cache、container limit。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "内存排障先分桶：堆内、堆外、缓存、容器。"
+  },
+  "linux-network-troubleshooting": {
+    "type": "flow",
+    "title": "接口突然访问不通，网络层怎么排查：流程一眼看懂",
+    "summary": "网络排障要按 DNS、连通性、端口监听、防火墙、路由、服务日志逐层检查。",
+    "nodes": [
+      {
+        "label": "DNS",
+        "tone": "main"
+      },
+      {
+        "label": "网络连通",
+        "tone": "safe"
+      },
+      {
+        "label": "端口监听",
+        "tone": "safe"
+      },
+      {
+        "label": "防火墙/安全组",
+        "tone": "safe"
+      },
+      {
+        "label": "网关",
+        "tone": "safe"
+      },
+      {
+        "label": "应用日志",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：DNS -> 网络连通 -> 端口监听 -> 防火墙/安全组 -> 网关 -> 应用日志。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "网络排障像寄快递：地址、道路、门卫、收件人。"
+  },
+  "opentelemetry-three-pillars": {
+    "type": "structure",
+    "title": "可观测性的日志、指标、链路追踪有什么区别：结构一眼看懂",
+    "summary": "日志回答发生了什么，指标回答整体是否异常，链路追踪回答一次请求经过了哪里。",
+    "nodes": [
+      {
+        "label": "Logs",
+        "tone": "main"
+      },
+      {
+        "label": "Metrics",
+        "tone": "safe"
+      },
+      {
+        "label": "Traces 三角互补",
+        "tone": "safe"
+      },
+      {
+        "label": "中间是线上排障",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画三角结构图：Logs、Metrics、Traces 三角互补，中间是线上排障。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "日志看细节，指标看趋势，追踪看路线。"
+  },
+  "prometheus-grafana-alerting": {
+    "type": "structure",
+    "title": "Prometheus 和 Grafana 在项目里分别做什么：结构一眼看懂",
+    "summary": "Prometheus 负责采集和存储指标，Grafana 负责可视化看板，告警规则负责发现异常。",
+    "nodes": [
+      {
+        "label": "应用 metrics",
+        "tone": "main"
+      },
+      {
+        "label": "Prometheus",
+        "tone": "safe"
+      },
+      {
+        "label": "Grafana 看板",
+        "tone": "safe"
+      },
+      {
+        "label": "Alertmanager 告警",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：应用 metrics -> Prometheus -> Grafana 看板 -> Alertmanager 告警。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "Prometheus 采数据，Grafana 画图，Alert 叫人。"
+  },
+  "g1-gc": {
+    "type": "structure",
+    "title": "G1 垃圾收集器有什么特点：结构一眼看懂",
+    "summary": "G1 把堆切成多个 Region，优先回收收益高的区域，并通过停顿目标控制回收节奏。",
+    "nodes": [
+      {
+        "label": "堆被切成多个 Region",
+        "tone": "main"
+      },
+      {
+        "label": "标出 Eden",
+        "tone": "safe"
+      },
+      {
+        "label": "Survivor",
+        "tone": "safe"
+      },
+      {
+        "label": "Old",
+        "tone": "safe"
+      },
+      {
+        "label": "Humongous 和回收选择",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：堆被切成多个 Region，标出 Eden、Survivor、Old、Humongous 和回收选择。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "G1 像分房间打扫，先扫最值得扫的。"
+  },
+  "gc-log-analysis": {
+    "type": "flow",
+    "title": "GC 日志一般怎么看：流程一眼看懂",
+    "summary": "GC 日志要看 GC 类型、发生频率、停顿时间、回收前后内存和是否伴随 Full GC。",
+    "nodes": [
+      {
+        "label": "堆使用量锯齿曲线",
+        "tone": "main"
+      },
+      {
+        "label": "GC 事件点",
+        "tone": "safe"
+      },
+      {
+        "label": "Full GC 后是否回落",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画折线图：堆使用量锯齿曲线、GC 事件点、Full GC 后是否回落。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "GC 日志四看：频率、停顿、回收量、Full GC 后剩多少。"
+  },
+  "jfr": {
+    "type": "structure",
+    "title": "JFR 在 Java 线上排障里有什么用：结构一眼看懂",
+    "summary": "JFR 可以低开销记录 JVM 和应用运行事件，用来分析 CPU、锁、GC、IO 等性能问题。",
+    "nodes": [
+      {
+        "label": "JVM 事件",
+        "tone": "main"
+      },
+      {
+        "label": "JFR 记录",
+        "tone": "safe"
+      },
+      {
+        "label": "JDK Mission Cont",
+        "detail": "rol 分析 CPU/GC/锁/IO",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：JVM 事件 -> JFR 记录 -> JDK Mission Control 分析 CPU/GC/锁/IO。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "JFR 是 JVM 黑匣子，排性能问题能回放现场。"
+  },
+  "consumer-backpressure": {
+    "type": "flow",
+    "title": "消费者处理不过来时怎么做背压：流程一眼看懂",
+    "summary": "背压是在消费者处理能力不足时主动降低拉取、控制并发或降级处理，避免系统被压垮。",
+    "nodes": [
+      {
+        "label": "MQ 堆积",
+        "tone": "main"
+      },
+      {
+        "label": "消费者线程池满",
+        "tone": "safe"
+      },
+      {
+        "label": "降低拉取/扩容/限流下游",
+        "tone": "safe"
+      },
+      {
+        "label": "lag 恢复",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：MQ 堆积 -> 消费者线程池满 -> 降低拉取/扩容/限流下游 -> lag 恢复。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "传送带太快就降速，不要让货堆塌。"
+  },
+  "delayed-retry-wheel": {
+    "type": "flow",
+    "title": "延迟重试为什么要分级退避：流程一眼看懂",
+    "summary": "分级退避让失败消息隔一段时间再重试，避免故障期间大量请求立即打回下游。",
+    "nodes": [
+      {
+        "label": "消费失败",
+        "tone": "main"
+      },
+      {
+        "label": "1 分钟重试",
+        "tone": "safe"
+      },
+      {
+        "label": "5 分钟重试",
+        "tone": "safe"
+      },
+      {
+        "label": "30 分钟重试",
+        "tone": "safe"
+      },
+      {
+        "label": "死信队列",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "适合画流程图：消费失败 -> 1 分钟重试 -> 5 分钟重试 -> 30 分钟重试 -> 死信队列。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "失败别猛打，隔一会再试，多次失败进死信。"
+  },
+  "kafka-partition-selection": {
+    "type": "structure",
+    "title": "Kafka 生产者把消息发到哪个分区：结构一眼看懂",
+    "summary": "Kafka 分区选择通常根据指定分区、消息 key 或默认分区器决定，同 key 进同分区可保证局部顺序。",
+    "nodes": [
+      {
+        "label": "producer",
+        "tone": "main"
+      },
+      {
+        "label": "partitioner",
+        "tone": "safe"
+      },
+      {
+        "label": "topic 分区 0/1/2",
+        "tone": "safe"
+      },
+      {
+        "label": "同 orderId 进入同分区",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：producer -> partitioner -> topic 分区 0/1/2，同 orderId 进入同分区。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "指定优先，其次看 key；顺序在分区内。"
+  },
+  "kafka-transactions": {
+    "type": "sequence",
+    "title": "Kafka 事务消息解决什么问题：交互一眼看懂",
+    "summary": "Kafka 事务让一组消息和消费位移提交具备原子性，是 exactly-once 语义的重要基础。",
+    "nodes": [
+      {
+        "label": "begin transactio",
+        "detail": "n",
+        "tone": "main"
+      },
+      {
+        "label": "send messages",
+        "tone": "safe"
+      },
+      {
+        "label": "send offsets",
+        "tone": "safe"
+      },
+      {
+        "label": "commit/abort",
+        "tone": "safe"
+      },
+      {
+        "label": "consumer read_co",
+        "detail": "mmitted",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画时序图：begin transaction -> send messages -> send offsets -> commit/abort -> consumer read_committed。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "Kafka 事务管消息原子，不包治业务一致。"
+  },
+  "cold-hot-data-archive": {
+    "type": "flow",
+    "title": "冷热数据归档怎么设计：流程一眼看懂",
+    "summary": "冷热归档把高频访问的新数据留在在线表，把低频历史数据迁移到归档库或低成本存储。",
+    "nodes": [
+      {
+        "label": "在线表筛选历史数据",
+        "tone": "main"
+      },
+      {
+        "label": "批量写归档库",
+        "tone": "safe"
+      },
+      {
+        "label": "校验",
+        "tone": "safe"
+      },
+      {
+        "label": "删除或标记源数据",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：在线表筛选历史数据 -> 批量写归档库 -> 校验 -> 删除或标记源数据。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "热数据放桌面，冷数据进仓库。"
+  },
+  "connection-pool": {
+    "type": "structure",
+    "title": "数据库连接池为什么重要：结构一眼看懂",
+    "summary": "连接池复用数据库连接，控制并发访问数据库的数量，避免频繁建连和连接打爆数据库。",
+    "nodes": [
+      {
+        "label": "应用线程",
+        "tone": "main"
+      },
+      {
+        "label": "连接池",
+        "tone": "safe"
+      },
+      {
+        "label": "MySQL",
+        "tone": "safe"
+      },
+      {
+        "label": "展示最大连接数和等待队列",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：应用线程 -> 连接池 -> MySQL，展示最大连接数和等待队列。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "连接池是出租车站，车够用就好，不是越多越好。"
+  },
+  "invisible-index": {
+    "type": "compare",
+    "title": "MySQL invisible index 有什么用：差异一眼看懂",
+    "summary": "不可见索引可以让优化器暂时忽略某个索引，用来安全评估删除索引的影响。",
+    "columns": [
+      {
+        "title": "visible",
+        "items": ["优化器可选择", "仍参与执行计划", "线上查询可能依赖"]
+      },
+      {
+        "title": "invisible",
+        "items": ["优化器默认忽略", "索引仍会维护", "适合灰度评估删除"]
+      }
+    ],
+    "prompt": "适合画对比图：visible 索引可被优化器选择，invisible 索引存在但默认不被选择。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "先藏起来试试，没问题再扔。"
+  },
+  "mysql-partitioning": {
+    "type": "structure",
+    "title": "MySQL 分区表适合解决什么问题：结构一眼看懂",
+    "summary": "分区表把一张逻辑表按规则拆到多个物理分区，适合管理大表历史数据，但不是索引优化万能药。",
+    "nodes": [
+      {
+        "label": "一张 orders 逻辑表按月份",
+        "detail": "拆成 p202601",
+        "tone": "main"
+      },
+      {
+        "label": "p202602",
+        "tone": "safe"
+      },
+      {
+        "label": "p202603 分区",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：一张 orders 逻辑表按月份拆成 p202601、p202602、p202603 分区。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "分区像按月份装文件夹，找得准才少翻。"
+  },
+  "optimizer-histogram": {
+    "type": "structure",
+    "title": "MySQL 直方图 histogram 是干什么的：结构一眼看懂",
+    "summary": "直方图帮助优化器了解列值分布，在没有合适索引或数据分布不均时辅助选择执行计划。",
+    "nodes": [
+      {
+        "label": "状态列数据分布柱状图",
+        "tone": "main"
+      },
+      {
+        "label": "优化器估算行数",
+        "tone": "safe"
+      },
+      {
+        "label": "选择执行计划",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：状态列数据分布柱状图 -> 优化器估算行数 -> 选择执行计划。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "索引帮你找，直方图帮优化器猜得准。"
+  },
+  "read-write-splitting-delay": {
+    "type": "sequence",
+    "title": "读写分离里的主从延迟怎么处理：交互一眼看懂",
+    "summary": "读写分离提升读扩展能力，但主从延迟会导致刚写完读不到，需要按场景走主库、延迟检测或缓存兜底。",
+    "nodes": [
+      {
+        "label": "写主库",
+        "tone": "main"
+      },
+      {
+        "label": "复制延迟",
+        "tone": "warn"
+      },
+      {
+        "label": "读从库旧数据",
+        "tone": "safe"
+      },
+      {
+        "label": "强一致请求改读主库",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画时序图：写主库 -> 复制延迟 -> 读从库旧数据 -> 强一致请求改读主库。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "读写分离怕“刚写就读”，强一致就读主。"
+  },
+  "forward-proxy-reverse-proxy": {
+    "type": "compare",
+    "title": "正向代理和反向代理有什么区别：差异一眼看懂",
+    "summary": "正向代理代表客户端访问外部，反向代理代表服务端接收外部请求并转发到内部服务。",
+    "columns": [
+      {
+        "title": "正向代理",
+        "items": ["站在客户端一侧", "隐藏真实客户端", "代表用户访问外部"]
+      },
+      {
+        "title": "反向代理",
+        "items": ["站在服务端一侧", "隐藏内部服务", "统一入口再转发"]
+      }
+    ],
+    "prompt": "适合画对比图：左边客户端 -> 正向代理 -> 外部网站；右边用户 -> 反向代理 -> 内部服务。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "正向替客户端出门，反向替服务端迎客。"
+  },
+  "linux-file-descriptor": {
+    "type": "structure",
+    "title": "Linux 文件描述符 fd 是什么：结构一眼看懂",
+    "summary": "文件描述符是进程访问文件、Socket、管道等内核资源的整数句柄，数量不足会导致打开文件失败。",
+    "nodes": [
+      {
+        "label": "进程 fd 表",
+        "tone": "main"
+      },
+      {
+        "label": "0/1/2 标准输入输出错误",
+        "tone": "safe"
+      },
+      {
+        "label": "文件/Socket/管道",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：进程 fd 表 -> 0/1/2 标准输入输出错误 -> 文件/Socket/管道。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "fd 是资源号码牌，文件和连接都靠它找。"
+  },
+  "data-sync-binlog-mq": {
+    "type": "sequence",
+    "title": "数据库和其他系统的数据同步怎么设计：交互一眼看懂",
+    "summary": "数据同步要明确源头、同步链路、失败补偿、幂等和一致性边界，常用 MQ 或 binlog 订阅。",
+    "nodes": [
+      {
+        "label": "业务写库",
+        "tone": "main"
+      },
+      {
+        "label": "本地消息/binlog",
+        "tone": "safe"
+      },
+      {
+        "label": "MQ/同步器",
+        "tone": "safe"
+      },
+      {
+        "label": "下游系统",
+        "tone": "safe"
+      },
+      {
+        "label": "失败重试和校对",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "适合画时序图：业务写库 -> 本地消息/binlog -> MQ/同步器 -> 下游系统 -> 失败重试和校对。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "同步不是通知一下，而是丢了能补、重了不怕。"
+  },
+  "es-index-sync": {
+    "type": "structure",
+    "title": "数据库数据同步到 Elasticsearch 怎么保证一致性：结构一眼看懂",
+    "summary": "DB 到 ES 通常追求最终一致，需要可靠同步、幂等更新、失败重试和定期校对。",
+    "nodes": [
+      {
+        "label": "MySQL",
+        "tone": "main"
+      },
+      {
+        "label": "binlog/MQ",
+        "tone": "safe"
+      },
+      {
+        "label": "同步服务",
+        "tone": "safe"
+      },
+      {
+        "label": "ES 索引",
+        "tone": "safe"
+      },
+      {
+        "label": "校对任务回查 MySQL",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：MySQL -> binlog/MQ -> 同步服务 -> ES 索引 -> 校对任务回查 MySQL。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "DB 是档案，ES 是目录；目录可以晚，但不能永远错。"
+  },
+  "gateway-auth-design": {
+    "type": "flow",
+    "title": "网关统一鉴权怎么设计：流程一眼看懂",
+    "summary": "网关统一鉴权负责入口身份校验和粗粒度权限拦截，核心服务仍要做关键权限兜底。",
+    "nodes": [
+      {
+        "label": "请求",
+        "tone": "main"
+      },
+      {
+        "label": "白名单判断",
+        "tone": "safe"
+      },
+      {
+        "label": "Token 校验",
+        "tone": "safe"
+      },
+      {
+        "label": "权限判断",
+        "tone": "safe"
+      },
+      {
+        "label": "透传用户上下文",
+        "tone": "safe"
+      },
+      {
+        "label": "服务兜底",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：请求 -> 白名单判断 -> Token 校验 -> 权限判断 -> 透传用户上下文 -> 服务兜底。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "网关查门禁，服务守保险柜。"
+  },
+  "multi-tenant-isolation": {
+    "type": "compare",
+    "title": "多租户系统的数据隔离怎么做：差异一眼看懂",
+    "summary": "多租户隔离常见方案有共享库共享表、共享库独立表、独立库，取舍在成本、隔离性和运维复杂度。",
+    "columns": [
+      {
+        "title": "共享表",
+        "items": ["成本最低", "靠 tenant_id 隔离", "最怕漏条件"]
+      },
+      {
+        "title": "独立表",
+        "items": ["隔离更清楚", "表数量膨胀", "适合中等租户"]
+      },
+      {
+        "title": "独立库",
+        "items": ["隔离最强", "运维成本高", "适合大客户"]
+      }
+    ],
+    "prompt": "适合画对比图：共享表、独立表、独立库三种方案对比成本和隔离性。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "多租户像办公楼：同层、分层、独栋，越隔离越贵。"
+  },
+  "oauth2-oidc": {
+    "type": "compare",
+    "title": "OAuth2 和 OIDC 有什么区别：差异一眼看懂",
+    "summary": "OAuth2 主要解决授权，OIDC 在 OAuth2 之上补充身份认证，返回可验证用户身份的 ID Token。",
+    "columns": [
+      {
+        "title": "OAuth2",
+        "items": ["重点是授权", "发 Access Token", "回答能访问什么"]
+      },
+      {
+        "title": "OIDC",
+        "items": ["重点是认证", "发 ID Token", "回答用户是谁"]
+      }
+    ],
+    "prompt": "适合画对比图：OAuth2 授权访问资源，OIDC 返回 ID Token 证明身份。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "OAuth2 问能干啥，OIDC 问你是谁。"
+  },
+  "oss-file-storage": {
+    "type": "sequence",
+    "title": "文件上传到对象存储怎么设计：交互一眼看懂",
+    "summary": "文件存储要考虑直传、回调、鉴权、大小类型限制、病毒风险、访问权限和元数据落库。",
+    "nodes": [
+      {
+        "label": "前端申请凭证",
+        "tone": "main"
+      },
+      {
+        "label": "OSS 直传",
+        "tone": "safe"
+      },
+      {
+        "label": "回调/通知后端",
+        "tone": "safe"
+      },
+      {
+        "label": "元数据入库",
+        "tone": "safe"
+      },
+      {
+        "label": "生成访问链接",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画时序图：前端申请凭证 -> OSS 直传 -> 回调/通知后端 -> 元数据入库 -> 生成访问链接。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "文件进仓库，数据库记账本。"
+  },
+  "pressure-testing": {
+    "type": "flow",
+    "title": "项目上线前压测怎么做：流程一眼看懂",
+    "summary": "压测要明确目标、模型、环境、指标和瓶颈定位，而不是只跑一个 QPS 数字。",
+    "nodes": [
+      {
+        "label": "目标设定",
+        "tone": "main"
+      },
+      {
+        "label": "场景建模",
+        "tone": "safe"
+      },
+      {
+        "label": "执行压测",
+        "tone": "safe"
+      },
+      {
+        "label": "指标观察",
+        "tone": "safe"
+      },
+      {
+        "label": "瓶颈优化",
+        "tone": "safe"
+      },
+      {
+        "label": "容量结论",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：目标设定 -> 场景建模 -> 执行压测 -> 指标观察 -> 瓶颈优化 -> 容量结论。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "压测不是炫 QPS，是找瓶颈、算容量。"
+  },
+  "search-autocomplete": {
+    "type": "scenario",
+    "title": "搜索联想词怎么设计：场景一眼看懂",
+    "summary": "搜索联想词要结合前缀匹配、热度排序、缓存和敏感词过滤，保证低延迟和结果质量。",
+    "nodes": [
+      {
+        "label": "用户输入前缀",
+        "tone": "main"
+      },
+      {
+        "label": "缓存/Trie/ES 候选",
+        "tone": "safe"
+      },
+      {
+        "label": "热度排序",
+        "tone": "safe"
+      },
+      {
+        "label": "敏感过滤",
+        "tone": "safe"
+      },
+      {
+        "label": "返回建议",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画场景图：用户输入前缀 -> 缓存/Trie/ES 候选 -> 热度排序 -> 敏感过滤 -> 返回建议。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "联想词是输入法候选，不是完整搜索结果。"
+  },
+  "sensitive-data-masking": {
+    "type": "scenario",
+    "title": "敏感数据脱敏怎么设计：场景一眼看懂",
+    "summary": "敏感数据脱敏要区分展示脱敏、日志脱敏、传输加密和存储加密，并结合权限控制。",
+    "nodes": [
+      {
+        "label": "数据库明文/密文",
+        "tone": "main"
+      },
+      {
+        "label": "后端权限判断",
+        "tone": "safe"
+      },
+      {
+        "label": "页面脱敏",
+        "tone": "safe"
+      },
+      {
+        "label": "日志脱敏",
+        "tone": "safe"
+      },
+      {
+        "label": "审计记录",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画场景图：数据库明文/密文 -> 后端权限判断 -> 页面脱敏 -> 日志脱敏 -> 审计记录。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "能少看就少看，必须看就留痕。"
+  },
+  "sso-design": {
+    "type": "sequence",
+    "title": "单点登录 SSO 怎么设计：交互一眼看懂",
+    "summary": "SSO 的核心是统一认证中心登录一次，再让多个系统通过票据或 Token 信任这次登录。",
+    "nodes": [
+      {
+        "label": "用户",
+        "tone": "main"
+      },
+      {
+        "label": "系统 A",
+        "tone": "safe"
+      },
+      {
+        "label": "认证中心",
+        "tone": "safe"
+      },
+      {
+        "label": "系统 A 建会话",
+        "tone": "safe"
+      },
+      {
+        "label": "系统 B 复用认证",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画时序图：用户 -> 系统 A -> 认证中心 -> 系统 A 建会话 -> 系统 B 复用认证。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "SSO 是一张通票，多系统认同一个入口。"
+  },
+  "cache-breakdown-mutex": {
+    "type": "sequence",
+    "title": "缓存击穿为什么常用互斥锁解决：交互一眼看懂",
+    "summary": "热点 key 过期瞬间大量请求回源会打爆数据库，互斥锁让只有一个请求重建缓存。",
+    "nodes": [
+      {
+        "label": "多个请求 miss",
+        "tone": "main"
+      },
+      {
+        "label": "一个拿锁查库",
+        "tone": "safe"
+      },
+      {
+        "label": "写缓存",
+        "tone": "safe"
+      },
+      {
+        "label": "其他请求重试命中",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画时序图：多个请求 miss -> 一个拿锁查库 -> 写缓存 -> 其他请求重试命中。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "热点失效别一起冲，一个人重建，其他人等。"
+  },
+  "cache-warming": {
+    "type": "flow",
+    "title": "缓存预热是什么？什么时候需要：流程一眼看懂",
+    "summary": "缓存预热是在流量到来前提前把热点数据加载进缓存，避免冷启动时请求打爆数据库。",
+    "nodes": [
+      {
+        "label": "活动配置",
+        "tone": "main"
+      },
+      {
+        "label": "预热任务",
+        "tone": "safe"
+      },
+      {
+        "label": "查数据库",
+        "tone": "safe"
+      },
+      {
+        "label": "写 Redis",
+        "tone": "safe"
+      },
+      {
+        "label": "流量进入读缓存",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画流程图：活动配置 -> 预热任务 -> 查数据库 -> 写 Redis -> 流量进入读缓存。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "饭点前先备菜，流量前先热缓存。"
+  },
+  "redis-cluster-hash-slot": {
+    "type": "structure",
+    "title": "Redis Cluster 的 hash slot 怎么理解：结构一眼看懂",
+    "summary": "Redis Cluster 把 key 映射到 16384 个槽，再把槽分配给不同节点，实现数据分片。",
+    "nodes": [
+      {
+        "label": "key",
+        "tone": "main"
+      },
+      {
+        "label": "CRC16",
+        "tone": "safe"
+      },
+      {
+        "label": "slot",
+        "tone": "safe"
+      },
+      {
+        "label": "节点 A/B/C",
+        "tone": "safe"
+      },
+      {
+        "label": "展示槽迁移",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画结构图：key -> CRC16 -> slot -> 节点 A/B/C，展示槽迁移。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "Redis Cluster 先分槽，再分节点。"
+  },
+  "redis-geo": {
+    "type": "scenario",
+    "title": "Redis GEO 适合解决什么问题：场景一眼看懂",
+    "summary": "Redis GEO 用经纬度和有序集合能力支持附近位置查询，适合附近门店、附近用户等场景。",
+    "nodes": [
+      {
+        "label": "用户当前位置为圆心",
+        "tone": "main"
+      },
+      {
+        "label": "半径内展示门店/司机",
+        "tone": "safe"
+      },
+      {
+        "label": "并返回距离排序",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "适合画场景图：用户当前位置为圆心，半径内展示门店/司机，并返回距离排序。 要求：中文短标签，每个节点不超过 12 个字，画面温暖清晰，保留 16:9 和 4:5 两套比例，不堆大段文字。",
+    "takeaway": "GEO 是 Redis 的附近查询小地图。"
   }
 }

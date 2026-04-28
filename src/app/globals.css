@@ -313,6 +313,8 @@ input {
 }
 
 .question-body code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
   border: 1px solid rgb(23 23 20 / 0.1);
   border-radius: 0.5rem;
   background: var(--smoke);
@@ -331,6 +333,8 @@ input {
 }
 
 .question-body pre code {
+  overflow-wrap: normal;
+  word-break: normal;
   border: 0;
   background: transparent;
   color: inherit;
