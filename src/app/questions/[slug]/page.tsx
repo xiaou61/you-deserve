@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, Clock3, Layers3, Sparkles } from "lucide-react";
 
 import { QuestionCard } from "@/components/question-card";
+import { QuestionVisual } from "@/components/question-visual";
 import { getQuestionBySlug, getQuestionMetas, getRelatedQuestions } from "@/lib/content";
 import { renderMarkdown } from "@/lib/markdown";
+import { getQuestionVisual } from "@/lib/visuals";
 
 type QuestionPageProps = {
   params: Promise<{
@@ -45,6 +47,7 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
 
   const html = await renderMarkdown(question.content);
   const related = getRelatedQuestions(question);
+  const visual = getQuestionVisual(question.slug);
 
   return (
     <main className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-16 pt-6 sm:px-6 lg:grid-cols-[320px_1fr] lg:px-8 lg:pt-10">
@@ -88,6 +91,8 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
       </aside>
 
       <section className="min-w-0">
+        {visual ? <QuestionVisual visual={visual} /> : null}
+
         <article className="article-shell rounded-[2rem] border border-ink/10 bg-white px-5 py-7 shadow-soft sm:px-8 lg:px-12 lg:py-10">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-mint/70 px-3 py-1.5 text-sm font-black text-ink">
             <Sparkles className="h-4 w-4 text-teal" />

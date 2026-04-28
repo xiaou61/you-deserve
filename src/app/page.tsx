@@ -3,11 +3,13 @@ import { ArrowUpRight, BookMarked, Flame, GraduationCap, Layers3 } from "lucide-
 
 import { QuestionExplorer } from "@/components/question-explorer";
 import { getCategories, getQuestionMetas, getRoutes } from "@/lib/content";
+import { getVisualCount } from "@/lib/visuals";
 
 export default function Home() {
   const questions = getQuestionMetas();
   const categories = getCategories();
   const routes = getRoutes();
+  const visualCount = getVisualCount();
   const featured = questions.slice(0, 3);
 
   return (
@@ -30,7 +32,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
+          <div className="mt-10 grid gap-3 sm:grid-cols-4">
             <div className="metric-tile">
               <span>{questions.length}</span>
               <p>已整理题目</p>
@@ -38,6 +40,10 @@ export default function Home() {
             <div className="metric-tile">
               <span>{categories.length}</span>
               <p>核心专题</p>
+            </div>
+            <div className="metric-tile">
+              <span>{visualCount}</span>
+              <p>图解样板</p>
             </div>
             <div className="metric-tile">
               <span>0</span>

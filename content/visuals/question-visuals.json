@@ -1,0 +1,413 @@
+{
+  "jvm-memory-areas": {
+    "type": "structure",
+    "title": "JVM 内存像一家公司",
+    "summary": "线程私有区像每个员工自己的桌面，共享区像公司公共仓库和资料室。",
+    "nodes": [
+      { "label": "程序计数器", "detail": "线程私有，记位置", "tone": "safe" },
+      { "label": "虚拟机栈", "detail": "线程私有，放栈帧", "tone": "safe" },
+      { "label": "本地方法栈", "detail": "线程私有，管 native", "tone": "safe" },
+      { "label": "堆", "detail": "线程共享，放对象", "tone": "main" },
+      { "label": "方法区", "detail": "线程共享，放类信息", "tone": "main" }
+    ],
+    "prompt": "画一张温暖清晰的 JVM 内存结构图，分为线程私有和线程共享两块，用员工桌面、公共仓库、资料室做类比，中文短标签。",
+    "takeaway": "私有三件套跟线程走，共享两大块被所有线程一起用。"
+  },
+  "jvm-class-loading": {
+    "type": "flow",
+    "title": "类加载是一条进厂流水线",
+    "summary": "从 class 文件被找到，到类信息可用，中间要经历加载、验证、准备、解析、初始化。",
+    "nodes": [
+      { "label": "加载", "detail": "找到 class", "tone": "safe" },
+      { "label": "验证", "detail": "检查安全", "tone": "safe" },
+      { "label": "准备", "detail": "静态变量默认值", "tone": "safe" },
+      { "label": "解析", "detail": "符号引用转直接引用", "tone": "main" },
+      { "label": "初始化", "detail": "执行 clinit", "tone": "warn" }
+    ],
+    "prompt": "画一张从左到右的 Java 类加载流程图，节点为加载、验证、准备、解析、初始化，用工厂流水线类比，初始化节点突出。",
+    "takeaway": "准备阶段给默认值，初始化阶段才执行静态赋值和静态代码块。"
+  },
+  "jvm-gc-roots": {
+    "type": "structure",
+    "title": "GC Roots 像找人关系网",
+    "summary": "从一批根对象出发，能沿引用链找到的对象还活着，找不到的才可能被回收。",
+    "nodes": [
+      { "label": "栈中引用", "detail": "局部变量", "tone": "main" },
+      { "label": "静态变量", "detail": "类持有引用", "tone": "main" },
+      { "label": "常量引用", "detail": "常量池相关", "tone": "safe" },
+      { "label": "JNI 引用", "detail": "native 持有", "tone": "safe" },
+      { "label": "不可达对象", "detail": "可能回收", "tone": "warn" }
+    ],
+    "prompt": "画一张可达性分析结构图，GC Roots 在中心，引用链连接存活对象，断开的对象标红为可回收，中文短标签。",
+    "takeaway": "不是没人引用就看一个点，而是从根出发看整条引用链。"
+  },
+  "hashmap-resize": {
+    "type": "flow",
+    "title": "HashMap 扩容像换大货架",
+    "summary": "元素超过阈值后数组扩成两倍，节点根据 hash 位决定留在原位置还是搬到新位置。",
+    "nodes": [
+      { "label": "元素增加", "detail": "size 变大", "tone": "safe" },
+      { "label": "超过阈值", "detail": "触发 resize", "tone": "warn" },
+      { "label": "数组翻倍", "detail": "容量 x2", "tone": "main" },
+      { "label": "节点迁移", "detail": "原位或新位", "tone": "main" },
+      { "label": "链表/树保留", "detail": "结构继续用", "tone": "safe" }
+    ],
+    "prompt": "画一张 HashMap 扩容流程图，用货架扩容类比，展示旧数组到新数组，节点根据 hash 位留原位或移动。",
+    "takeaway": "扩容不是重新乱放，而是按新增高位判断原位或原位加旧容量。"
+  },
+  "concurrenthashmap": {
+    "type": "structure",
+    "title": "ConcurrentHashMap 像分区仓库",
+    "summary": "它通过 CAS、synchronized 和分桶结构降低并发冲突，让多个线程尽量操作不同桶。",
+    "nodes": [
+      { "label": "数组桶", "detail": "分散 key", "tone": "main" },
+      { "label": "CAS", "detail": "空桶抢占", "tone": "safe" },
+      { "label": "synchronized", "detail": "锁住桶头", "tone": "warn" },
+      { "label": "链表/红黑树", "detail": "处理冲突", "tone": "main" },
+      { "label": "协助扩容", "detail": "多线程搬迁", "tone": "safe" }
+    ],
+    "prompt": "画一张 ConcurrentHashMap 结构图，多个桶像仓库分区，线程分别进入不同桶，CAS 和桶锁用小标记表示。",
+    "takeaway": "它不是整张表一把大锁，而是尽量把冲突压到桶级别。"
+  },
+  "aqs": {
+    "type": "structure",
+    "title": "AQS 像排队叫号器",
+    "summary": "state 表示资源状态，CLH 队列保存等待线程，抢不到锁就入队排队。",
+    "nodes": [
+      { "label": "state", "detail": "资源状态", "tone": "main" },
+      { "label": "CAS 抢锁", "detail": "成功就执行", "tone": "safe" },
+      { "label": "CLH 队列", "detail": "失败就排队", "tone": "main" },
+      { "label": "park 等待", "detail": "挂起线程", "tone": "warn" },
+      { "label": "unpark 唤醒", "detail": "释放后通知", "tone": "safe" }
+    ],
+    "prompt": "画一张 AQS 结构图，中心是 state，右侧是等待队列，线程抢锁失败后排队等待，释放后唤醒队头。",
+    "takeaway": "AQS 的核心就是一个状态值加一条等待队列。"
+  },
+  "thread-pool-core-parameters": {
+    "type": "flow",
+    "title": "线程池像前台接单系统",
+    "summary": "任务来了先找核心员工，忙不过来进队列，再不够加临时工，最后触发拒绝策略。",
+    "nodes": [
+      { "label": "提交任务", "detail": "execute", "tone": "safe" },
+      { "label": "核心线程", "detail": "先处理", "tone": "main" },
+      { "label": "阻塞队列", "detail": "排队等", "tone": "safe" },
+      { "label": "最大线程", "detail": "临时加人", "tone": "warn" },
+      { "label": "拒绝策略", "detail": "兜底处理", "tone": "warn" }
+    ],
+    "prompt": "画一张线程池任务流转图，任务从提交进入核心线程、队列、最大线程、拒绝策略，用前台接单类比。",
+    "takeaway": "核心线程、队列、最大线程、拒绝策略是一条顺序链。"
+  },
+  "spring-bean-lifecycle": {
+    "type": "flow",
+    "title": "Bean 生命周期像员工入职",
+    "summary": "Spring 先实例化对象，再注入属性、执行初始化扩展，最后放入容器供业务使用。",
+    "nodes": [
+      { "label": "实例化", "detail": "new 对象", "tone": "safe" },
+      { "label": "属性注入", "detail": "填依赖", "tone": "main" },
+      { "label": "Aware 回调", "detail": "拿上下文", "tone": "safe" },
+      { "label": "初始化前后", "detail": "后置处理器", "tone": "main" },
+      { "label": "销毁", "detail": "释放资源", "tone": "warn" }
+    ],
+    "prompt": "画一张 Spring Bean 生命周期流程图，用员工入职到离职类比，突出属性注入和 BeanPostProcessor 前后处理。",
+    "takeaway": "BeanPostProcessor 是很多框架增强能力插进去的关键点。"
+  },
+  "spring-mvc-flow": {
+    "type": "sequence",
+    "title": "Spring MVC 请求像办事大厅",
+    "summary": "请求先进 DispatcherServlet，再找 HandlerMapping、HandlerAdapter，最后返回视图或 JSON。",
+    "nodes": [
+      { "label": "DispatcherServlet", "detail": "统一入口", "tone": "main" },
+      { "label": "HandlerMapping", "detail": "找处理器", "tone": "safe" },
+      { "label": "HandlerAdapter", "detail": "调用方法", "tone": "safe" },
+      { "label": "Controller", "detail": "执行业务", "tone": "main" },
+      { "label": "返回响应", "detail": "JSON/视图", "tone": "safe" }
+    ],
+    "prompt": "画一张 Spring MVC 时序图，角色为浏览器、DispatcherServlet、HandlerMapping、HandlerAdapter、Controller，箭头清晰。",
+    "takeaway": "DispatcherServlet 是总前台，Mapping 找人，Adapter 负责调用。"
+  },
+  "spring-boot-autoconfiguration": {
+    "type": "flow",
+    "title": "自动配置像智能装机",
+    "summary": "Spring Boot 根据依赖、条件注解和配置项，自动装配常用 Bean。",
+    "nodes": [
+      { "label": "引入 starter", "detail": "带依赖", "tone": "safe" },
+      { "label": "读取配置类", "detail": "自动配置候选", "tone": "main" },
+      { "label": "条件判断", "detail": "Conditional", "tone": "warn" },
+      { "label": "创建 Bean", "detail": "装进容器", "tone": "main" },
+      { "label": "用户覆盖", "detail": "自定义优先", "tone": "safe" }
+    ],
+    "prompt": "画一张 Spring Boot 自动配置流程图，依赖 starter 进入条件判断，满足条件后创建 Bean，用户自定义可覆盖。",
+    "takeaway": "自动配置不是魔法，是条件注解决定配不配。"
+  },
+  "spring-transaction-failure": {
+    "type": "flow",
+    "title": "事务失效多半是代理没拦住",
+    "summary": "Spring 声明式事务依赖 AOP 代理，自调用、异常被吞、非 public 方法都容易让事务失效。",
+    "nodes": [
+      { "label": "外部调用", "detail": "经过代理", "tone": "safe" },
+      { "label": "开启事务", "detail": "拦截增强", "tone": "main" },
+      { "label": "执行业务", "detail": "数据库操作", "tone": "safe" },
+      { "label": "异常判断", "detail": "决定回滚", "tone": "warn" },
+      { "label": "提交/回滚", "detail": "事务结束", "tone": "main" }
+    ],
+    "prompt": "画一张 Spring 事务代理流程图，突出外部调用经过代理才能开启事务，自调用绕过代理用红色警示。",
+    "takeaway": "事务生效先看有没有经过代理，再看异常是否能触发回滚。"
+  },
+  "mysql-b-plus-tree": {
+    "type": "structure",
+    "title": "B+ 树像图书馆目录",
+    "summary": "非叶子节点只做导航，真实数据在叶子节点，叶子之间有链表方便范围查询。",
+    "nodes": [
+      { "label": "根节点", "detail": "第一层目录", "tone": "main" },
+      { "label": "中间节点", "detail": "继续导航", "tone": "safe" },
+      { "label": "叶子节点", "detail": "存数据/主键", "tone": "main" },
+      { "label": "叶子链表", "detail": "范围查询快", "tone": "safe" },
+      { "label": "磁盘页", "detail": "减少 IO", "tone": "warn" }
+    ],
+    "prompt": "画一张 MySQL B+ 树索引结构图，三层树，非叶子节点做目录，叶子节点横向链表连接，中文标注。",
+    "takeaway": "B+ 树适合数据库，是因为层高低、范围查方便、磁盘 IO 少。"
+  },
+  "mysql-mvcc": {
+    "type": "structure",
+    "title": "MVCC 像试卷版本快照",
+    "summary": "每条记录带隐藏版本信息，事务通过 ReadView 判断自己能看到哪个版本。",
+    "nodes": [
+      { "label": "当前记录", "detail": "最新版本", "tone": "main" },
+      { "label": "undo log", "detail": "历史版本链", "tone": "safe" },
+      { "label": "ReadView", "detail": "可见性规则", "tone": "main" },
+      { "label": "快照读", "detail": "不加锁读旧版", "tone": "safe" },
+      { "label": "当前读", "detail": "读最新并加锁", "tone": "warn" }
+    ],
+    "prompt": "画一张 MVCC 版本链结构图，一条记录连接多个历史版本，事务 ReadView 像滤镜决定可见版本。",
+    "takeaway": "MVCC 的关键是版本链加 ReadView，不是复制整张表。"
+  },
+  "mysql-redo-undo-binlog": {
+    "type": "compare",
+    "title": "三种日志分工不同",
+    "summary": "redo 保证崩溃恢复，undo 支持回滚和 MVCC，binlog 用于复制和归档。",
+    "columns": [
+      { "title": "redo log", "items": ["InnoDB 层", "崩溃恢复", "物理日志", "保证已提交不丢"] },
+      { "title": "undo log", "items": ["InnoDB 层", "事务回滚", "历史版本", "支撑 MVCC"] },
+      { "title": "binlog", "items": ["Server 层", "主从复制", "逻辑日志", "归档恢复"] }
+    ],
+    "prompt": "画一张 redo、undo、binlog 三栏对比图，用不同颜色展示职责：崩溃恢复、回滚版本、复制归档。",
+    "takeaway": "redo 管不丢，undo 管后悔，binlog 管同步。"
+  },
+  "mysql-master-slave": {
+    "type": "sequence",
+    "title": "主从复制像抄作业",
+    "summary": "主库写 binlog，从库 IO 线程拉取，中继日志保存，SQL 线程回放。",
+    "nodes": [
+      { "label": "主库写入", "detail": "产生 binlog", "tone": "main" },
+      { "label": "IO 线程", "detail": "拉取日志", "tone": "safe" },
+      { "label": "relay log", "detail": "中继保存", "tone": "safe" },
+      { "label": "SQL 线程", "detail": "回放执行", "tone": "main" },
+      { "label": "主从延迟", "detail": "可能读旧", "tone": "warn" }
+    ],
+    "prompt": "画一张 MySQL 主从复制时序图，主库 binlog 到从库 relay log，再由 SQL 线程回放，标出主从延迟风险。",
+    "takeaway": "复制是异步链路，读写分离一定要考虑延迟。"
+  },
+  "mysql-slow-query": {
+    "type": "flow",
+    "title": "慢 SQL 排查像看病",
+    "summary": "先定位慢语句，再看执行计划、索引、扫描行数和业务数据量，最后验证优化效果。",
+    "nodes": [
+      { "label": "发现慢 SQL", "detail": "日志/监控", "tone": "warn" },
+      { "label": "EXPLAIN", "detail": "看执行计划", "tone": "main" },
+      { "label": "查索引", "detail": "是否命中", "tone": "safe" },
+      { "label": "看扫描行数", "detail": "rows/filter", "tone": "main" },
+      { "label": "验证优化", "detail": "回归指标", "tone": "safe" }
+    ],
+    "prompt": "画一张慢 SQL 排查流程图，从慢查询日志到 EXPLAIN、索引、扫描行数、优化验证，像医生诊断。",
+    "takeaway": "慢 SQL 不靠猜，执行计划和数据分布会告诉你方向。"
+  },
+  "redis-cache-penetration-breakdown-avalanche": {
+    "type": "compare",
+    "title": "缓存三兄弟别混",
+    "summary": "穿透是查不存在，击穿是热点 key 失效，雪崩是大量 key 同时失效或缓存集群故障。",
+    "columns": [
+      { "title": "穿透", "items": ["查不存在数据", "缓存和 DB 都没有", "空值缓存", "布隆过滤器"] },
+      { "title": "击穿", "items": ["热点 key 过期", "大量请求打 DB", "互斥锁", "逻辑过期"] },
+      { "title": "雪崩", "items": ["大量 key 同时失效", "缓存整体不可用", "过期打散", "限流降级"] }
+    ],
+    "prompt": "画一张缓存穿透、击穿、雪崩三栏对比图，用请求箭头打到数据库的不同方式区分。",
+    "takeaway": "看请求怎么打到数据库，就能分清三类缓存问题。"
+  },
+  "cache-aside": {
+    "type": "flow",
+    "title": "Cache Aside 是旁路缓存",
+    "summary": "读先查缓存，未命中再查库写回；写先更新库，再删除缓存。",
+    "nodes": [
+      { "label": "读缓存", "detail": "先找 Redis", "tone": "main" },
+      { "label": "未命中", "detail": "查数据库", "tone": "warn" },
+      { "label": "写回缓存", "detail": "下次命中", "tone": "safe" },
+      { "label": "写数据库", "detail": "先改真相源", "tone": "main" },
+      { "label": "删缓存", "detail": "避免脏读", "tone": "warn" }
+    ],
+    "prompt": "画一张 Cache Aside 读写流程图，上半部分读路径，下半部分写路径，突出写库后删缓存。",
+    "takeaway": "旁路缓存的数据库是真相源，缓存是加速层。"
+  },
+  "redis-distributed-lock": {
+    "type": "sequence",
+    "title": "Redis 分布式锁像抢会议室",
+    "summary": "用 SET NX EX 抢锁，业务执行完用 Lua 校验 value 后释放，避免误删别人锁。",
+    "nodes": [
+      { "label": "SET NX EX", "detail": "抢锁带过期", "tone": "main" },
+      { "label": "执行业务", "detail": "持锁期间", "tone": "safe" },
+      { "label": "校验 value", "detail": "确认是自己", "tone": "warn" },
+      { "label": "Lua 删除", "detail": "原子释放", "tone": "main" },
+      { "label": "锁过期风险", "detail": "业务超时", "tone": "warn" }
+    ],
+    "prompt": "画一张 Redis 分布式锁时序图，客户端抢锁、执行业务、Lua 校验释放，标红锁过期和误删风险。",
+    "takeaway": "加锁要唯一值和过期时间，解锁要先校验再删除。"
+  },
+  "redis-sentinel-cluster": {
+    "type": "compare",
+    "title": "主从、哨兵、Cluster 是三层能力",
+    "summary": "主从管复制，哨兵管故障转移，Cluster 管分片扩容。",
+    "columns": [
+      { "title": "主从", "items": ["一个主多个从", "读扩展", "数据备份", "不自动切主"] },
+      { "title": "哨兵", "items": ["监控主从", "发现故障", "自动选主", "不做分片"] },
+      { "title": "Cluster", "items": ["16384 槽", "多主分片", "可扩容", "跨槽受限"] }
+    ],
+    "prompt": "画一张 Redis 主从、哨兵、Cluster 三栏结构对比图，用门店、巡检员、多门店分区类比。",
+    "takeaway": "主从复制，哨兵切主，Cluster 分片。"
+  },
+  "kafka-consumer-group": {
+    "type": "structure",
+    "title": "Consumer Group 像分工取快递",
+    "summary": "同一消费组内，一个分区同一时刻只给一个消费者处理，用来实现并行和负载均衡。",
+    "nodes": [
+      { "label": "Topic", "detail": "消息主题", "tone": "main" },
+      { "label": "Partition", "detail": "并行单位", "tone": "safe" },
+      { "label": "Consumer Group", "detail": "一组消费者", "tone": "main" },
+      { "label": "Consumer", "detail": "处理分区", "tone": "safe" },
+      { "label": "Rebalance", "detail": "重新分配", "tone": "warn" }
+    ],
+    "prompt": "画一张 Kafka Consumer Group 结构图，Topic 分成多个 Partition，消费者组内消费者分别消费不同分区。",
+    "takeaway": "组内分摊，组间广播；并行度受分区数影响。"
+  },
+  "kafka-isr": {
+    "type": "structure",
+    "title": "ISR 是跟得上的副本名单",
+    "summary": "Leader 负责读写，ISR 里是同步进度足够接近的 follower，影响可靠性。",
+    "nodes": [
+      { "label": "Leader", "detail": "对外读写", "tone": "main" },
+      { "label": "Follower A", "detail": "同步正常", "tone": "safe" },
+      { "label": "Follower B", "detail": "同步正常", "tone": "safe" },
+      { "label": "落后副本", "detail": "踢出 ISR", "tone": "warn" },
+      { "label": "acks=all", "detail": "等 ISR 确认", "tone": "main" }
+    ],
+    "prompt": "画一张 Kafka ISR 结构图，Leader 在中心，ISR 副本围绕同步，落后副本标红移出 ISR。",
+    "takeaway": "ISR 不是所有副本，而是当前跟得上的副本。"
+  },
+  "mq-reliable-message": {
+    "type": "sequence",
+    "title": "可靠消息是一条接力链",
+    "summary": "生产确认、Broker 持久化、消费者确认、失败重试和死信队列共同保证消息尽量不丢。",
+    "nodes": [
+      { "label": "生产者确认", "detail": "发送成功", "tone": "main" },
+      { "label": "Broker 持久化", "detail": "落盘副本", "tone": "safe" },
+      { "label": "消费者处理", "detail": "执行业务", "tone": "main" },
+      { "label": "ACK 确认", "detail": "成功提交", "tone": "safe" },
+      { "label": "重试/死信", "detail": "失败兜底", "tone": "warn" }
+    ],
+    "prompt": "画一张 MQ 可靠消息链路图，生产者、Broker、消费者、ACK、重试和死信队列按顺序连接。",
+    "takeaway": "可靠消息不是一个配置，是发送、存储、消费、补偿的整条链路。"
+  },
+  "outbox-pattern": {
+    "type": "sequence",
+    "title": "本地消息表像待办账本",
+    "summary": "业务数据和消息记录放在同一个本地事务里，再由任务异步投递消息。",
+    "nodes": [
+      { "label": "本地事务", "detail": "业务+消息表", "tone": "main" },
+      { "label": "提交成功", "detail": "账本落库", "tone": "safe" },
+      { "label": "投递任务", "detail": "扫描待发送", "tone": "main" },
+      { "label": "发送 MQ", "detail": "异步通知", "tone": "safe" },
+      { "label": "失败重试", "detail": "补偿兜底", "tone": "warn" }
+    ],
+    "prompt": "画一张本地消息表时序图，业务写库和消息表在同一事务，后台任务扫描发送 MQ，失败可重试。",
+    "takeaway": "先把消息写进本地账本，再慢慢可靠投递。"
+  },
+  "tcp-three-way-handshake": {
+    "type": "sequence",
+    "title": "三次握手是在互相确认收发能力",
+    "summary": "客户端和服务端通过 SYN、SYN+ACK、ACK 确认双方发送和接收都正常。",
+    "nodes": [
+      { "label": "SYN", "detail": "客户端能发", "tone": "main" },
+      { "label": "SYN+ACK", "detail": "服务端能收能发", "tone": "safe" },
+      { "label": "ACK", "detail": "客户端能收", "tone": "safe" },
+      { "label": "连接建立", "detail": "双方确认", "tone": "main" }
+    ],
+    "prompt": "画一张 TCP 三次握手时序图，客户端和服务端两条竖线，SYN、SYN+ACK、ACK 三个箭头，中文解释收发能力。",
+    "takeaway": "三次不是凑数，是让双方都确认彼此能发也能收。"
+  },
+  "tls-handshake": {
+    "type": "sequence",
+    "title": "TLS 握手是在安全交换会话钥匙",
+    "summary": "客户端和服务端协商版本算法，验证证书，再生成后续通信使用的对称密钥。",
+    "nodes": [
+      { "label": "ClientHello", "detail": "带随机数和套件", "tone": "main" },
+      { "label": "ServerHello", "detail": "选择算法", "tone": "safe" },
+      { "label": "证书校验", "detail": "确认身份", "tone": "warn" },
+      { "label": "密钥协商", "detail": "生成会话密钥", "tone": "main" },
+      { "label": "加密通信", "detail": "对称加密", "tone": "safe" }
+    ],
+    "prompt": "画一张 TLS 握手时序图，展示 ClientHello、ServerHello、证书校验、密钥协商、加密通信。",
+    "takeaway": "非对称主要用来安全协商，对称密钥负责后续高效传输。"
+  },
+  "distributed-transaction": {
+    "type": "compare",
+    "title": "分布式事务是在多个系统间对齐结果",
+    "summary": "常见方案有 2PC、TCC、本地消息表、事务消息，取舍在一致性、侵入性和复杂度。",
+    "columns": [
+      { "title": "强一致", "items": ["2PC", "同步阻塞", "一致性强", "性能压力大"] },
+      { "title": "业务补偿", "items": ["TCC", "侵入较高", "控制力强", "适合核心链路"] },
+      { "title": "最终一致", "items": ["消息表/MQ", "异步补偿", "吞吐更好", "短暂不一致"] }
+    ],
+    "prompt": "画一张分布式事务方案对比图，三栏展示 2PC、TCC、最终一致，标出一致性和复杂度取舍。",
+    "takeaway": "分布式事务没有银弹，面试要讲清业务能接受哪种一致性。"
+  },
+  "distributed-id": {
+    "type": "structure",
+    "title": "分布式 ID 是全局不撞号",
+    "summary": "常见方案包括 UUID、数据库号段、雪花算法，核心是唯一、趋势递增和高可用。",
+    "nodes": [
+      { "label": "时间戳", "detail": "趋势递增", "tone": "main" },
+      { "label": "机器号", "detail": "区分节点", "tone": "safe" },
+      { "label": "序列号", "detail": "同毫秒自增", "tone": "main" },
+      { "label": "时钟回拨", "detail": "风险点", "tone": "warn" },
+      { "label": "全局唯一", "detail": "最终目标", "tone": "safe" }
+    ],
+    "prompt": "画一张雪花算法 ID 结构图，把 ID 拆成时间戳、机器号、序列号，旁边标注时钟回拨风险。",
+    "takeaway": "雪花 ID 靠时间、机器、序列三段组合避免撞号。"
+  },
+  "order-state-machine": {
+    "type": "flow",
+    "title": "订单状态机像快递进度",
+    "summary": "订单只能按允许的状态流转，不能从任意状态跳到任意状态。",
+    "nodes": [
+      { "label": "待支付", "detail": "创建订单", "tone": "main" },
+      { "label": "已支付", "detail": "支付成功", "tone": "safe" },
+      { "label": "待发货", "detail": "准备履约", "tone": "safe" },
+      { "label": "已完成", "detail": "确认收货", "tone": "main" },
+      { "label": "取消/退款", "detail": "异常分支", "tone": "warn" }
+    ],
+    "prompt": "画一张订单状态机流程图，状态从待支付到已支付、待发货、已完成，并展示取消退款异常分支。",
+    "takeaway": "状态机的重点是限制合法流转，避免状态乱跳。"
+  },
+  "inventory-deduction": {
+    "type": "sequence",
+    "title": "库存扣减怕超卖",
+    "summary": "高并发扣库存要用条件更新、预扣、锁或队列控制并发，核心是不能扣成负数。",
+    "nodes": [
+      { "label": "查询库存", "detail": "确认可卖", "tone": "safe" },
+      { "label": "条件扣减", "detail": "stock > 0", "tone": "main" },
+      { "label": "订单创建", "detail": "占用库存", "tone": "safe" },
+      { "label": "支付超时", "detail": "释放库存", "tone": "warn" },
+      { "label": "防超卖", "detail": "最终目标", "tone": "main" }
+    ],
+    "prompt": "画一张库存扣减时序图，用户下单、条件扣减库存、创建订单、支付超时释放库存，突出防超卖。",
+    "takeaway": "库存扣减最怕并发把库存扣成负数，条件更新是基础兜底。"
+  }
+}
