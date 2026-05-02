@@ -34,14 +34,85 @@ function inferType(hint) {
   return "flow";
 }
 
+function isAsciiWord(char) {
+  return /[A-Za-z0-9_]/.test(char ?? "");
+}
+
+function safeLabelSplit(text, maxLength = 16, hardMaxLength = 24) {
+  const source = text.trim();
+
+  if (source.length <= maxLength) {
+    return [source, ""];
+  }
+
+  const hasChinese = /[\u4e00-\u9fff]/.test(source);
+
+  if (!hasChinese && source.length <= hardMaxLength) {
+    return [source, ""];
+  }
+
+  const splitCandidates = [];
+
+  for (let index = 1; index < source.length; index += 1) {
+    const previous = source[index - 1];
+    const current = source[index];
+
+    if (/\s/.test(previous) || /[、/：:，,；;。()（）-]/.test(previous)) {
+      splitCandidates.push(index);
+      continue;
+    }
+
+    if (previous === "的" || previous === "和" || previous === "或") {
+      splitCandidates.push(index);
+      continue;
+    }
+
+    if (!isAsciiWord(previous) && isAsciiWord(current)) {
+      splitCandidates.push(index);
+    }
+  }
+
+  const usableCandidates = splitCandidates.filter((index) => index >= 6 && index <= hardMaxLength);
+  const beforeMax = usableCandidates.filter((index) => index <= maxLength).at(-1);
+  const afterMax = usableCandidates.find((index) => index > maxLength);
+  const shouldKeepNextToken =
+    beforeMax !== undefined &&
+    afterMax !== undefined &&
+    beforeMax <= maxLength * 0.75 &&
+    afterMax <= hardMaxLength;
+  let splitAt = shouldKeepNextToken ? afterMax : beforeMax ?? afterMax ?? maxLength;
+
+  if (isAsciiWord(source[splitAt - 1]) && isAsciiWord(source[splitAt])) {
+    let tokenStart = splitAt;
+    let tokenEnd = splitAt;
+
+    while (tokenStart > 0 && isAsciiWord(source[tokenStart - 1])) {
+      tokenStart -= 1;
+    }
+
+    while (tokenEnd < source.length && isAsciiWord(source[tokenEnd])) {
+      tokenEnd += 1;
+    }
+
+    if (tokenStart >= 6) {
+      splitAt = tokenStart;
+    } else if (tokenEnd <= hardMaxLength) {
+      splitAt = tokenEnd;
+    }
+  }
+
+  const label = source.slice(0, splitAt).trim().replace(/[、/：:，,；;。-]$/g, "");
+  const detail = source.slice(splitAt).trim().replace(/^[、/：:，,；;。-]/g, "");
+
+  return [label || source.slice(0, maxLength).trim(), detail];
+}
+
 function shortNode(text, index) {
   const clean = text
     .replace(/^适合画[^：]+：/, "")
     .replace(/[。；;]$/g, "")
     .trim();
-  const splitAt = clean.length > 16 ? 16 : clean.length;
-  const label = clean.slice(0, splitAt).trim();
-  const detail = clean.length > 16 ? clean.slice(splitAt).trim() : undefined;
+  const [label, detail] = safeLabelSplit(clean);
   const risky = /失败|风险|超限|拒绝|死信|误伤|回滚|异常|延迟|阻塞|泄露|拒/.test(clean);
 
   return {

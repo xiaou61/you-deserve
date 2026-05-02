@@ -1,0 +1,204 @@
+# Progress
+
+## 2026-05-02
+- 已启动项目到 `http://localhost:3001`。
+- 已确认 3000 端口被其他项目占用。
+- 已读取 `pua` 技能和 `planning-with-files` 技能。
+- 已定位图解组件和题目页渲染链路。
+- 已完成题目数量和章节分布盘点。
+- 已新增 `scripts/enrich-questions.mjs` 并批量扩写 400 道题。
+- 已优化 `scripts/generate-visuals-from-questions.mjs`，改为优先读取 `图解提示` 并更新 400 条 visual 数据。
+- 已开始改造 `QuestionVisual`，移除页面上的“生图提示词”展示。
+- 已完成 `QuestionVisual` 和 `globals.css` 的图解画布改造。
+- `npm run lint` 通过。
+- `npm run build` 通过，生成 414 个静态页面。
+- 已用本地页面验证 `/questions/java-hashmap-thread-unsafe` 包含“已生成图解”、不再包含“生图提示词”、包含“深挖理解”。
+- 2026-05-02：开始第二轮内容增强，目标是每题增加 1000-2000 字 `详细讲解`，按 10 道一批处理并保存进度。
+- 第一批 10 道：`java-hashmap-thread-unsafe`、`jvm-gc-roots`、`spring-ioc`、`mysql-index-left-prefix`、`mysql-transaction-isolation`、`redis-cache-penetration-breakdown-avalanche`、`tcp-three-way-handshake`、`thread-pool-core-parameters`、`volatile-visibility`、`jvm-memory-areas`。
+- 已新增 `scripts/enrich-detail-batch.mjs`，用于按批插入 `## 详细讲解` 并更新 visual 节点。
+- 已生成 `content/question-detail-progress.json`，记录 batch size、已完成 slug、下一批编号和每批长度统计。
+- 第一批 10 道已完成并验证：实际 `详细讲解` 去空白长度范围 1002-1072；每题 visual 节点为 6 个。
+- `npm run lint` 通过；`npm run build` 通过，414 个静态页面生成成功。
+- 已请求验证 `/questions/java-hashmap-thread-unsafe`：包含 `详细讲解` 和 `已生成图解`，不包含旧的 `生图提示词`。
+- 下一批 10 道为：`spring-transaction-failure`、`mysql-index-failure`、`mysql-explain`、`redis-rdb-aof`、`redis-distributed-lock`、`tcp-four-way-wave`、`process-thread-difference`、`mq-reliable-message`、`spring-bean-lifecycle`、`arraylist-linkedlist`。
+- 继续推进 batch 2、batch 3、batch 4，已完成到排序题目 1-40。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 40`，`nextBatch = 5`。
+- 独立校验结果：已完成 40 道全部包含 `## 详细讲解`，去空白长度范围 1000-1255；40 道 visual 节点均不少于 6 个。
+- 本轮新增完成的批次：
+  - batch 2：`spring-transaction-failure` 到 `arraylist-linkedlist`
+  - batch 3：`cas-aba` 到 `mysql-lock-deadlock`
+  - batch 4：`redis-data-structures` 到 `linux-common-debug`
+- `npm run lint` 通过；`npm run build` 通过，414 个静态页面生成成功。
+- 已请求验证 `/questions/redis-data-structures` 和 `/questions/http-https`：包含 `详细讲解` 和 `已生成图解`，不包含旧的 `生图提示词`。
+- 下一批 batch 5 为：`equals-hashcode`、`synchronized-reentrantlock`、`spring-security-authentication-authorization`、`seckill-system-design`、`cap-base`、`distributed-transaction`、`rate-limiter`、`circuit-breaker-degrade-rate-limit`、`consistent-hash`、`service-discovery`。
+- 已继续完成 batch 5、batch 6、batch 7，当前排序题目 1-70 已全部补入 `## 详细讲解`。
+- batch 5 最终覆盖：`equals-hashcode`、`synchronized-reentrantlock`、`spring-security-authentication-authorization`、`seckill-system-design`、`cap-base`、`distributed-transaction`、`rate-limiter`、`circuit-breaker-degrade-rate-limit`、`consistent-hash`、`service-discovery`。
+- batch 6 最终覆盖：`api-gateway`、`lru-cache`、`top-k`、`binary-search`、`two-pointers`、`linked-list-cycle`、`mybatis-hash-dollar`、`mybatis-cache`、`n-plus-one-query`、`threadlocal-memory-leak`。
+- batch 7 最终覆盖：`completablefuture`、`generic-erasure`、`jmm-happens-before`、`java-oom-troubleshooting`、`spring-circular-dependency`、`spring-transaction-propagation`、`redis-expire-eviction`、`bloom-filter`、`delayed-message`、`http-status-codes`。
+- 独立校验结果：batch 6 的 `详细讲解` 去空白长度范围 1013-1086；batch 7 的 `详细讲解` 去空白长度范围 1015-1154；两批题目 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 70`，`currentBatch = 7`，`nextBatch = 8`。
+- 下一批 batch 8 为：`http2-http3`、`user-kernel-mode`、`kubernetes-pod-deployment-service`、`ci-cd`、`jwt-login`、`api-idempotency`、`global-exception-handler`、`nginx-reverse-proxy`、`string-stringbuilder-stringbuffer`、`final-finally-finalize`。
+- 已继续完成 batch 8，当前排序题目 1-80 已全部补入 `## 详细讲解`。
+- batch 8 最终覆盖：`http2-http3`、`user-kernel-mode`、`kubernetes-pod-deployment-service`、`ci-cd`、`jwt-login`、`api-idempotency`、`global-exception-handler`、`nginx-reverse-proxy`、`string-stringbuilder-stringbuffer`、`final-finally-finalize`。
+- 独立校验结果：batch 8 的 `详细讲解` 去空白长度范围 1001-1110；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 80`，`currentBatch = 8`，`nextBatch = 9`。
+- 下一批 batch 9 为：`abstract-class-interface`、`checked-runtime-exception`、`java-reflection`、`java-serialization`、`aqs`、`countdownlatch-cyclicbarrier-semaphore`、`synchronized-lock-upgrade`、`java-reference-types`、`spring-bean-scope`、`autowired-resource`。
+- 已继续完成 batch 9，当前排序题目 1-90 已全部补入 `## 详细讲解`。
+- batch 9 最终覆盖：`abstract-class-interface`、`checked-runtime-exception`、`java-reflection`、`java-serialization`、`aqs`、`countdownlatch-cyclicbarrier-semaphore`、`synchronized-lock-upgrade`、`java-reference-types`、`spring-bean-scope`、`autowired-resource`。
+- 独立校验结果：batch 9 的 `详细讲解` 去空白长度范围 1004-1086；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 90`，`currentBatch = 9`，`nextBatch = 10`。
+- 下一批 batch 10 为：`filter-interceptor-aop`、`spring-boot-starter`、`mybatis-mapper-proxy`、`mybatis-resulttype-resultmap`、`clustered-secondary-index`、`covering-index`、`redis-single-thread-fast`、`cache-db-consistency`、`kafka-consumer-group`、`kafka-offset`。
+- 已发现并修正历史进度不一致：`content/question-detail-progress.json` 已经记录 batch 10 完成，但 batch 5 和 batch 10 中有部分 `详细讲解` 低于 1000 字符下限。
+- 已增强 `scripts/enrich-detail-batch.mjs`：缺少手写 payload 时会按题目 frontmatter 和现有回答生成详解；已有详解不足 1000 字符时会自动补充工程化延展段落。
+- 已重跑并修正 batch 5、batch 10；batch 5 最终长度范围为 1029-1247，batch 10 最终长度范围为 1005-1160，相关题目 visual 节点均为 6 个。
+- 已继续完成 batch 11，当前排序题目 1-110 已全部补入 `## 详细讲解`。
+- batch 11 最终覆盖：`mq-message-backlog`、`tcp-reliable`、`tcp-udp`、`get-post`、`context-switch`、`virtual-memory`、`distributed-id`、`rbac`、`pagination-design`、`sort-stability`。
+- 独立校验结果：排序 1-110 的 `详细讲解` 全部在 1000-2000 字符目标内，整体范围 1000-1255；batch 11 范围 1026-1167；110 道题 visual 节点均不少于 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 110`，`currentBatch = 11`，`nextBatch = 12`。
+- 下一批 batch 12 为：`hash-collision`、`logging-tracing`、`blue-green-gray-rolling-release`、`file-upload`、`jvm-class-file-structure`、`jvm-escape-analysis`、`minor-major-full-gc`、`jvm-gc-tuning-parameters`、`jvm-direct-memory`、`classloader-parent-delegation`。
+- 已继续完成 batch 12，当前排序题目 1-120 已全部补入 `## 详细讲解`。
+- batch 12 最终覆盖：`hash-collision`、`logging-tracing`、`blue-green-gray-rolling-release`、`file-upload`、`jvm-class-file-structure`、`jvm-escape-analysis`、`minor-major-full-gc`、`jvm-gc-tuning-parameters`、`jvm-direct-memory`、`classloader-parent-delegation`。
+- 独立校验结果：batch 12 的 `详细讲解` 去空白长度范围 1122-1204；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 120`，`currentBatch = 12`，`nextBatch = 13`。
+- 下一批 batch 13 为：`spring-event`、`spring-boot-configuration-priority`、`spring-transaction-isolation`、`spring-async`、`controller-restcontroller`、`mysql-buffer-pool`、`mysql-master-slave`、`mysql-slow-query`、`mysql-pagination-optimization`、`mysql-sharding`。
+- 已继续完成 batch 13，当前排序题目 1-130 已全部补入 `## 详细讲解`。
+- batch 13 最终覆盖：`spring-event`、`spring-boot-configuration-priority`、`spring-transaction-isolation`、`spring-async`、`controller-restcontroller`、`mysql-buffer-pool`、`mysql-master-slave`、`mysql-slow-query`、`mysql-pagination-optimization`、`mysql-sharding`。
+- 独立校验结果：batch 13 的 `详细讲解` 去空白长度范围 1038-1204；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 130`，`currentBatch = 13`，`nextBatch = 14`。
+- 下一批 batch 14 为：`mysql-gap-lock`、`redis-sentinel-cluster`、`redis-lua`、`redis-redlock`、`redis-pipeline`、`cache-preheat-degrade`、`dead-letter-queue`、`transaction-message`、`kafka-rebalance`、`rocketmq-kafka`。
+- 已继续完成 batch 14，当前排序题目 1-140 已全部补入 `## 详细讲解`。
+- batch 14 最终覆盖：`mysql-gap-lock`、`redis-sentinel-cluster`、`redis-lua`、`redis-redlock`、`redis-pipeline`、`cache-preheat-degrade`、`dead-letter-queue`、`transaction-message`、`kafka-rebalance`、`rocketmq-kafka`。
+- 独立校验结果：batch 14 的 `详细讲解` 去空白长度范围 1007-1221；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 140`，`currentBatch = 14`，`nextBatch = 15`。
+- 下一批 batch 15 为：`order-state-machine`、`coupon-system`、`inventory-deduction`、`api-signature`、`anti-brush`、`config-center`、`distributed-session`、`cookie-session-token`、`concurrenthashmap`、`hashmap-resize`。
+- 已继续完成 batch 15，当前排序题目 1-150 已全部补入 `## 详细讲解`。
+- batch 15 最终覆盖：`order-state-machine`、`coupon-system`、`inventory-deduction`、`api-signature`、`anti-brush`、`config-center`、`distributed-session`、`cookie-session-token`、`concurrenthashmap`、`hashmap-resize`。
+- 独立校验结果：batch 15 的 `详细讲解` 去空白长度范围 1142-1254；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 150`，`currentBatch = 15`，`nextBatch = 16`。
+- 下一批 batch 16 为：`docker-image-layer`、`health-check`、`rollback-strategy`、`page-replacement`、`sliding-window`、`object-common-methods`、`arraylist-fail-fast`、`hashmap-load-factor`、`java-stream-api`、`java-thread-states`。
+- 已继续完成 batch 16，当前排序题目 1-160 已全部补入 `## 详细讲解`。
+- batch 16 最终覆盖：`docker-image-layer`、`health-check`、`rollback-strategy`、`page-replacement`、`sliding-window`、`object-common-methods`、`arraylist-fail-fast`、`hashmap-load-factor`、`java-stream-api`、`java-thread-states`。
+- 独立校验结果：batch 16 的 `详细讲解` 去空白长度范围 1049-1209；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 160`，`currentBatch = 16`，`nextBatch = 17`。
+- 下一批 batch 17 为：`wait-sleep`、`notify-notifyall`、`locksupport`、`beanfactory-applicationcontext`、`spring-validation`、`spring-boot-actuator`、`spring-conditional-annotation`、`spring-profiles`、`mybatis-plugin-interceptor`、`mybatis-dynamic-sql`。
+- 已继续完成 batch 17，当前排序题目 1-170 已全部补入 `## 详细讲解`。
+- batch 17 最终覆盖：`wait-sleep`、`notify-notifyall`、`locksupport`、`beanfactory-applicationcontext`、`spring-validation`、`spring-boot-actuator`、`spring-conditional-annotation`、`spring-profiles`、`mybatis-plugin-interceptor`、`mybatis-dynamic-sql`。
+- 独立校验结果：batch 17 的 `详细讲解` 去空白长度范围 1164-1237；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 170`，`currentBatch = 17`，`nextBatch = 18`。
+- 下一批 batch 18 为：`mybatis-batch-insert`、`mysql-index-condition-pushdown`、`mysql-binlog-format`、`sql-execution-order`、`mysql-char-varchar`、`mysql-count-difference`、`redis-transaction`、`redis-stream`、`redis-pubsub-vs-stream`、`redis-bitmap-hyperloglog`。
+- 已继续完成 batch 18，当前排序题目 1-180 已全部补入 `## 详细讲解`。
+- batch 18 最终覆盖：`mybatis-batch-insert`、`mysql-index-condition-pushdown`、`mysql-binlog-format`、`sql-execution-order`、`mysql-char-varchar`、`mysql-count-difference`、`redis-transaction`、`redis-stream`、`redis-pubsub-vs-stream`、`redis-bitmap-hyperloglog`。
+- 独立校验结果：batch 18 的 `详细讲解` 去空白长度范围 1148-1237；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 180`，`currentBatch = 18`，`nextBatch = 19`。
+- 下一批 batch 19 为：`redis-zset-ranking`、`mq-exactly-once`、`outbox-pattern`、`mq-retry-strategy`、`distributed-leader-election`、`service-mesh`、`distributed-idempotent`、`http-cache`、`cors`、`tls-handshake`。
+- 已继续完成 batch 19，当前排序题目 1-190 已全部补入 `## 详细讲解`。
+- batch 19 最终覆盖：`redis-zset-ranking`、`mq-exactly-once`、`outbox-pattern`、`mq-retry-strategy`、`distributed-leader-election`、`service-mesh`、`distributed-idempotent`、`http-cache`、`cors`、`tls-handshake`。
+- 独立校验结果：batch 19 的 `详细讲解` 去空白长度范围 1127-1204；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 190`，`currentBatch = 19`，`nextBatch = 20`。
+- 下一批 batch 20 为：`websocket-http`、`zero-copy`、`mmap`、`bfs-dfs`、`dynamic-programming`、`observability`、`jstack-jmap-jstat`、`data-permission`、`audit-log`、`excel-import-export`。
+- 已继续完成 batch 20，当前排序题目 1-200 已全部补入 `## 详细讲解`。
+- batch 20 最终覆盖：`websocket-http`、`zero-copy`、`mmap`、`bfs-dfs`、`dynamic-programming`、`observability`、`jstack-jmap-jstat`、`data-permission`、`audit-log`、`excel-import-export`。
+- 独立校验结果：batch 20 的 `详细讲解` 去空白长度范围 1112-1208；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 200`，`currentBatch = 20`，`nextBatch = 21`。
+- 下一批 batch 21 为：`java-enum`、`java-optional`、`string-intern`、`copyonwritearraylist`、`blockingqueue`、`forkjoinpool`、`java-virtual-threads`、`jvm-metaspace`、`jvm-safepoint`、`beanpostprocessor`。
+- 已继续完成 batch 21，当前排序题目 1-210 已全部补入 `## 详细讲解`。
+- batch 21 最终覆盖：`java-enum`、`java-optional`、`string-intern`、`copyonwritearraylist`、`blockingqueue`、`forkjoinpool`、`java-virtual-threads`、`jvm-metaspace`、`jvm-safepoint`、`beanpostprocessor`。
+- 独立校验结果：batch 21 的 `详细讲解` 去空白长度范围 1007-1186；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 210`，`currentBatch = 21`，`nextBatch = 22`。
+- 下一批 batch 22 为：`factorybean`、`spring-transaction-rollback-rules`、`spring-transaction-readonly`、`spring-mvc-webflux`、`spring-security-jwt`、`filter-interceptor-order`、`mybatis-lazy-loading`、`mybatis-pagination-plugin`、`mysql-optimizer`、`mysql-explain-analyze`。
+- 已继续完成 batch 22，当前排序题目 1-220 已全部补入 `## 详细讲解`。
+- batch 22 最终覆盖：`factorybean`、`spring-transaction-rollback-rules`、`spring-transaction-readonly`、`spring-mvc-webflux`、`spring-security-jwt`、`filter-interceptor-order`、`mybatis-lazy-loading`、`mybatis-pagination-plugin`、`mysql-optimizer`、`mysql-explain-analyze`。
+- 独立校验结果：batch 22 的 `详细讲解` 去空白长度范围 1156-1264；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 220`，`currentBatch = 22`，`nextBatch = 23`。
+- 下一批 batch 23 为：`mysql-join-algorithms`、`mysql-filesort`、`mysql-temporary-table`、`mysql-prefix-index`、`mysql-online-ddl`、`optimistic-pessimistic-lock`、`cache-aside`、`redis-key-design`、`redis-memory-fragmentation`、`redis-slowlog`。
+- 已继续完成 batch 23，当前排序题目 1-230 已全部补入 `## 详细讲解`。
+- batch 23 最终覆盖：`mysql-join-algorithms`、`mysql-filesort`、`mysql-temporary-table`、`mysql-prefix-index`、`mysql-online-ddl`、`optimistic-pessimistic-lock`、`cache-aside`、`redis-key-design`、`redis-memory-fragmentation`、`redis-slowlog`。
+- 独立校验结果：batch 23 的 `详细讲解` 去空白长度范围 1135-1179；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 230`，`currentBatch = 23`，`nextBatch = 24`。
+- 下一批 batch 24 为：`redis-cluster-moved-ask`、`kafka-acks`、`kafka-isr`、`kafka-storage`、`kafka-consumer-lag`、`kafka-idempotent-producer`、`rpc-timeout-retry`、`load-balancing-algorithms`、`trace-id`、`http-keep-alive`。
+- 已继续完成 batch 24，当前排序题目 1-240 已全部补入 `## 详细讲解`。
+- batch 24 最终覆盖：`redis-cluster-moved-ask`、`kafka-acks`、`kafka-isr`、`kafka-storage`、`kafka-consumer-lag`、`kafka-idempotent-producer`、`rpc-timeout-retry`、`load-balancing-algorithms`、`trace-id`、`http-keep-alive`。
+- 独立校验结果：batch 24 的 `详细讲解` 去空白长度范围 1131-1215；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 240`，`currentBatch = 24`，`nextBatch = 25`。
+- 下一批 batch 25 为：`grpc-rest`、`cdn`、`api-versioning`、`feature-flag`、`search-design`、`notification-system`、`comment-system`、`canary-gray-release`、`epoll`、`union-find`。
+- 已继续完成 batch 25，当前排序题目 1-250 已全部补入 `## 详细讲解`。
+- batch 25 最终覆盖：`grpc-rest`、`cdn`、`api-versioning`、`feature-flag`、`search-design`、`notification-system`、`comment-system`、`canary-gray-release`、`epoll`、`union-find`。
+- 独立校验结果：batch 25 的 `详细讲解` 去空白长度范围 1125-1214；10 道题的 visual 节点均为 6 个。
+- 已定位并修正一次共享文件并发写问题：并行执行 batch 25/26 时，`content/question-detail-progress.json` 和 `content/visuals/question-visuals.json` 出现竞争，导致进度数字短暂落后、一次 JSON 读取报错。随后已改回顺序补账并重跑相关批次，进度已重新对齐。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 250`，后续顺序重跑后继续前进。
+- 下一批 batch 26 为：`trie`、`spring-cloud-gateway-route`、`gateway-rate-limiter`、`nacos-service-discovery`、`nacos-config-center`、`sentinel-flow-control`、`sentinel-circuit-breaker`、`dubbo-service-governance`、`rpc-serialization-protocol`、`seata-at-transaction`。
+- 已继续完成 batch 26，当前排序题目 1-260 已全部补入 `## 详细讲解`。
+- batch 26 最终覆盖：`trie`、`spring-cloud-gateway-route`、`gateway-rate-limiter`、`nacos-service-discovery`、`nacos-config-center`、`sentinel-flow-control`、`sentinel-circuit-breaker`、`dubbo-service-governance`、`rpc-serialization-protocol`、`seata-at-transaction`。
+- 独立校验结果：batch 26 的 `详细讲解` 去空白长度范围 1099-1250；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 260`，`currentBatch = 26`，`nextBatch = 27`。
+- 下一批 batch 27 为：`fencing-token`、`k8s-liveness-readiness-startup`、`k8s-configmap-secret`、`k8s-ingress`、`docker-multi-stage-build`、`linux-high-cpu`、`linux-high-memory`、`linux-disk-full`、`linux-network-troubleshooting`、`prometheus-grafana-alerting`。
+- 已继续完成 batch 27，当前排序题目 1-270 已全部补入 `## 详细讲解`。
+- batch 27 最终覆盖：`fencing-token`、`k8s-liveness-readiness-startup`、`k8s-configmap-secret`、`k8s-ingress`、`docker-multi-stage-build`、`linux-high-cpu`、`linux-high-memory`、`linux-disk-full`、`linux-network-troubleshooting`、`prometheus-grafana-alerting`。
+- 独立校验结果：batch 27 的 `详细讲解` 去空白长度范围 1157-1243；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 270`，`currentBatch = 27`，`nextBatch = 28`。
+- 下一批 batch 28 为：`opentelemetry-three-pillars`、`oauth2-oidc`、`sso-design`、`gateway-auth-design`、`data-sync-binlog-mq`、`es-index-sync`、`pressure-testing`、`sensitive-data-masking`、`oss-file-storage`、`multi-tenant-isolation`。
+- 已继续完成 batch 28，当前排序题目 1-280 已全部补入 `## 详细讲解`。
+- batch 28 最终覆盖：`opentelemetry-three-pillars`、`oauth2-oidc`、`sso-design`、`gateway-auth-design`、`data-sync-binlog-mq`、`es-index-sync`、`pressure-testing`、`sensitive-data-masking`、`oss-file-storage`、`multi-tenant-isolation`。
+- 独立校验结果：batch 28 的 `详细讲解` 去空白长度范围 1143-1247；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 280`，`currentBatch = 28`，`nextBatch = 29`。
+- 下一批 batch 29 为：`search-autocomplete`、`mysql-partitioning`、`cold-hot-data-archive`、`invisible-index`、`optimizer-histogram`、`connection-pool`、`read-write-splitting-delay`、`cache-warming`、`cache-breakdown-mutex`、`redis-cluster-hash-slot`。
+- 已继续完成 batch 29，当前排序题目 1-290 已全部补入 `## 详细讲解`。
+- batch 29 最终覆盖：`search-autocomplete`、`mysql-partitioning`、`cold-hot-data-archive`、`invisible-index`、`optimizer-histogram`、`connection-pool`、`read-write-splitting-delay`、`cache-warming`、`cache-breakdown-mutex`、`redis-cluster-hash-slot`。
+- 独立校验结果：batch 29 的 `详细讲解` 去空白长度范围 1144-1193；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 290`，`currentBatch = 29`，`nextBatch = 30`。
+- 下一批 batch 30 为：`redis-geo`、`kafka-transactions`、`kafka-partition-selection`、`consumer-backpressure`、`delayed-retry-wheel`、`gc-log-analysis`、`g1-gc`、`jfr`、`forward-proxy-reverse-proxy`、`linux-file-descriptor`。
+- 已继续完成 batch 30，当前排序题目 1-300 已全部补入 `## 详细讲解`。
+- batch 30 最终覆盖：`redis-geo`、`kafka-transactions`、`kafka-partition-selection`、`consumer-backpressure`、`delayed-retry-wheel`、`gc-log-analysis`、`g1-gc`、`jfr`、`forward-proxy-reverse-proxy`、`linux-file-descriptor`。
+- 独立校验结果：batch 30 的 `详细讲解` 去空白长度范围 1128-1207；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 300`，`currentBatch = 30`，`nextBatch = 31`。
+- 下一批 batch 31 为：`java-record`、`java-sealed-class`、`lambda-effectively-final`、`java-spi`、`bigdecimal-precision`、`java-time-api`、`java-annotation-retention-target`、`java-classpath-jar-conflict`、`java-generics-wildcard`、`java-object-immutability`。
+- 已继续完成 batch 31，当前排序题目 1-310 已全部补入 `## 详细讲解`。
+- batch 31 最终覆盖：`java-record`、`java-sealed-class`、`lambda-effectively-final`、`java-spi`、`bigdecimal-precision`、`java-time-api`、`java-annotation-retention-target`、`java-classpath-jar-conflict`、`java-generics-wildcard`、`java-object-immutability`。
+- 独立校验结果：batch 31 的 `详细讲解` 去空白长度范围 1139-1217；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 310`，`currentBatch = 31`，`nextBatch = 32`。
+- 下一批 batch 32 为：`thread-interrupt`、`atomic-classes-cas`、`reentrantreadwritelock`、`stampedlock`、`thread-pool-rejection-policy`、`false-sharing`、`threadlocal-inheritable`、`completablefuture-exception`、`jvm-jit-compiler`、`jvm-code-cache`。
+- 已继续完成 batch 32，当前排序题目 1-320 已全部补入 `## 详细讲解`。
+- batch 32 最终覆盖：`thread-interrupt`、`atomic-classes-cas`、`reentrantreadwritelock`、`stampedlock`、`thread-pool-rejection-policy`、`false-sharing`、`threadlocal-inheritable`、`completablefuture-exception`、`jvm-jit-compiler`、`jvm-code-cache`。
+- 独立校验结果：batch 32 的 `详细讲解` 去空白长度范围 1120-1219；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 320`，`currentBatch = 32`，`nextBatch = 33`。
+- 下一批 batch 33 为：`jvm-tlab`、`jvm-class-unloading`、`jvm-zgc-shenandoah`、`jvm-biased-locking`、`jvm-string-deduplication`、`jvm-native-memory-tracking`、`spring-boot-startup-flow`、`spring-mvc-argument-resolver`、`spring-mvc-message-converter`、`spring-configuration-properties`。
+- 已继续完成 batch 33，当前排序题目 1-330 已全部补入 `## 详细讲解`。
+- batch 33 最终覆盖：`jvm-tlab`、`jvm-class-unloading`、`jvm-zgc-shenandoah`、`jvm-biased-locking`、`jvm-string-deduplication`、`jvm-native-memory-tracking`、`spring-boot-startup-flow`、`spring-mvc-argument-resolver`、`spring-mvc-message-converter`、`spring-configuration-properties`。
+- 独立校验结果：batch 33 的 `详细讲解` 去空白长度范围 1124-1247；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 330`，`currentBatch = 33`，`nextBatch = 34`。
+- 下一批 batch 34 为：`spring-import-selector`、`spring-application-event-transaction`、`spring-cache-annotation`、`spring-scheduled-pitfalls`、`spring-webclient`、`spring-boot-starter-custom`、`mybatis-typehandler`、`mybatis-sqlsession-thread-safe`、`mybatis-executor-types`、`mybatis-second-cache-pitfalls`。
+- 已继续完成 batch 34，当前排序题目 1-340 已全部补入 `## 详细讲解`。
+- batch 34 最终覆盖：`spring-import-selector`、`spring-application-event-transaction`、`spring-cache-annotation`、`spring-scheduled-pitfalls`、`spring-webclient`、`spring-boot-starter-custom`、`mybatis-typehandler`、`mybatis-sqlsession-thread-safe`、`mybatis-executor-types`、`mybatis-second-cache-pitfalls`。
+- 独立校验结果：batch 34 的 `详细讲解` 去空白长度范围 1150-1243；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 340`，`currentBatch = 34`，`nextBatch = 35`。
+- 下一批 batch 35 将从排序题目 341-350 继续推进。
+- 已继续完成 batch 35，当前排序题目 1-350 已全部补入 `## 详细讲解`。
+- batch 35 最终覆盖：`mybatis-dynamic-table-name`、`mysql-next-key-lock`、`mysql-insert-intention-lock`、`mysql-phantom-read`、`mysql-undo-log-purge`、`mysql-change-buffer`、`mysql-adaptive-hash-index`、`mysql-json-index`、`mysql-index-skip-scan`、`mysql-deadlock-log`。
+- 独立校验结果：batch 35 的 `详细讲解` 去空白长度范围 1137-1201；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 350`，`currentBatch = 35`，`nextBatch = 36`。
+- 下一批 batch 36 为：`mysql-replication-gtid`、`redis-scan-vs-keys`、`redis-unlink-vs-del`、`redis-acl`、`redis-client-output-buffer`、`redis-stream-consumer-group`、`redis-cluster-failover`、`redis-quicklist-listpack`、`redis-rate-limit-lua`、`kafka-log-compaction`。
+- 已继续完成 batch 36，当前排序题目 1-360 已全部补入 `## 详细讲解`。
+- batch 36 最终覆盖：`mysql-replication-gtid`、`redis-scan-vs-keys`、`redis-unlink-vs-del`、`redis-acl`、`redis-client-output-buffer`、`redis-stream-consumer-group`、`redis-cluster-failover`、`redis-quicklist-listpack`、`redis-rate-limit-lua`、`kafka-log-compaction`。
+- 独立校验结果：batch 36 的 `详细讲解` 去空白长度范围 1151-1209；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 360`，`currentBatch = 36`，`nextBatch = 37`。
+- 下一批 batch 37 为：`kafka-page-cache`、`kafka-controller`、`rocketmq-tag-key`、`rocketmq-delay-level`、`mq-poison-message`、`mq-out-of-order-compensation`、`raft-basic`、`etcd-watch-lease`、`tcc-transaction`、`saga-transaction`。
+- 已继续完成 batch 37，当前排序题目 1-370 已全部补入 `## 详细讲解`。
+- batch 37 最终覆盖：`kafka-page-cache`、`kafka-controller`、`rocketmq-tag-key`、`rocketmq-delay-level`、`mq-poison-message`、`mq-out-of-order-compensation`、`raft-basic`、`etcd-watch-lease`、`tcc-transaction`、`saga-transaction`。
+- 独立校验结果：batch 37 的 `详细讲解` 去空白长度范围 1133-1226；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 370`，`currentBatch = 37`，`nextBatch = 38`。
+- 下一批 batch 38 为：`bulkhead-isolation`、`distributed-clock-skew`、`idempotency-token`、`distributed-cache-coherence`、`tcp-time-wait`、`tcp-nagle-delayed-ack`、`tls13-vs-tls12`、`http-range-request`、`dns-cache`、`grpc-streaming`。
+- 已继续完成 batch 38，当前排序题目 1-380 已全部补入 `## 详细讲解`。
+- batch 38 最终覆盖：`bulkhead-isolation`、`distributed-clock-skew`、`idempotency-token`、`distributed-cache-coherence`、`tcp-time-wait`、`tcp-nagle-delayed-ack`、`tls13-vs-tls12`、`http-range-request`、`dns-cache`、`grpc-streaming`。
+- 独立校验结果：batch 38 的 `详细讲解` 去空白长度范围 1128-1189；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 380`，`currentBatch = 38`，`nextBatch = 39`。
+- 下一批 batch 39 为：`linux-cgroup`、`linux-namespace`、`linux-ebpf`、`payment-system-design`、`reconciliation-system`、`webhook-design`、`data-migration-plan`、`canary-monitoring`、`runbook-design`、`incident-review`。
+- 已继续完成 batch 39，当前排序题目 1-390 已全部补入 `## 详细讲解`。
+- batch 39 最终覆盖：`linux-cgroup`、`linux-namespace`、`linux-ebpf`、`payment-system-design`、`reconciliation-system`、`webhook-design`、`data-migration-plan`、`canary-monitoring`、`runbook-design`、`incident-review`。
+- 独立校验结果：batch 39 的 `详细讲解` 去空白长度范围 1128-1216；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 390`，`currentBatch = 39`，`nextBatch = 40`。
+- 下一批 batch 40 为：`capacity-planning`、`slo-sli-error-budget`、`alert-fatigue`、`multi-region-disaster-recovery`、`api-compatibility`、`job-scheduler-design`、`inventory-reservation`、`coupon-anti-abuse`、`search-relevance-ranking`、`audit-log-tamper-proof`。
+- 已继续完成 batch 40，当前排序题目 1-400 已全部补入 `## 详细讲解`。
+- batch 40 最终覆盖：`capacity-planning`、`slo-sli-error-budget`、`alert-fatigue`、`multi-region-disaster-recovery`、`api-compatibility`、`job-scheduler-design`、`inventory-reservation`、`coupon-anti-abuse`、`search-relevance-ranking`、`audit-log-tamper-proof`。
+- 独立校验结果：batch 40 的 `详细讲解` 去空白长度范围 1130-1151；10 道题的 visual 节点均为 6 个。
+- 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 400`，`currentBatch = 40`，`nextBatch = 41`。
+- 全部 400 道题的第二轮内容增强已完成：每题已补入 `## 详细讲解`，并同步更新站内图解 visual 数据。

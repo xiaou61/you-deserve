@@ -1,4 +1,4 @@
-import { ImageIcon, MessageSquareText, Sparkles } from "lucide-react";
+import { ArrowRight, CircleDot, ImageIcon, Sparkles, Workflow } from "lucide-react";
 
 import type { QuestionVisual as QuestionVisualData, VisualNode } from "@/lib/visuals";
 
@@ -34,10 +34,58 @@ function NodePill({ node, index }: { node: VisualNode; index: number }) {
   );
 }
 
+function connectorText(type: QuestionVisualData["type"]) {
+  const text: Record<QuestionVisualData["type"], string> = {
+    flow: "下一步",
+    structure: "关联",
+    compare: "对照",
+    sequence: "然后",
+    scenario: "进入"
+  };
+
+  return text[type];
+}
+
+function VisualDiagram({ visual }: QuestionVisualProps) {
+  const nodes = visual.nodes ?? [];
+
+  if (visual.columns?.length) {
+    return (
+      <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {visual.columns.map((column) => (
+          <div className="visual-column" key={column.title}>
+            <h3>{column.title}</h3>
+            <ul>
+              {column.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`visual-canvas visual-canvas-${visual.type}`}>
+      {nodes.map((node, index) => (
+        <div className="visual-step" key={`${node.label}-${index}`}>
+          <NodePill index={index} node={node} />
+          {index < nodes.length - 1 ? (
+            <div className="visual-connector" aria-hidden="true">
+              <span>{connectorText(visual.type)}</span>
+              <ArrowRight className="h-4 w-4" />
+            </div>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function QuestionVisual({ visual }: QuestionVisualProps) {
-  const nodeCount = visual.nodes?.length ?? 0;
-  const nodeGridClass =
-    nodeCount <= 4 ? "mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4" : "mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-5";
+  const firstNode = visual.nodes?.[0]?.label ?? "核心概念";
+  const lastNode = visual.nodes?.at(-1)?.label ?? "面试落点";
 
   return (
     <section className="visual-shell">
@@ -52,39 +100,13 @@ export function QuestionVisual({ visual }: QuestionVisualProps) {
           </h2>
           <p className="mt-3 max-w-3xl text-base font-bold leading-7 text-ink/66">{visual.summary}</p>
         </div>
-        <div className="rounded-2xl bg-white/72 px-4 py-3 text-sm font-black text-teal shadow-[0_10px_30px_rgb(23_23_20_/_0.08)]">
-          可直接用于生图
+        <div className="inline-flex items-center gap-2 rounded-2xl bg-white/72 px-4 py-3 text-sm font-black text-teal shadow-[0_10px_30px_rgb(23_23_20_/_0.08)]">
+          <Workflow className="h-4 w-4" />
+          已生成图解
         </div>
       </div>
 
-      {visual.columns?.length ? (
-        <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {visual.columns.map((column) => (
-            <div className="visual-column" key={column.title}>
-              <h3>{column.title}</h3>
-              <ul>
-                {column.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className={nodeGridClass}>
-          {(visual.nodes ?? []).slice(0, 5).map((node, index) => (
-            <NodePill index={index} key={`${node.label}-${index}`} node={node} />
-          ))}
-        </div>
-      )}
-
-      {(visual.nodes?.length ?? 0) > 5 ? (
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {(visual.nodes ?? []).slice(5).map((node, index) => (
-            <NodePill index={index + 5} key={`${node.label}-${index}`} node={node} />
-          ))}
-        </div>
-      ) : null}
+      <VisualDiagram visual={visual} />
 
       <div className="mt-6 grid gap-3 lg:grid-cols-[1fr_1.2fr]">
         <div className="rounded-[1.2rem] bg-white/76 p-4">
@@ -94,12 +116,15 @@ export function QuestionVisual({ visual }: QuestionVisualProps) {
           </div>
           <p className="font-bold leading-7 text-ink/72">{visual.takeaway}</p>
         </div>
-        <div className="rounded-[1.2rem] border border-ink/10 bg-ink p-4 text-white">
-          <div className="mb-2 flex items-center gap-2 text-sm font-black text-amber">
-            <MessageSquareText className="h-4 w-4" />
-            生图提示词
+        <div className="rounded-[1.2rem] border border-ink/10 bg-white/76 p-4">
+          <div className="mb-2 flex items-center gap-2 text-sm font-black text-teal">
+            <CircleDot className="h-4 w-4" />
+            看图顺序
           </div>
-          <p className="text-sm font-bold leading-7 text-white/72">{visual.prompt}</p>
+          <p className="font-bold leading-7 text-ink/68">
+            先抓住“{firstNode}”，再顺着箭头看到“{lastNode}”。回答时按图里的节点顺序展开，
+            最后补一句边界和风险。
+          </p>
         </div>
       </div>
     </section>
