@@ -1,6 +1,9 @@
-import Link from "next/link";
-import { ArrowUpRight, Clock3 } from "lucide-react";
+"use client";
 
+import Link from "next/link";
+import { ArrowUpRight, Bookmark, Clock3, Eye, Heart, NotebookPen } from "lucide-react";
+
+import { useStudy } from "@/components/study-provider";
 import type { QuestionMeta } from "@/lib/content";
 
 const difficultyText: Record<QuestionMeta["difficulty"], string> = {
@@ -15,6 +18,21 @@ type QuestionCardProps = {
 };
 
 export function QuestionCard({ question, compact = false }: QuestionCardProps) {
+  const { currentUser, getActivity, ready } = useStudy();
+  const activity = ready
+    ? getActivity(question.slug)
+    : {
+        views: 0,
+        likedBy: [],
+        favoritedBy: [],
+        masteredBy: [],
+        notesByUser: {},
+        comments: []
+      };
+  const isMastered = ready && !!currentUser && activity.masteredBy.includes(currentUser);
+  const hasNote = ready && !!currentUser && !!activity.notesByUser[currentUser]?.trim();
+  const isFavorited = ready && !!currentUser && activity.favoritedBy.includes(currentUser);
+
   return (
     <Link className="question-card group" href={`/questions/${question.slug}`}>
       <div className="flex items-start justify-between gap-4">
@@ -26,6 +44,8 @@ export function QuestionCard({ question, compact = false }: QuestionCardProps) {
             <span className="rounded-full bg-smoke px-2.5 py-1 text-xs font-black text-ink/55">
               {difficultyText[question.difficulty]}
             </span>
+            {isMastered ? <span className="status-chip is-mastered">已掌握</span> : null}
+            {isFavorited ? <span className="status-chip is-favorited">已收藏</span> : null}
           </div>
           <h3 className="mt-4 text-xl font-black leading-snug text-ink group-hover:text-coral">
             {question.title}
@@ -44,6 +64,25 @@ export function QuestionCard({ question, compact = false }: QuestionCardProps) {
           {question.readingTime} 分钟
         </span>
         <span>{question.scene}</span>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-ink/58">
+        <span className="mini-metric">
+          <Eye className="h-3.5 w-3.5" />
+          {activity.views}
+        </span>
+        <span className="mini-metric">
+          <Heart className="h-3.5 w-3.5" />
+          {activity.likedBy.length}
+        </span>
+        <span className="mini-metric">
+          <Bookmark className="h-3.5 w-3.5" />
+          {activity.favoritedBy.length}
+        </span>
+        <span className="mini-metric">
+          <NotebookPen className="h-3.5 w-3.5" />
+          {hasNote ? "有笔记" : "未记"}
+        </span>
       </div>
     </Link>
   );

@@ -54,6 +54,10 @@ input {
   font: inherit;
 }
 
+textarea {
+  font: inherit;
+}
+
 .display-title {
   font-family: var(--font-display);
 }
@@ -92,6 +96,125 @@ input {
   transform: translateY(-2px);
   border-color: var(--ink);
   background: white;
+}
+
+.primary-action,
+.ghost-action,
+.engagement-action,
+.auth-tab,
+.auth-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 900;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.primary-action {
+  min-height: 2.9rem;
+  border: 1px solid transparent;
+  background: var(--ink);
+  color: white;
+  padding: 0.7rem 1rem;
+}
+
+.primary-action:hover {
+  transform: translateY(-1px);
+  background: var(--coral);
+}
+
+.ghost-action,
+.auth-close {
+  min-height: 2.9rem;
+  border: 1px solid rgb(23 23 20 / 0.1);
+  background: white;
+  color: rgb(23 23 20 / 0.7);
+  padding: 0.7rem 1rem;
+}
+
+.ghost-action:hover,
+.auth-close:hover {
+  transform: translateY(-1px);
+  border-color: rgb(23 23 20 / 0.18);
+  color: var(--ink);
+}
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgb(23 23 20 / 0.34);
+  padding: 1rem;
+}
+
+.auth-panel {
+  width: min(100%, 34rem);
+  border: 1px solid rgb(23 23 20 / 0.1);
+  border-radius: 2rem;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.93)),
+    linear-gradient(135deg, rgb(232 76 61 / 0.08), rgb(19 137 125 / 0.1));
+  box-shadow: 0 24px 90px rgb(23 23 20 / 0.24);
+  padding: 1.4rem;
+}
+
+.auth-tab {
+  min-height: 2.6rem;
+  flex: 1;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgb(23 23 20 / 0.56);
+}
+
+.auth-tab.is-active {
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 10px 24px rgb(23 23 20 / 0.08);
+}
+
+.auth-input,
+.note-area,
+.comment-area {
+  width: 100%;
+  border: 1px solid rgb(23 23 20 / 0.1);
+  border-radius: 1.2rem;
+  background: rgb(255 255 255 / 0.94);
+  color: var(--ink);
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.auth-input {
+  min-height: 3rem;
+  padding: 0.85rem 1rem;
+}
+
+.auth-input:focus,
+.note-area:focus,
+.comment-area:focus {
+  border-color: rgb(19 137 125 / 0.6);
+  box-shadow: 0 0 0 4px rgb(19 137 125 / 0.08);
+  background: white;
+}
+
+.note-area,
+.comment-area {
+  min-height: 12rem;
+  resize: vertical;
+  line-height: 1.8;
+  padding: 1rem 1.05rem;
 }
 
 .hero-panel {
@@ -189,6 +312,88 @@ input {
   box-shadow: 0 24px 70px rgb(23 23 20 / 0.13);
 }
 
+.status-chip,
+.mini-metric,
+.engagement-stat,
+.engagement-action,
+.comment-card {
+  border: 1px solid rgb(23 23 20 / 0.08);
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: white;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.3rem 0.7rem;
+}
+
+.status-chip.is-mastered {
+  background: rgb(19 137 125 / 0.12);
+  color: var(--teal);
+}
+
+.status-chip.is-favorited {
+  background: rgb(246 198 68 / 0.18);
+  color: var(--amber-strong);
+}
+
+.mini-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  background: var(--smoke);
+  padding: 0.35rem 0.55rem;
+}
+
+.engagement-stat {
+  display: grid;
+  gap: 0.25rem;
+  border-radius: 1.1rem;
+  background: var(--smoke);
+  padding: 0.9rem;
+}
+
+.engagement-stat strong {
+  font-size: 1.2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.engagement-stat span {
+  color: rgb(23 23 20 / 0.54);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.engagement-action {
+  min-height: 2.85rem;
+  background: white;
+  color: rgb(23 23 20 / 0.72);
+  padding: 0.72rem 1rem;
+}
+
+.engagement-action:hover,
+.engagement-action.is-active {
+  transform: translateY(-1px);
+  border-color: rgb(23 23 20 / 0.16);
+  background: var(--ink);
+  color: white;
+}
+
+.engagement-action.mastered.is-active {
+  background: var(--teal);
+}
+
+.comment-card {
+  border-radius: 1.2rem;
+  background: rgb(255 255 255 / 0.88);
+  padding: 0.95rem 1rem;
+}
+
 .article-shell {
   background:
     linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.94)),
@@ -207,19 +412,65 @@ input {
   padding: 1.25rem;
 }
 
-.visual-node {
-  display: grid;
-  min-width: 0;
-  grid-template-columns: auto 1fr;
-  gap: 0.85rem;
-  align-items: start;
-  border: 1px solid rgb(23 23 20 / 0.09);
-  border-radius: 1.15rem;
-  background: rgb(255 255 255 / 0.82);
+.mindmap-shell {
+  margin-top: 1.5rem;
+  border: 1px solid rgb(23 23 20 / 0.08);
+  border-radius: 1.6rem;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.92), rgb(255 255 255 / 0.8)),
+    repeating-linear-gradient(90deg, rgb(23 23 20 / 0.025) 0 1px, transparent 1px 40px);
   padding: 1rem;
 }
 
-.visual-node-index {
+.mindmap-shell-flow,
+.mindmap-shell-sequence {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.95), rgb(189 244 208 / 0.16)),
+    repeating-linear-gradient(90deg, rgb(23 23 20 / 0.025) 0 1px, transparent 1px 40px);
+}
+
+.mindmap-shell-compare {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(246 198 68 / 0.14)),
+    repeating-linear-gradient(90deg, rgb(23 23 20 / 0.025) 0 1px, transparent 1px 40px);
+}
+
+.mindmap-shell-scenario {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(232 76 61 / 0.08)),
+    repeating-linear-gradient(90deg, rgb(23 23 20 / 0.025) 0 1px, transparent 1px 40px);
+}
+
+.mindmap-topline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  background: rgb(23 23 20 / 0.92);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 900;
+  padding: 0.45rem 0.75rem;
+}
+
+.mindmap-core-wrap {
+  margin-top: 1rem;
+}
+
+.mindmap-core-card,
+.mindmap-branch-card {
+  border: 1px solid rgb(23 23 20 / 0.09);
+  background: rgb(255 255 255 / 0.88);
+  box-shadow: 0 14px 34px rgb(23 23 20 / 0.07);
+}
+
+.mindmap-core-card {
+  border-radius: 1.6rem;
+  padding: 1.2rem;
+}
+
+.mindmap-core-badge,
+.mindmap-branch-badge {
   display: grid;
   height: 2.35rem;
   width: 2.35rem;
@@ -230,93 +481,47 @@ input {
   font-weight: 900;
 }
 
-.visual-canvas {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  border: 1px solid rgb(23 23 20 / 0.08);
-  border-radius: 1.4rem;
-  background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.68), rgb(238 241 234 / 0.72)),
-    repeating-linear-gradient(90deg, rgb(23 23 20 / 0.035) 0 1px, transparent 1px 44px);
-  padding: 0.85rem;
-}
-
-.visual-canvas-flow,
-.visual-canvas-sequence {
-  background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.76), rgb(189 244 208 / 0.32)),
-    repeating-linear-gradient(0deg, rgb(19 137 125 / 0.06) 0 1px, transparent 1px 36px);
-}
-
-.visual-canvas-compare {
-  background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.78), rgb(246 198 68 / 0.2)),
-    repeating-linear-gradient(90deg, rgb(23 23 20 / 0.04) 0 1px, transparent 1px 48px);
-}
-
-.visual-canvas-scenario {
-  background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.78), rgb(232 76 61 / 0.12)),
-    repeating-linear-gradient(135deg, rgb(19 137 125 / 0.055) 0 1px, transparent 1px 36px);
-}
-
-.visual-step {
+.mindmap-core-points,
+.mindmap-branch-points {
+  margin-top: 1rem;
   display: grid;
-  min-width: min(100%, 13.5rem);
-  flex: 1 1 13.5rem;
-  grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.65rem;
-  align-items: center;
 }
 
-.visual-step:last-child {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.visual-connector {
-  display: inline-flex;
-  min-width: 3.3rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  border-radius: 999px;
-  background: rgb(23 23 20 / 0.88);
-  color: white;
-  font-size: 0.72rem;
-  font-weight: 900;
-  padding: 0.42rem 0.5rem;
-  white-space: nowrap;
-}
-
-.visual-column {
-  border: 1px solid rgb(23 23 20 / 0.09);
-  border-radius: 1.25rem;
-  background: rgb(255 255 255 / 0.82);
-  padding: 1rem;
-}
-
-.visual-column h3 {
-  color: var(--ink);
-  font-size: 1.1rem;
-  font-weight: 900;
-}
-
-.visual-column ul {
-  margin-top: 0.8rem;
+.mindmap-core-point,
+.mindmap-branch-point {
   display: grid;
+  grid-template-columns: auto 1fr;
   gap: 0.55rem;
+  align-items: start;
+  border-radius: 0.95rem;
+  background: var(--smoke);
+  color: rgb(23 23 20 / 0.72);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.65;
+  padding: 0.72rem 0.8rem;
 }
 
-.visual-column li {
-  border-radius: 0.9rem;
-  background: var(--smoke);
-  color: rgb(23 23 20 / 0.68);
-  font-size: 0.92rem;
-  font-weight: 800;
-  line-height: 1.55;
-  padding: 0.65rem 0.75rem;
+.mindmap-point-dot {
+  margin-top: 0.45rem;
+  height: 0.45rem;
+  width: 0.45rem;
+  border-radius: 999px;
+  background: var(--teal);
+}
+
+.mindmap-branch-grid {
+  position: relative;
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.mindmap-branch-card {
+  position: relative;
+  border-radius: 1.25rem;
+  padding: 1rem;
 }
 
 .question-body {
@@ -441,21 +646,40 @@ input {
     border-radius: 1.5rem;
     padding: 1rem;
   }
+}
 
-  .visual-canvas {
-    display: grid;
+@media (min-width: 1024px) {
+  .mindmap-shell {
+    padding: 1.15rem;
   }
 
-  .visual-step {
-    grid-template-columns: minmax(0, 1fr);
+  .mindmap-core-wrap {
+    max-width: 52rem;
   }
 
-  .visual-connector {
-    justify-self: center;
-    transform: rotate(90deg);
+  .mindmap-branch-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .visual-connector span {
-    display: none;
+  .mindmap-branch-grid::before {
+    position: absolute;
+    top: -0.8rem;
+    left: 50%;
+    width: 2px;
+    height: 0.8rem;
+    transform: translateX(-50%);
+    background: rgb(19 137 125 / 0.28);
+    content: "";
+  }
+
+  .mindmap-branch-card::before {
+    position: absolute;
+    top: -0.95rem;
+    left: 50%;
+    width: 2px;
+    height: 0.95rem;
+    transform: translateX(-50%);
+    background: rgb(19 137 125 / 0.28);
+    content: "";
   }
 }

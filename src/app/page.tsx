@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowUpRight, BookMarked, Flame, GraduationCap, Layers3 } from "lucide-react";
+import { ArrowUpRight, Flame, GraduationCap, Layers3 } from "lucide-react";
 
 import { QuestionExplorer } from "@/components/question-explorer";
+import { StudyOverview } from "@/components/study-overview";
 import { getCategories, getQuestionMetas, getRoutes } from "@/lib/content";
 import { getVisualCount } from "@/lib/visuals";
 
@@ -78,31 +79,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-[1.6rem] border border-ink/10 bg-white p-6 shadow-soft">
-            <div className="flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-mint text-ink">
-                <BookMarked className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-ink/55">学习闭环</p>
-                <h2 className="text-xl font-black text-ink">收藏、掌握、复习已预留</h2>
-              </div>
-            </div>
-            <div className="mt-5 grid grid-cols-3 gap-2 text-center text-sm">
-              <div className="rounded-2xl bg-smoke px-2 py-4">
-                <p className="text-2xl font-black text-coral">{questions.length}</p>
-                <p className="mt-1 text-ink/55">待刷</p>
-              </div>
-              <div className="rounded-2xl bg-smoke px-2 py-4">
-                <p className="text-2xl font-black text-teal">0</p>
-                <p className="mt-1 text-ink/55">已掌握</p>
-              </div>
-              <div className="rounded-2xl bg-smoke px-2 py-4">
-                <p className="text-2xl font-black text-amber-strong">0%</p>
-                <p className="mt-1 text-ink/55">进度</p>
-              </div>
-            </div>
-          </div>
+          <StudyOverview totalQuestions={questions.length} />
 
           <div className="rounded-[1.6rem] border border-ink/10 bg-white p-6 shadow-soft">
             <div className="flex items-center gap-3">

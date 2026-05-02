@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, Clock3, Layers3, Sparkles } from "lucide-react";
 
 import { QuestionCard } from "@/components/question-card";
+import { QuestionEngagement } from "@/components/question-engagement";
 import { QuestionVisual } from "@/components/question-visual";
 import { getQuestionBySlug, getQuestionMetas, getRelatedQuestions } from "@/lib/content";
 import { renderMarkdown } from "@/lib/markdown";
@@ -91,8 +92,6 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
       </aside>
 
       <section className="min-w-0">
-        {visual ? <QuestionVisual visual={visual} /> : null}
-
         <article className="article-shell rounded-[2rem] border border-ink/10 bg-white px-5 py-7 shadow-soft sm:px-8 lg:px-12 lg:py-10">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-mint/70 px-3 py-1.5 text-sm font-black text-ink">
             <Sparkles className="h-4 w-4 text-teal" />
@@ -100,6 +99,10 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
           </div>
           <div className="question-body" dangerouslySetInnerHTML={{ __html: html }} />
         </article>
+
+        <QuestionEngagement slug={question.slug} title={question.title} />
+
+        {visual ? <QuestionVisual visual={visual} /> : null}
 
         {related.length > 0 ? (
           <section className="mt-8">
