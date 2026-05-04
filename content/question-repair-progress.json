@@ -1,0 +1,36 @@
+{
+  "updatedAt": "2026-05-04",
+  "batchSize": 10,
+  "completedRepairBatches": [
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+  ],
+  "lastBatch": {
+    "batch": 40,
+    "range": "391-400",
+    "slugs": [
+      "spring-security-jwt",
+      "spring-transaction-failure",
+      "spring-validation",
+      "spring-webclient",
+      "spring-boot-starter",
+      "spring-transaction-isolation",
+      "spring-transaction-propagation",
+      "spring-transaction-readonly",
+      "spring-transaction-rollback-rules",
+      "spring-mvc-webflux"
+    ],
+    "fixes": [
+      "重写详细讲解，去除通用模板污染",
+      "扩充常见追问为 4 个专项追问",
+      "去重并重写图解提示",
+      "更新 visual 节点，消除截断标签"
+    ]
+  },
+  "nextBatch": null
+}

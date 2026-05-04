@@ -17,7 +17,8 @@ export function StudyOverview({ totalQuestions }: StudyOverviewProps) {
         totalFavorites: 0,
         masteredCount: 0,
         noteCount: 0,
-        totalViews: 0
+        totalViews: 0,
+        commentCount: 0
       };
   const rawProgress = totalQuestions > 0 ? Math.round((overview.masteredCount / totalQuestions) * 100) : 0;
   const progress = overview.masteredCount > 0 ? Math.max(1, rawProgress) : 0;
@@ -31,7 +32,7 @@ export function StudyOverview({ totalQuestions }: StudyOverviewProps) {
         </div>
         <div>
           <p className="text-sm font-bold text-ink/55">学习闭环</p>
-          <h2 className="text-xl font-black text-ink">{currentUser ? `${currentUser} 的本地进度` : "先登录再沉淀你的学习轨迹"}</h2>
+          <h2 className="text-xl font-black text-ink">{currentUser ? `${currentUser} 的学习进度` : "先登录再沉淀你的学习轨迹"}</h2>
         </div>
       </div>
       <div className="mt-5 grid grid-cols-3 gap-2 text-center text-sm">

@@ -28,13 +28,21 @@ summary: "@RestController 等价于 @Controller 加 @ResponseBody，默认返回
 
 ## 常见追问
 
-### @ResponseBody 的作用是什么？
+### @RestController 一定返回 JSON 吗？
 
-它表示方法返回值不是视图名，而是直接写入响应体，常通过消息转换器转成 JSON。
+不一定。它返回响应体，具体格式由 HttpMessageConverter 和内容协商决定，常见是 JSON。
 
-### 返回页面时应该用哪个？
+### @Controller 返回字符串会怎样？
 
-如果返回模板页面，一般用 `@Controller`。
+默认可能被当作视图名解析；加 `@ResponseBody` 才会作为响应体字符串返回。
+
+### 什么时候用 ResponseEntity？
+
+需要显式控制 HTTP 状态码、Header、缓存策略或响应体时使用。
+
+### 前后端分离为什么常用 @RestController？
+
+因为接口通常直接返回 JSON 数据，不需要服务端视图解析。
 
 ## 易错点
 
@@ -44,17 +52,19 @@ summary: "@RestController 等价于 @Controller 加 @ResponseBody，默认返回
 
 ## 详细讲解
 
-@Controller 和 @RestController 有什么区别 这道题不能只按定义回答，因为面试官通常不是在确认你会不会背概念，而是在看你能不能把它放回真实系统的链路里。可以先用一句话定调：@RestController 等价于 @Controller 加 @ResponseBody，默认返回 JSON 等响应体。有了这个结论，再往下拆“为什么需要它、它靠什么机制工作、什么时候会出问题、项目里怎么验证”，答案就会比简单罗列更稳定。  
+`@Controller` 是 Spring MVC 的控制器注解，通常用于返回页面或视图。方法返回字符串时，如果没有 `@ResponseBody`，Spring MVC 可能把它当作视图名交给视图解析器。`@RestController` 可以理解为 `@Controller` 加 `@ResponseBody`，类中方法默认把返回值写入 HTTP 响应体，常用于 REST API。
 
-第一层要讲背景。Spring MVC、Controller、RestController、接口 相关问题通常都不是孤立出现的，而是和流量、并发、数据规模、调用链路或资源限制绑在一起。回答时先说明它解决的矛盾：一边是业务希望简单、快速、稳定地完成请求，另一边是系统内部存在状态变化、失败重试、性能成本和一致性边界。把这个矛盾讲出来，后面再解释机制才不会像背书。  
+返回 JSON 的关键不是注解本身，而是 HttpMessageConverter。`@ResponseBody` 或 `@RestController` 返回对象时，Spring 会根据 Content-Type、Accept 和已注册转换器，把对象序列化成 JSON、XML 或其他格式。配置不当时可能出现 406、415、序列化字段异常或日期格式不一致。
 
-第二层要讲核心机制：@Controller 是 Spring MVC 控制器注解，方法返回值默认可能被解析成视图名。这里最好把动作讲成链路，而不是只说名词。比如谁先发生、谁依赖谁、哪个状态会改变、失败时会留下什么痕迹。如果能把输入、处理、输出和副作用串起来，面试官继续追问时，你也能沿着链路往下展开，而不是被单点概念卡住。  
+实际项目里，前后端分离接口通常用 `@RestController`，页面渲染或模板项目用 `@Controller`。如果同一个类既返回页面又返回 JSON，要小心注解位置，避免把视图名当成普通字符串响应。接口返回还常配合 `ResponseEntity` 控制状态码、header 和 body，异常则通过全局异常处理统一格式。
 
-第三层要讲边界和代价：如果要返回 JSON，需要在方法上加 @ResponseBody。任何方案都有适用范围，真正成熟的回答要主动说明它在哪些条件下有效，哪些条件下会失效或成本变高。比如数据量变大、并发提升、节点故障、网络抖动、下游变慢、配置不一致，都可能让原本简单的方案暴露问题。这里可以补一句 不要只背 API 名称，要说清触发条件、默认行为和失效边界。  
+面试回答可以一句话定调：区别在返回值处理方式，`@Controller` 默认走视图解析，`@RestController` 默认走响应体写出。然后补消息转换器、视图解析、ResponseEntity 和统一异常处理，就比只说“RestController 返回 JSON”更完整。
 
-第四层要落到工程排查。项目里遇到类似问题，不要只说“改配置”或“加组件”，而是先看信号：日志、单元测试、线程栈、JFR/GC 日志、最小复现和配置对照。能用证据定位问题，说明你知道这件事在线上会长什么样；能说出验证方式，说明你不是只会写 happy path。  
+如果把这道题讲成项目经历，可以从“@Controller、视图解析、@ResponseBody”切入，先交代触发条件、请求或容器阶段，再展开关键机制。接着用“@RestController、消息转换器、接口实践”说明处理动作、验证指标和失败兜底。这样面试官继续追问时，你可以沿着一条真实链路回答：请求从哪里进入，Spring 容器或代理对象做了什么，哪个上下文会变化，失败时怎样限制影响面。
 
-最后用一句话收束：@RestController 是组合注解，包含 @Controller 和 @ResponseBody，类中方法默认把返回值写入 HTTP 响应体，常用于 REST API。回答模板可以是“先给结论，再讲机制，再补边界，最后落到项目验证”。图解时适合把它画成六个节点：问题背景、核心机制、关键风险、工程处理、验证闭环、面试收束。这样既能覆盖概念，也能展示你对真实系统复杂度的判断。
+图解时不要只画名词列表，要把状态变化画出来：哪些节点代表入口，哪些节点代表容器扩展点，哪些节点代表代理、事务或线程上下文，哪些节点代表验证闭环。回答最后再补一句取舍：Spring 方案通常是在开发效率、扩展性、运行时代理边界和排障复杂度之间做平衡，不能只说“加注解”或“改配置”，必须说明生效时机、失效条件、灰度策略、告警阈值和回滚方式。
+
+落到线上时，还要主动补监控证据：启动日志、Bean 创建顺序、ConditionEvaluationReport、Actuator 端点、请求链路、线程池指标、事务日志、异常栈、接口 P95/P99 和安全审计等信号。能把这些信号讲出来，答案才从“知道 Spring 注解”升级为“能维护 Spring 应用”。如果面试官继续追问，还可以补一次故障演练：如何模拟代理失效、如何观察上下文、如何灰度恢复、如何持续复盘防止同类问题再次发生和扩大。
 
 ## 深挖理解
 
@@ -94,7 +104,7 @@ summary: "@RestController 等价于 @Controller 加 @ResponseBody，默认返回
 
 ## 图解提示
 
-适合画一张对比图：@Controller 和 @RestController 有什么区别。核心节点：@Controller 是 Spri… -> 如果要返回 JSON -> @RestController 是组… -> 现在前后端分离项目里。画面重点突出“问题从哪里来、机制如何工作、风险在哪里、怎么落到实践”。补充一句背景：@RestController 等价于 @Controller 加 @ResponseBody，默认返回 JSON 等响应体。。
+适合画一张对比图：@Controller -> 视图解析 -> @ResponseBody -> @RestController -> 消息转换器 -> 接口实践。画面重点突出：@Controller 常用于页面和视图，@RestController 等价于 @Controller 加 @ResponseBody，默认返回响应体。
 
 ## 记忆钩子
 

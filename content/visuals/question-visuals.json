@@ -274,159 +274,159 @@
   },
   "spring-bean-lifecycle": {
     "type": "flow",
-    "title": "Spring Bean 生命周期有哪些关键步骤：流程一眼看懂",
-    "summary": "按实例化、属性填充、初始化、使用、销毁理解 Bean 生命周期。",
+    "title": "Spring Bean 生命周期：创建到销毁",
+    "summary": "Bean 生命周期包括实例化、属性填充、Aware、后处理器、初始化、代理生成和销毁回调。",
     "nodes": [
       {
-        "label": "实例化",
-        "detail": "根据 BeanDefinition 创建对象",
+        "label": "实例化 Bean",
+        "detail": "构造器或工厂方法创建原始对象",
         "tone": "main"
       },
       {
         "label": "属性填充",
-        "detail": "注入依赖和配置值",
+        "detail": "注入依赖并处理循环依赖相关引用",
         "tone": "safe"
       },
       {
         "label": "Aware 回调",
-        "detail": "注入容器相关上下文",
+        "detail": "注入 BeanName、BeanFactory、ApplicationContext",
         "tone": "safe"
       },
       {
-        "label": "初始化前后处理",
-        "detail": "BeanPostProcessor 参与增强",
+        "label": "初始化前处理",
+        "detail": "BeanPostProcessor beforeInitialization",
         "tone": "safe"
       },
       {
         "label": "初始化方法",
-        "detail": "InitializingBean 或 init-method",
+        "detail": "@PostConstruct、InitializingBean、initMethod",
         "tone": "safe"
       },
       {
-        "label": "销毁",
-        "detail": "容器关闭时执行 destroy 回调",
+        "label": "初始化后和销毁",
+        "detail": "afterInitialization 可能生成代理，关闭时执行 destroy",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：实例化 -> 属性填充 -> Aware 回调 -> 初始化前后处理 -> 初始化方法 -> 销毁。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "Spring 造 Bean：先造人，再装配，再培训，最后可能套一层代理工牌。"
+    "prompt": "画一张流程图：实例化 Bean -> 属性填充 -> Aware 回调 -> 初始化前处理 -> 初始化方法 -> 初始化后和销毁。标注 BeanPostProcessor 和 AOP 代理生成位置。",
+    "takeaway": "Bean 生命周期的关键是后处理器把普通对象变成框架增强对象。"
   },
   "spring-mvc-flow": {
-    "type": "flow",
-    "title": "Spring MVC 一次请求的执行流程是什么：流程一眼看懂",
-    "summary": "围绕 DispatcherServlet、HandlerMapping、HandlerAdapter 和 Controller 串起请求链路。",
+    "type": "sequence",
+    "title": "Spring MVC 请求流程：入口到响应",
+    "summary": "一次 MVC 请求经过 DispatcherServlet、HandlerMapping、Interceptor、HandlerAdapter、参数解析、返回值处理和异常解析。",
     "nodes": [
       {
         "label": "请求进入",
-        "detail": "Tomcat 接收 HTTP 请求",
+        "detail": "Filter 后进入 DispatcherServlet",
         "tone": "main"
       },
       {
-        "label": "DispatcherServlet",
-        "detail": "Spring MVC 的前端控制器",
+        "label": "查找 Handler",
+        "detail": "HandlerMapping 返回 HandlerExecutionChain",
         "tone": "safe"
       },
       {
-        "label": "HandlerMapping",
-        "detail": "根据路径找到处理器",
+        "label": "执行拦截器",
+        "detail": "preHandle、postHandle、afterCompletion",
         "tone": "safe"
       },
       {
-        "label": "HandlerAdapter",
-        "detail": "适配并调用 Controller",
+        "label": "调用 Adapter",
+        "detail": "HandlerAdapter 准备参数并调用 Controller",
         "tone": "safe"
       },
       {
-        "label": "参数和返回值处理",
-        "detail": "转换、校验、序列化",
+        "label": "处理返回值",
+        "detail": "视图解析或 ResponseBody 写响应",
         "tone": "safe"
       },
       {
-        "label": "响应返回",
-        "detail": "视图渲染或 JSON 写回客户端",
-        "tone": "safe"
+        "label": "异常和完成",
+        "detail": "HandlerExceptionResolver 处理异常并最终清理",
+        "tone": "warn"
       }
     ],
-    "prompt": "站内图解：请求进入 -> DispatcherServlet -> HandlerMapping -> HandlerAdapter -> 参数和返回值处理 -> 响应返回。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "DispatcherServlet 是总调度：找人、叫人、收结果、回响应。"
+    "prompt": "画一张时序图：请求进入 -> 查找 Handler -> 执行拦截器 -> 调用 Adapter -> 处理返回值 -> 异常和完成。突出 REST 返回和视图解析分支。",
+    "takeaway": "MVC 的核心是 DispatcherServlet 调度，而不是 Controller 单独工作。"
   },
   "spring-boot-autoconfiguration": {
     "type": "flow",
-    "title": "Spring Boot 自动配置原理是什么：结构一眼看懂",
-    "summary": "从 starter、条件注解和自动配置类理解 Spring Boot 为什么开箱即用。",
+    "title": "Spring Boot 自动配置：导入、条件和覆盖",
+    "summary": "Boot 3 通过 AutoConfiguration.imports 导入自动配置类，再由条件注解决定默认 Bean 是否注册。",
     "nodes": [
       {
         "label": "引入 starter",
-        "detail": "带来依赖和自动配置入口",
+        "detail": "依赖把功能库和 autoconfigure 带进项目",
         "tone": "main"
       },
       {
-        "label": "启动应用",
-        "detail": "SpringApplication 创建上下文",
+        "label": "导入自动配置",
+        "detail": "Boot 3 读取 AutoConfiguration.imports",
         "tone": "safe"
       },
       {
-        "label": "加载自动配置类",
-        "detail": "从 imports 候选配置中筛选",
+        "label": "解析配置类",
+        "detail": "@AutoConfiguration 声明默认装配逻辑",
         "tone": "safe"
       },
       {
         "label": "条件注解判断",
-        "detail": "按 class、bean、property 决定是否生效",
+        "detail": "OnClass、OnProperty、OnMissingBean 控制生效",
         "tone": "safe"
       },
       {
         "label": "注册默认 Bean",
-        "detail": "没有用户自定义时提供默认实现",
+        "detail": "只在条件满足且用户未覆盖时创建",
         "tone": "safe"
       },
       {
-        "label": "覆盖和调试",
-        "detail": "通过配置、排除和条件报告定位",
+        "label": "诊断和覆盖",
+        "detail": "--debug、conditions、用户自定义 Bean 覆盖默认值",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：引入 starter -> 启动应用 -> 加载自动配置类 -> 条件注解判断 -> 注册默认 Bean -> 覆盖和调试。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "自动配置就是：看依赖、看配置、看你有没有自己配；合适才帮你配。"
+    "prompt": "画一张流程图：引入 starter -> 导入自动配置 -> 解析配置类 -> 条件注解判断 -> 注册默认 Bean -> 诊断和覆盖。突出 Boot 3 的 AutoConfiguration.imports 和 OnMissingBean。",
+    "takeaway": "自动配置不是自动魔法，而是条件化注册默认 Bean。"
   },
   "spring-transaction-failure": {
     "type": "flow",
-    "title": "Spring 事务为什么会失效：结构一眼看懂",
-    "summary": "从代理机制、异常类型、传播行为和数据库引擎角度排查 Spring 事务失效。",
+    "title": "Spring 事务失效：代理和异常边界",
+    "summary": "事务失效通常来自没有经过代理、异常没有触发回滚、传播行为不符合预期或事务管理器/数据库不支持。",
     "nodes": [
       {
-        "label": "调用入口",
-        "detail": "事务必须从代理对象进入",
+        "label": "调用是否走代理",
+        "detail": "自调用、private/final、非 Spring Bean 都可能绕过代理",
         "tone": "main"
       },
       {
-        "label": "代理增强",
-        "detail": "AOP 在方法外层开启和提交事务",
+        "label": "方法可见性",
+        "detail": "事务方法通常应为 public 并由容器管理",
         "tone": "safe"
       },
       {
-        "label": "异常判断",
-        "detail": "默认只回滚 RuntimeException 和 Error",
+        "label": "异常是否抛出",
+        "detail": "catch 后吞掉异常不会触发默认回滚",
         "tone": "warn"
       },
       {
-        "label": "传播行为",
-        "detail": "REQUIRES_NEW、NESTED 等会改变边界",
+        "label": "回滚规则",
+        "detail": "默认 RuntimeException/Error 回滚，checked 需 rollbackFor",
+        "tone": "safe"
+      },
+      {
+        "label": "传播和管理器",
+        "detail": "REQUIRES_NEW、NESTED、多个事务管理器要匹配",
         "tone": "safe"
       },
       {
         "label": "数据库支持",
-        "detail": "引擎和连接配置也会影响事务",
+        "detail": "表引擎、连接、自动提交和隔离级别影响最终效果",
         "tone": "safe"
-      },
-      {
-        "label": "排查闭环",
-        "detail": "看代理、日志、异常、SQL 和表引擎",
-        "tone": "warn"
       }
     ],
-    "prompt": "站内图解：调用入口 -> 代理增强 -> 异常判断 -> 传播行为 -> 数据库支持 -> 排查闭环。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "Spring 事务要生效，方法必须穿过代理这道门。"
+    "prompt": "画一张排查流程图：调用是否走代理 -> 方法可见性 -> 异常是否抛出 -> 回滚规则 -> 传播和管理器 -> 数据库支持。突出事务失效排查顺序。",
+    "takeaway": "事务失效先查代理，再查异常和数据库边界。"
   },
   "mysql-b-plus-tree": {
     "type": "structure",
@@ -625,42 +625,42 @@
   },
   "redis-cache-penetration-breakdown-avalanche": {
     "type": "compare",
-    "title": "缓存穿透、击穿、雪崩有什么区别：差异一眼看懂",
-    "summary": "用请求如何打到数据库来区分三类缓存问题。",
+    "title": "缓存穿透、击穿、雪崩：故障路径对比",
+    "summary": "穿透是不存在数据打 DB，击穿是热点 key 过期打 DB，雪崩是大量 key 或缓存层同时失效。",
     "nodes": [
       {
         "label": "缓存穿透",
-        "detail": "查不存在的数据绕过缓存打到 DB",
+        "detail": "查不存在数据，缓存和 DB 都 miss",
         "tone": "main"
       },
       {
+        "label": "空值和布隆",
+        "detail": "缓存空结果或用 BloomFilter 拦截",
+        "tone": "safe"
+      },
+      {
         "label": "缓存击穿",
-        "detail": "热点 key 失效瞬间大量请求落库",
+        "detail": "热点 key 失效，大量请求同时回源",
+        "tone": "warn"
+      },
+      {
+        "label": "互斥和逻辑过期",
+        "detail": "单线程重建或返回旧值异步刷新",
         "tone": "safe"
       },
       {
         "label": "缓存雪崩",
-        "detail": "大量 key 同时失效或 Redis 故障",
+        "detail": "大量 key 过期或 Redis 整体故障",
         "tone": "warn"
       },
       {
-        "label": "空值和布隆",
-        "detail": "拦截不存在请求",
-        "tone": "safe"
-      },
-      {
-        "label": "互斥和预热",
-        "detail": "保护热点 key 重建过程",
-        "tone": "safe"
-      },
-      {
         "label": "分散过期和降级",
-        "detail": "避免集中失效拖垮系统",
-        "tone": "safe"
+        "detail": "TTL 抖动、限流、预热和兜底",
+        "tone": "warn"
       }
     ],
-    "prompt": "站内图解：缓存穿透 -> 缓存击穿 -> 缓存雪崩 -> 空值和布隆 -> 互斥和预热 -> 分散过期和降级。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "穿透是假人，击穿是明星，雪崩是前台集体下班。"
+    "prompt": "画一张三列对比图：缓存穿透 -> 空值和布隆；缓存击穿 -> 互斥和逻辑过期；缓存雪崩 -> 分散过期和降级。突出请求如何打到数据库以及对应保护手段。",
+    "takeaway": "穿透是假 key，击穿是热 key，雪崩是一大片 key。"
   },
   "cache-aside": {
     "type": "structure",
@@ -702,82 +702,82 @@
     "takeaway": "读先缓存， miss 查库；写先改库，再删缓存。"
   },
   "redis-distributed-lock": {
-    "type": "flow",
-    "title": "Redis 分布式锁怎么实现：交互一眼看懂",
-    "summary": "掌握 set nx ex、唯一标识、Lua 删除和锁续期这几个关键点。",
+    "type": "sequence",
+    "title": "Redis 分布式锁：加锁、续期与释放",
+    "summary": "Redis 锁要用原子加锁、唯一标识和 Lua 校验释放，还要说明超时、续期和一致性边界。",
     "nodes": [
       {
-        "label": "加锁",
-        "detail": "SET key value NX EX 原子写入",
+        "label": "SET NX PX",
+        "detail": "原子设置 key、唯一 token 和过期时间",
         "tone": "main"
-      },
-      {
-        "label": "唯一标识",
-        "detail": "value 保存请求 ID 防误删",
-        "tone": "safe"
       },
       {
         "label": "执行业务",
-        "detail": "在锁有效期内完成临界区",
+        "detail": "业务必须小于锁有效期或支持续期",
         "tone": "safe"
       },
       {
-        "label": "Lua 解锁",
-        "detail": "先比对 value 再删除 key",
+        "label": "校验 token",
+        "detail": "释放前确认锁仍属于当前线程",
         "tone": "safe"
       },
       {
-        "label": "续期风险",
-        "detail": "业务超时需要看门狗或缩短临界区",
-        "tone": "warn"
+        "label": "Lua 删除",
+        "detail": "比较和删除必须原子完成",
+        "tone": "safe"
       },
       {
-        "label": "可靠性边界",
-        "detail": "单 Redis、主从切换和 RedLock 取舍",
+        "label": "处理超时",
+        "detail": "业务超时要考虑续期和幂等",
+        "tone": "safe"
+      },
+      {
+        "label": "一致性边界",
+        "detail": "主从切换可能丢锁，强一致需 fencing token",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：加锁 -> 唯一标识 -> 执行业务 -> Lua 解锁 -> 续期风险 -> 可靠性边界。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "Redis 锁三件事：抢锁带过期，锁上写名字，删锁先验身份。"
+    "prompt": "画一张时序图：SET NX PX -> 执行业务 -> 校验 token -> Lua 删除 -> 处理超时 -> 一致性边界。突出唯一标识、过期时间、Lua 原子释放和主从切换风险。",
+    "takeaway": "Redis 锁能控并发，但不能天然保证强一致。"
   },
   "redis-sentinel-cluster": {
     "type": "compare",
-    "title": "Redis 主从、哨兵、Cluster 有什么区别：差异一眼看懂",
-    "summary": "主从解决读扩展和备份，哨兵解决故障转移，Cluster 解决分片扩容。",
+    "title": "Redis 主从、哨兵、Cluster：能力边界对比",
+    "summary": "主从解决复制和读扩展，哨兵解决主从高可用，Cluster 解决分片扩容和集群路由。",
     "nodes": [
       {
-        "label": "问题背景",
-        "detail": "主从解决读扩展和备份，哨兵解决故障转移，Cluster 解决分片扩容。",
+        "label": "主从复制",
+        "detail": "主写从读，提供副本和读扩展",
         "tone": "main"
       },
       {
-        "label": "主从解决读扩展和备份",
-        "detail": "把机制拆成可解释的链路",
+        "label": "哨兵监控",
+        "detail": "判断主观下线和客观下线",
         "tone": "safe"
       },
       {
-        "label": "核心机制",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "关键风险",
-        "detail": "结合项目给出处理动作",
+        "label": "哨兵故障转移",
+        "detail": "选新主并通知客户端",
         "tone": "warn"
       },
       {
-        "label": "工程处理",
-        "detail": "用日志、指标或测试验证",
+        "label": "Cluster 分片",
+        "detail": "16384 slot 分散到多个主节点",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "Cluster 重定向",
+        "detail": "客户端处理 MOVED 和 ASK",
+        "tone": "safe"
+      },
+      {
+        "label": "按需求选择",
+        "detail": "容量、可用性、运维复杂度一起评估",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：问题背景 -> 主从解决读扩展和备份 -> 核心机制 -> 关键风险 -> 工程处理 -> 面试收束。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "主从管复制，哨兵管切主，Cluster 管分片。"
+    "prompt": "画一张对比图：主从复制 -> 哨兵监控 -> 哨兵故障转移 -> Cluster 分片 -> Cluster 重定向 -> 按需求选择。突出三者解决的问题不同。",
+    "takeaway": "主从管副本，哨兵管高可用，Cluster 管分片。"
   },
   "kafka-consumer-group": {
     "type": "structure",
@@ -2964,121 +2964,121 @@
     "takeaway": "热点失效别一起冲，一个人重建，其他人等。"
   },
   "cache-warming": {
-    "type": "structure",
-    "title": "缓存预热是什么？什么时候需要：结构一眼看懂",
-    "summary": "缓存预热是在流量到来前提前把热点数据加载进缓存，避免冷启动时请求打爆数据库。",
+    "type": "flow",
+    "title": "缓存预热：从热点识别到命中验证",
+    "summary": "缓存预热是在流量到来前把热点数据提前写入缓存，重点是选对数据、限速执行和验证命中。",
     "nodes": [
       {
-        "label": "秒杀活动开始前加载商品和…",
-        "detail": "缓存预热是在流量到来前提前把热点数据加载进缓存，避免冷启动时请求打爆数据库。",
+        "label": "确定预热范围",
+        "detail": "活动商品、首页内容、字典配置、搜索热词",
         "tone": "main"
       },
       {
-        "label": "首页热门内容提前缓存",
-        "detail": "把机制拆成可解释的链路",
+        "label": "生成预热任务",
+        "detail": "按批次、优先级和版本组织任务",
         "tone": "safe"
       },
       {
-        "label": "系统重启后恢复热点配置和…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "限速读取数据库",
+        "detail": "保护 DB，避免预热成为流量洪峰",
         "tone": "safe"
       },
       {
-        "label": "大促前预加载高频查询结果",
-        "detail": "结合项目给出处理动作",
+        "label": "写入 Redis",
+        "detail": "设置 TTL、版本号和随机过期",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "抽样校验缓存",
+        "detail": "读回 key，检查命中率和数据版本",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
+        "label": "失败重试告警",
+        "detail": "失败进入重试队列并触发告警",
+        "tone": "warn"
       }
     ],
-    "prompt": "站内图解：秒杀活动开始前加载商品和… -> 首页热门内容提前缓存 -> 系统重启后恢复热点配置和… -> 大促前预加载高频查询结果 -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "饭点前先备菜，流量前先热缓存。"
+    "prompt": "画一张流程图：确定预热范围 -> 生成预热任务 -> 限速读取数据库 -> 写入 Redis -> 抽样校验缓存 -> 失败重试告警。突出预热不是全量导入，而是受控地加载热点数据。",
+    "takeaway": "预热的关键不是提前写缓存，而是受控地写对热点。"
   },
   "redis-cluster-hash-slot": {
     "type": "structure",
-    "title": "Redis Cluster 的 hash slot 怎么理解：结构一眼看懂",
-    "summary": "Redis Cluster 把 key 映射到 16384 个槽，再把槽分配给不同节点，实现数据分片。",
+    "title": "Redis Cluster hash slot：分片和路由",
+    "summary": "Cluster 先把 key 映射到 16384 个 slot，再把 slot 分配给主节点。",
     "nodes": [
       {
-        "label": "对 key 计算 CRC…",
-        "detail": "Redis Cluster 把 key 映射到 16384 个槽，再把槽分配给不同节点，实现数据分片。",
+        "label": "计算 CRC16",
+        "detail": "对 key 或 hash tag 计算 CRC16",
         "tone": "main"
       },
       {
-        "label": "每个主节点负责一部分槽",
-        "detail": "把机制拆成可解释的链路",
+        "label": "映射 16384 槽",
+        "detail": "slot = CRC16(key) mod 16384",
         "tone": "safe"
       },
       {
-        "label": "客户端根据槽位找到对应节…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "槽分配给主节点",
+        "detail": "每个主节点负责一段 slot",
         "tone": "safe"
       },
       {
-        "label": "节点迁移时",
-        "detail": "结合项目给出处理动作",
+        "label": "客户端缓存路由",
+        "detail": "slot cache 记录 slot 到节点的映射",
         "tone": "safe"
       },
       {
-        "label": "如果访问错节点",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
+        "label": "跨槽命令受限",
+        "detail": "多 key 需要落在同一 slot",
+        "tone": "warn"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "迁移触发重定向",
+        "detail": "reshard 时出现 MOVED 或 ASK",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：对 key 计算 CRC… -> 每个主节点负责一部分槽 -> 客户端根据槽位找到对应节… -> 节点迁移时 -> 如果访问错节点 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Redis Cluster 先分槽，再分节点。"
+    "prompt": "画一张结构图：计算 CRC16 -> 映射 16384 槽 -> 槽分配给主节点 -> 客户端缓存路由 -> 跨槽命令受限 -> 迁移触发重定向。突出 slot 是 key 和节点之间的中间层。",
+    "takeaway": "Cluster 不是直接 key 到节点，而是 key 到 slot 再到节点。"
   },
   "redis-geo": {
-    "type": "structure",
-    "title": "Redis GEO 适合解决什么问题：结构一眼看懂",
-    "summary": "Redis GEO 用经纬度和有序集合能力支持附近位置查询，适合附近门店、附近用户等场景。",
+    "type": "flow",
+    "title": "Redis GEO：附近位置查询流程",
+    "summary": "Redis GEO 基于经纬度和 GeoHash/ZSet 能力，适合做附近的人、门店和骑手粗粒度查询。",
     "nodes": [
       {
-        "label": "添加经纬度位置",
-        "detail": "Redis GEO 用经纬度和有序集合能力支持附近位置查询，适合附近门店、附近用户等场景。",
+        "label": "GEOADD 写位置",
+        "detail": "保存成员经纬度",
         "tone": "main"
       },
       {
-        "label": "查询两个位置距离",
-        "detail": "把机制拆成可解释的链路",
+        "label": "GEODIST 算距离",
+        "detail": "计算两个成员之间距离",
         "tone": "safe"
       },
       {
-        "label": "按半径查询附近成员",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "GEOSEARCH 查附近",
+        "detail": "按半径或矩形范围检索",
         "tone": "safe"
       },
       {
-        "label": "返回距离、坐标并排序",
-        "detail": "结合项目给出处理动作",
+        "label": "返回距离坐标",
+        "detail": "WITHDIST、WITHCOORD、ASC、COUNT",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "业务二次过滤",
+        "detail": "按营业状态、权限、精度再过滤",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "控制范围性能",
+        "detail": "限制半径、数量和隐私暴露",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：添加经纬度位置 -> 查询两个位置距离 -> 按半径查询附近成员 -> 返回距离、坐标并排序 -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "GEO 是 Redis 的附近查询小地图。"
+    "prompt": "画一张流程图：GEOADD 写位置 -> GEODIST 算距离 -> GEOSEARCH 查附近 -> 返回距离坐标 -> 业务二次过滤 -> 控制范围性能。突出 GEO 适合粗筛附近对象。",
+    "takeaway": "Redis GEO 适合附近粗筛，精排还要交给业务。"
   },
   "bfs-dfs": {
     "type": "compare",
@@ -10062,1642 +10062,1642 @@
     "takeaway": "数据库是原件，缓存是复印件；原件改了，先撕旧复印件。"
   },
   "cache-preheat-degrade": {
-    "type": "structure",
-    "title": "缓存预热和缓存降级是什么：结构一眼看懂",
-    "summary": "缓存预热是在流量到来前提前加载热点数据，缓存降级是在缓存异常时保护数据库和核心链路。",
+    "type": "flow",
+    "title": "缓存预热和缓存降级：执行闭环图",
+    "summary": "预热负责在流量前装好热点缓存，降级负责在缓存异常时保护核心链路和数据库。",
     "nodes": [
       {
-        "label": "返回默认值或兜底数据",
-        "detail": "缓存预热是在流量到来前提前加载热点数据，缓存降级是在缓存异常时保护数据库和核心链路。",
+        "label": "识别热点数据",
+        "detail": "来自历史访问、运营配置、活动商品、配置字典",
         "tone": "main"
       },
       {
-        "label": "只允许核心接口访问数据库",
-        "detail": "把机制拆成可解释的链路",
+        "label": "限速批量预热",
+        "detail": "分批查库写 Redis，避免预热任务打爆 DB",
         "tone": "safe"
       },
       {
-        "label": "对非核心功能限流或关闭",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "校验命中率",
+        "detail": "抽样读取缓存，观察命中率、失败数和容量",
         "tone": "safe"
       },
       {
-        "label": "本地缓存临时兜底",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
+        "label": "监控缓存异常",
+        "detail": "关注 Redis 延迟、错误率、连接池和命中率",
+        "tone": "warn"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
+        "label": "打开降级开关",
+        "detail": "非核心功能返回默认值、只读结果或本地缓存",
+        "tone": "warn"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "恢复和回补",
+        "detail": "缓存恢复后逐步关闭降级并补偿缺失数据",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：返回默认值或兜底数据 -> 只允许核心接口访问数据库 -> 对非核心功能限流或关闭 -> 本地缓存临时兜底 -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "预热防开场冲击，降级防故障扩大。"
+    "prompt": "画一张流程图：识别热点数据 -> 限速批量预热 -> 校验命中率 -> 监控缓存异常 -> 打开降级开关 -> 恢复和回补。突出预热防冷启动、降级防故障扩散，并标出 DB 保护和恢复条件。",
+    "takeaway": "预热解决开场冷缓存，降级解决缓存层失守。"
   },
   "redis-cluster-moved-ask": {
-    "type": "structure",
-    "title": "Redis Cluster 的 MOVED 和 ASK 是什么：结构一眼看懂",
-    "summary": "MOVED 表示槽已永久迁移到新节点，ASK 表示槽正在迁移中，需要临时去目标节点请求。",
+    "type": "sequence",
+    "title": "MOVED 与 ASK：Redis Cluster 重定向时序",
+    "summary": "MOVED 要刷新槽位路由，ASK 只是在迁移期间临时访问目标节点。",
     "nodes": [
       {
-        "label": "Redis Cluste…",
-        "detail": "MOVED 表示槽已永久迁移到新节点，ASK 表示槽正在迁移中，需要临时去目标节点请求。",
+        "label": "客户端算 slot",
+        "detail": "按 CRC16 和 hash tag 计算 key 所属槽",
         "tone": "main"
       },
       {
-        "label": "客户端根据 key 计算…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "访问旧节点",
+        "detail": "本地 slot cache 可能已经过期",
         "tone": "safe"
       },
       {
-        "label": "当访问错节点时",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "返回 MOVED",
+        "detail": "槽已归属新节点，客户端刷新路由",
         "tone": "safe"
       },
       {
-        "label": "- ASK",
-        "detail": "结合项目给出处理动作",
+        "label": "返回 ASK",
+        "detail": "槽正在迁移，客户端只临时访问目标节点",
         "tone": "safe"
       },
       {
-        "label": "成熟客户端通常会自动处理…",
-        "detail": "用日志、指标或测试验证",
+        "label": "发送 ASKING",
+        "detail": "ASK 场景先向目标节点发送 ASKING",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "重试业务命令",
+        "detail": "执行命令后不立即永久修改槽映射",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：Redis Cluste… -> 客户端根据 key 计算… -> 当访问错节点时 -> - ASK -> 成熟客户端通常会自动处理… -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "MOVED 是永久搬家，ASK 是搬家中临时问路。"
+    "prompt": "画一张时序图：客户端算 slot -> 访问旧节点 -> 返回 MOVED 或 ASK -> MOVED 刷新路由 -> ASK 先发送 ASKING -> 重试业务命令。突出永久重定向和临时重定向的区别。",
+    "takeaway": "MOVED 改通讯录，ASK 只临时问路。"
   },
   "redis-memory-fragmentation": {
     "type": "structure",
-    "title": "Redis 内存碎片是什么：结构一眼看懂",
-    "summary": "内存碎片是分配器已占用内存大于 Redis 实际数据内存，频繁增删和大 key 变化都可能导致。",
+    "title": "Redis 内存碎片：指标与处理路径",
+    "summary": "内存碎片是 allocator/RSS 占用高于 Redis 实际数据内存，处理时要先判断再治理。",
     "nodes": [
       {
-        "label": "避免频繁修改巨大 val…",
-        "detail": "内存碎片是分配器已占用内存大于 Redis 实际数据内存，频繁增删和大 key 变化都可能导致。",
+        "label": "查看 used_memory",
+        "detail": "Redis 数据实际占用内存",
         "tone": "main"
       },
       {
-        "label": "拆分大 key",
-        "detail": "把机制拆成可解释的链路",
+        "label": "对比 used_memory_rss",
+        "detail": "进程向操作系统申请的常驻内存",
         "tone": "safe"
       },
       {
-        "label": "开启或调整主动碎片整理",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "计算碎片率",
+        "detail": "关注 mem_fragmentation_ratio",
         "tone": "safe"
       },
       {
-        "label": "必要时重启或迁移实例",
-        "detail": "结合项目给出处理动作",
+        "label": "识别大 key 变动",
+        "detail": "大 value 频繁扩缩容易产生空洞",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "启用主动整理",
+        "detail": "评估 activedefrag 和 CPU 成本",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "迁移或重启",
+        "detail": "低峰期迁移实例释放 RSS",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：避免频繁修改巨大 val… -> 拆分大 key -> 开启或调整主动碎片整理 -> 必要时重启或迁移实例 -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "内存碎片就是仓库空洞多，占地没降下来。"
+    "prompt": "画一张结构图：查看 used_memory -> 对比 used_memory_rss -> 计算碎片率 -> 识别大 key 变动 -> 启用主动整理 -> 迁移或重启。突出先看指标再治理。",
+    "takeaway": "碎片率高不是数据多，而是内存空洞多。"
   },
   "redis-pubsub-vs-stream": {
     "type": "compare",
-    "title": "Redis Pub/Sub 和 Stream 有什么区别：差异一眼看懂",
-    "summary": "Pub/Sub 是实时广播，Stream 是可持久化的消息流，支持消费者组和确认机制。",
+    "title": "Pub/Sub vs Stream：广播和消息流对比",
+    "summary": "Pub/Sub 强调在线实时广播，Stream 强调消息持久化、消费组和确认。",
     "nodes": [
       {
-        "label": "Pub/Sub",
-        "detail": "Pub/Sub 是实时广播，Stream 是可持久化的消息流，支持消费者组和确认机制。",
+        "label": "Pub/Sub 实时广播",
+        "detail": "订阅者在线才收到消息",
         "tone": "main"
       },
       {
-        "label": "Stream",
-        "detail": "把机制拆成可解释的链路",
+        "label": "Pub/Sub 不保留",
+        "detail": "断线期间消息不可重放",
         "tone": "safe"
       },
       {
-        "label": "Pub/Sub 不适合可…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "Stream 追加消息",
+        "detail": "XADD 写入可持久化消息流",
         "tone": "safe"
       },
       {
-        "label": "Stream 更适合轻量…",
-        "detail": "结合项目给出处理动作",
+        "label": "消费组分摊",
+        "detail": "XREADGROUP 支持多消费者协作",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "PEL 和 XACK",
+        "detail": "记录已投递未确认消息",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "按可靠性选择",
+        "detail": "广播通知用 Pub/Sub，轻量队列用 Stream",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：Pub/Sub -> Stream -> Pub/Sub 不适合可… -> Stream 更适合轻量… -> 验证闭环 -> 面试收束。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "Pub/Sub 是广播，Stream 是账本。"
+    "prompt": "画一张对比图：Pub/Sub 实时广播、Pub/Sub 不保留、Stream 追加消息、消费组分摊、PEL 和 XACK、按可靠性选择。突出是否持久化、是否可重放、是否支持确认。",
+    "takeaway": "Pub/Sub 像直播，Stream 像可追溯的消息账本。"
   },
   "redis-data-structures": {
     "type": "compare",
-    "title": "Redis 常见数据结构分别适合什么场景：差异一眼看懂",
-    "summary": "把 String、Hash、List、Set、ZSet 和业务场景对应起来。",
+    "title": "Redis 常见数据结构：场景选择图",
+    "summary": "String、Hash、List、Set、ZSet 的选择要看数据模型、访问方式、排序需求和成员唯一性。",
     "nodes": [
       {
         "label": "String",
-        "detail": "计数、缓存、分布式锁基础值",
+        "detail": "计数器、缓存对象、分布式锁 value",
         "tone": "main"
       },
       {
         "label": "Hash",
-        "detail": "对象字段缓存，适合局部更新",
+        "detail": "对象字段较稳定时节省 key 数量",
         "tone": "safe"
       },
       {
         "label": "List",
-        "detail": "有序列表和简单队列",
+        "detail": "按插入顺序处理队列或时间线",
         "tone": "safe"
       },
       {
         "label": "Set",
-        "detail": "去重集合、共同关注、标签",
+        "detail": "去重集合、共同关注、标签交集",
         "tone": "safe"
       },
       {
         "label": "ZSet",
-        "detail": "排行榜、延迟队列、按分数排序",
+        "detail": "排行榜、延迟队列、按分数范围查询",
         "tone": "safe"
       },
       {
         "label": "选择原则",
-        "detail": "按访问模式和数据规模选结构",
+        "detail": "按读写模式、元素规模和命令复杂度选择",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：String -> Hash -> List -> Set -> ZSet -> 选择原则。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "String 缓存，Hash 对象，Set 去重，ZSet 排名。"
+    "prompt": "画一张对比图：String -> Hash -> List -> Set -> ZSet -> 选择原则。突出每种结构的典型命令、适用场景和不适合的边界。",
+    "takeaway": "Redis 结构选择先看访问模式，再看命令成本。"
   },
   "redis-expire-eviction": {
     "type": "compare",
-    "title": "Redis 过期删除和内存淘汰有什么区别：差异一眼看懂",
-    "summary": "区分 key 到期后的删除策略和内存不足时的淘汰策略。",
+    "title": "Redis 过期删除与内存淘汰：触发时机对比",
+    "summary": "过期删除处理已经到期的 key，内存淘汰是在 maxmemory 压力下选择 key 释放空间。",
     "nodes": [
       {
         "label": "过期删除",
-        "detail": "key 到了 TTL 后属于逻辑过期数据",
+        "detail": "key 到 TTL 后变成可删除对象",
         "tone": "main"
       },
       {
-        "label": "删除策略",
-        "detail": "惰性删除和定期删除共同处理过期 key",
+        "label": "惰性删除",
+        "detail": "访问 key 时发现过期再删除",
+        "tone": "safe"
+      },
+      {
+        "label": "定期删除",
+        "detail": "后台周期抽样清理过期 key",
         "tone": "safe"
       },
       {
         "label": "内存淘汰",
-        "detail": "内存达到上限时按策略挑 key 逐出",
+        "detail": "used_memory 超过 maxmemory 后触发",
         "tone": "safe"
       },
       {
-        "label": "触发时机",
-        "detail": "一个看时间，一个看内存压力",
+        "label": "淘汰策略",
+        "detail": "allkeys/volatile 与 LRU/LFU/random/ttl",
         "tone": "safe"
       },
       {
-        "label": "淘汰范围",
-        "detail": "有的策略只淘汰带 TTL 的 key",
-        "tone": "safe"
-      },
-      {
-        "label": "设计取舍",
-        "detail": "TTL 设计和 maxmemory 策略要一起看",
+        "label": "监控验证",
+        "detail": "expired_keys、evicted_keys、命中率和延迟",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：过期删除 -> 删除策略 -> 内存淘汰 -> 触发时机 -> 淘汰范围 -> 设计取舍。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "过期看时间，淘汰看空间。"
+    "prompt": "画一张对比图：过期删除 -> 惰性删除 -> 定期删除 -> 内存淘汰 -> 淘汰策略 -> 监控验证。突出到期清理和内存压力淘汰不是一回事。",
+    "takeaway": "过期是时间到了，淘汰是内存不够了。"
   },
   "redis-hot-key-big-key": {
-    "type": "compare",
-    "title": "Redis 热 key 和大 key 怎么处理：结构一眼看懂",
-    "summary": "从访问集中和单 key 过大两个方向理解 Redis 性能风险。",
+    "type": "structure",
+    "title": "Redis 热 key 和大 key：发现与治理",
+    "summary": "热 key 是访问集中，大 key 是单个 key 体积或成员过大，二者治理方向不同。",
     "nodes": [
       {
-        "label": "热 key",
-        "detail": "访问过于集中导致单点压力",
+        "label": "识别热 key",
+        "detail": "代理统计、客户端埋点、监控访问频次",
         "tone": "main"
       },
       {
-        "label": "大 key",
-        "detail": "单个 key 占用内存或操作耗时过大",
+        "label": "识别大 key",
+        "detail": "--bigkeys、MEMORY USAGE、扫描抽样",
         "tone": "safe"
       },
       {
-        "label": "发现方式",
-        "detail": "监控、slowlog、bigkeys、hotkeys",
+        "label": "热 key 分散",
+        "detail": "本地缓存、副本读、分片 key、限流",
         "tone": "safe"
       },
       {
-        "label": "拆分分散",
-        "detail": "分片、复制、本地缓存",
+        "label": "大 key 拆分",
+        "detail": "Hash 分桶、List/ZSet 分页、对象拆字段",
         "tone": "safe"
       },
       {
-        "label": "异步处理",
-        "detail": "删除和重建避免阻塞",
+        "label": "安全删除",
+        "detail": "UNLINK、分批清理、低峰执行",
         "tone": "safe"
       },
       {
-        "label": "治理闭环",
-        "detail": "限制大小、预警、压测和降级",
+        "label": "治理验证",
+        "detail": "看 P99、慢日志、内存、网络和命中率",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：热 key -> 大 key -> 发现方式 -> 拆分分散 -> 异步处理 -> 治理闭环。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "热 key 是人太多，大 key 是包太大；一个挤爆窗口，一个搬不动。"
+    "prompt": "画一张结构图：识别热 key -> 识别大 key -> 热 key 分散 -> 大 key 拆分 -> 安全删除 -> 治理验证。突出热 key 和大 key 的不同治理路径。",
+    "takeaway": "热 key 是访问过热，大 key 是体积过大。"
   },
   "redis-key-design": {
-    "type": "scenario",
-    "title": "Redis key 设计要注意什么：结构一眼看懂",
-    "summary": "Redis key 要有业务前缀、层级清晰、长度适中、避免大 key 和无过期时间滥用。",
+    "type": "structure",
+    "title": "Redis key 设计：命名、隔离和治理",
+    "summary": "好的 key 设计要可读、可隔离、可迁移、可观测，并兼顾 TTL 和 Cluster hash tag。",
     "nodes": [
       {
-        "label": "使用业务前缀",
-        "detail": "Redis key 要有业务前缀、层级清晰、长度适中、避免大 key 和无过期时间滥用。",
+        "label": "业务前缀",
+        "detail": "app:module:entity:id 清楚表达归属",
         "tone": "main"
       },
       {
-        "label": "用冒号分层",
-        "detail": "把机制拆成可解释的链路",
+        "label": "环境和租户",
+        "detail": "env、tenant、region 避免互相污染",
         "tone": "safe"
       },
       {
-        "label": "key 不要过长",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "控制长度和 value",
+        "detail": "key 不过长，value 不做巨大对象",
         "tone": "safe"
       },
       {
-        "label": "避免存巨大 value…",
-        "detail": "结合项目给出处理动作",
+        "label": "TTL 和抖动",
+        "detail": "临时缓存设置过期并避免集中失效",
         "tone": "safe"
       },
       {
-        "label": "临时缓存要设置 TTL",
-        "detail": "用日志、指标或测试验证",
+        "label": "Cluster hash tag",
+        "detail": "多 key 操作需要同槽时使用 {}",
         "tone": "safe"
       },
       {
-        "label": "不同环境和租户要避免 k…",
-        "detail": "最后补一句取舍和边界",
+        "label": "废弃和迁移",
+        "detail": "版本号、灰度双写、清理过期 key",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：使用业务前缀 -> 用冒号分层 -> key 不要过长 -> 避免存巨大 value… -> 临时缓存要设置 TTL -> 不同环境和租户要避免 k…。要求用中文短标签画成scenario图，突出顺序、结构和风险落点。",
-    "takeaway": "Redis key 是仓库标签，清楚、分层、别太大。"
+    "prompt": "画一张结构图：业务前缀 -> 环境和租户 -> 控制长度和 value -> TTL 和抖动 -> Cluster hash tag -> 废弃和迁移。突出 key 设计是治理体系。",
+    "takeaway": "key 名不是字符串细节，而是缓存治理边界。"
   },
   "redis-lua": {
-    "type": "structure",
-    "title": "Redis Lua 脚本有什么用？为什么说它有原子性：结构一眼看懂",
-    "summary": "Redis Lua 可把多条命令打包在服务端执行，脚本执行期间不会被其他命令插入。",
+    "type": "flow",
+    "title": "Redis Lua：原子脚本执行边界",
+    "summary": "Lua 脚本把多条 Redis 命令打包成一次原子执行，但必须控制耗时、key 规范和 Cluster 同槽。",
     "nodes": [
       {
-        "label": "分布式锁的校验和释放",
-        "detail": "Redis Lua 可把多条命令打包在服务端执行，脚本执行期间不会被其他命令插入。",
+        "label": "传入 KEYS/ARGV",
+        "detail": "key 和参数分离，避免脚本写死",
         "tone": "main"
       },
       {
-        "label": "限流计数和过期时间设置合…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "EVAL 执行脚本",
+        "detail": "Redis 单线程连续执行脚本",
         "tone": "safe"
       },
       {
-        "label": "库存扣减前检查库存是否足…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "多命令原子完成",
+        "detail": "检查、修改、过期设置合成一步",
         "tone": "safe"
       },
       {
-        "label": "多个 key 的条件判断…",
-        "detail": "结合项目给出处理动作",
+        "label": "EVALSHA 复用",
+        "detail": "脚本缓存后用 SHA1 调用",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "控制执行耗时",
+        "detail": "长脚本会阻塞 Redis 处理其他命令",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
+        "label": "Cluster 同槽限制",
+        "detail": "脚本内多个 key 必须落在同一 slot",
+        "tone": "warn"
       }
     ],
-    "prompt": "站内图解：分布式锁的校验和释放 -> 限流计数和过期时间设置合… -> 库存扣减前检查库存是否足… -> 多个 key 的条件判断… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Lua 是 Redis 的整张工单，中途不插队。"
+    "prompt": "画一张流程图：传入 KEYS/ARGV -> EVAL 执行脚本 -> 多命令原子完成 -> EVALSHA 复用 -> 控制执行耗时 -> Cluster 同槽限制。突出 Lua 的原子性和边界。",
+    "takeaway": "Lua 能合并原子步骤，但不能写成长事务。"
   },
   "redis-rdb-aof": {
     "type": "compare",
-    "title": "Redis RDB 和 AOF 有什么区别：差异一眼看懂",
-    "summary": "从快照、命令日志、恢复速度和数据安全性对比 Redis 两种持久化方式。",
+    "title": "Redis RDB 与 AOF：恢复和数据安全对比",
+    "summary": "RDB 是快照，恢复快但可能丢最近数据；AOF 是写命令日志，数据更安全但文件和刷盘成本更高。",
     "nodes": [
       {
         "label": "RDB 快照",
-        "detail": "按时间点生成二进制数据文件",
+        "detail": "按时间点生成紧凑二进制快照",
         "tone": "main"
+      },
+      {
+        "label": "RDB 恢复快",
+        "detail": "适合备份和全量恢复",
+        "tone": "safe"
       },
       {
         "label": "AOF 日志",
-        "detail": "记录写命令用于重放恢复",
+        "detail": "记录写命令并按策略刷盘",
         "tone": "safe"
       },
       {
-        "label": "恢复速度",
-        "detail": "RDB 通常更快",
+        "label": "appendfsync",
+        "detail": "always、everysec、no 控制安全和性能",
         "tone": "safe"
       },
       {
-        "label": "数据安全",
-        "detail": "AOF 通常丢数据更少",
-        "tone": "warn"
-      },
-      {
-        "label": "重写机制",
-        "detail": "AOF rewrite 压缩日志体积",
+        "label": "AOF 重写",
+        "detail": "压缩历史命令，降低文件体积",
         "tone": "safe"
       },
       {
-        "label": "组合使用",
-        "detail": "生产常用混合持久化和备份",
+        "label": "混合持久化",
+        "detail": "用 RDB 基底加 AOF 增量兼顾恢复速度",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：RDB 快照 -> AOF 日志 -> 恢复速度 -> 数据安全 -> 重写机制 -> 组合使用。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "RDB 是拍照，AOF 是记账；拍照恢复快，记账丢得少。"
+    "prompt": "画一张对比图：RDB 快照 -> RDB 恢复快 -> AOF 日志 -> appendfsync -> AOF 重写 -> 混合持久化。突出 RPO/RTO 取舍。",
+    "takeaway": "RDB 像拍照，AOF 像记账。"
   },
   "redis-pipeline": {
-    "type": "structure",
-    "title": "Redis Pipeline 是什么？适合什么场景：结构一眼看懂",
-    "summary": "Pipeline 通过批量发送命令减少网络往返次数，适合大量独立命令，但不保证事务语义。",
+    "type": "flow",
+    "title": "Redis Pipeline：批量发送与风险控制",
+    "summary": "Pipeline 通过批量发送命令减少 RTT，但不是事务，也要控制批量大小和输出缓冲。",
     "nodes": [
       {
-        "label": "问题背景",
-        "detail": "Pipeline 通过批量发送命令减少网络往返次数，适合大量独立命令，但不保证事务语义。",
+        "label": "收集多条命令",
+        "detail": "客户端暂存一批独立 Redis 命令",
         "tone": "main"
       },
       {
-        "label": "Pipeline 通过批…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "一次性发送",
+        "detail": "减少多次网络往返 RTT",
         "tone": "safe"
       },
       {
-        "label": "核心机制",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "Redis 顺序执行",
+        "detail": "服务端仍按命令顺序处理",
         "tone": "safe"
       },
       {
-        "label": "关键风险",
-        "detail": "结合项目给出处理动作",
+        "label": "批量读取响应",
+        "detail": "客户端再集中读取结果",
+        "tone": "safe"
+      },
+      {
+        "label": "控制批量大小",
+        "detail": "避免输出缓冲和网络包过大",
+        "tone": "safe"
+      },
+      {
+        "label": "处理部分失败",
+        "detail": "逐条检查响应并设计重试",
         "tone": "warn"
-      },
-      {
-        "label": "工程处理",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
       }
     ],
-    "prompt": "站内图解：问题背景 -> Pipeline 通过批… -> 核心机制 -> 关键风险 -> 工程处理 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Pipeline 省的是来回路费，不是事务保险。"
+    "prompt": "画一张流程图：收集多条命令 -> 一次性发送 -> Redis 顺序执行 -> 批量读取响应 -> 控制批量大小 -> 处理部分失败。突出 Pipeline 不是事务。",
+    "takeaway": "Pipeline 省 RTT，不保原子。"
   },
   "redis-single-thread-fast": {
     "type": "structure",
-    "title": "Redis 单线程为什么还这么快：结构一眼看懂",
-    "summary": "从内存操作、IO 多路复用、数据结构和避免线程切换解释 Redis 性能。",
+    "title": "Redis 单线程快的原因与瓶颈",
+    "summary": "Redis 快来自内存操作、高效结构和 I/O 多路复用，但慢命令、大 key、fork 和磁盘也会拖慢它。",
     "nodes": [
       {
-        "label": "单线程执行命令",
-        "detail": "核心命令处理路径串行避免锁竞争",
+        "label": "内存读写",
+        "detail": "大多数操作在内存完成",
         "tone": "main"
-      },
-      {
-        "label": "内存操作",
-        "detail": "绝大多数操作是内存级而非磁盘级",
-        "tone": "safe"
       },
       {
         "label": "高效数据结构",
-        "detail": "跳表、哈希、压缩结构都很轻量",
+        "detail": "针对常见结构做紧凑编码和优化",
         "tone": "safe"
       },
       {
-        "label": "IO 多路复用",
-        "detail": "网络连接处理高效，不靠一请求一线程",
+        "label": "I/O 多路复用",
+        "detail": "单线程事件循环处理大量连接",
         "tone": "safe"
       },
       {
-        "label": "局部瓶颈",
-        "detail": "快不代表无上限，慢命令仍会拖住全局",
+        "label": "避免锁竞争",
+        "detail": "命令串行执行减少复杂并发控制",
         "tone": "safe"
       },
       {
-        "label": "工程要点",
-        "detail": "避免 big key、慢命令和阻塞操作",
+        "label": "局部慢源",
+        "detail": "大 key、慢命令、Lua、fork、AOF fsync",
+        "tone": "safe"
+      },
+      {
+        "label": "观测延迟",
+        "detail": "slowlog、latency doctor、commandstats",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：单线程执行命令 -> 内存操作 -> 高效数据结构 -> IO 多路复用 -> 局部瓶颈 -> 工程要点。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Redis 快：数据在手边，一个人处理，不抢锁。"
+    "prompt": "画一张结构图：内存读写 -> 高效数据结构 -> I/O 多路复用 -> 避免锁竞争 -> 局部慢源 -> 观测延迟。突出快的原因和慢的来源。",
+    "takeaway": "Redis 单线程快，不代表任何命令都快。"
   },
   "redis-slowlog": {
     "type": "flow",
-    "title": "Redis SlowLog 怎么用：结构一眼看懂",
-    "summary": "Redis SlowLog 记录执行时间超过阈值的命令，用于排查慢命令和不合理访问模式。",
+    "title": "Redis SlowLog：慢命令排查闭环",
+    "summary": "SlowLog 记录命令执行耗时，不包含网络传输和客户端排队，要和 latency、命令统计一起看。",
     "nodes": [
       {
-        "label": "问题背景",
-        "detail": "Redis SlowLog 记录执行时间超过阈值的命令，用于排查慢命令和不合理访问模式。",
+        "label": "配置阈值",
+        "detail": "slowlog-log-slower-than 控制记录门槛",
         "tone": "main"
       },
       {
-        "label": "Redis SlowLo…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "核心机制",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "关键风险",
-        "detail": "结合项目给出处理动作",
+        "label": "限制长度",
+        "detail": "slowlog-max-len 控制保留条数",
         "tone": "warn"
       },
       {
-        "label": "工程处理",
-        "detail": "用日志、指标或测试验证",
+        "label": "查看慢日志",
+        "detail": "SLOWLOG GET/LEN/RESET",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "识别慢命令",
+        "detail": "看命令、参数、耗时和发生时间",
+        "tone": "safe"
+      },
+      {
+        "label": "关联其他指标",
+        "detail": "latency、commandstats、big key、网络",
+        "tone": "safe"
+      },
+      {
+        "label": "修复验证",
+        "detail": "改命令、拆 key、分页并复看慢日志",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：问题背景 -> Redis SlowLo… -> 核心机制 -> 关键风险 -> 工程处理 -> 面试收束。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "SlowLog 记的是 Redis 自己执行慢的单。"
+    "prompt": "画一张流程图：配置阈值 -> 限制长度 -> 查看慢日志 -> 识别慢命令 -> 关联其他指标 -> 修复验证。突出 SlowLog 不包含网络耗时。",
+    "takeaway": "SlowLog 看服务端命令耗时，不等于用户端总耗时。"
   },
   "redis-stream": {
-    "type": "flow",
-    "title": "Redis Stream 是什么：交互一眼看懂",
-    "summary": "Redis Stream 是 Redis 的日志型消息结构，支持消息追加、消费者组和待确认消息。",
+    "type": "structure",
+    "title": "Redis Stream：消息流核心结构",
+    "summary": "Stream 用 XADD 追加消息，用 ID 排序，用消费者组、PEL 和 XACK 支持协作消费。",
     "nodes": [
       {
-        "label": "XADD 追加消息",
-        "detail": "Redis Stream 是 Redis 的日志型消息结构，支持消息追加、消费者组和待确认消息。",
+        "label": "XADD 追加",
+        "detail": "写入带 ID 的消息记录",
         "tone": "main"
       },
       {
-        "label": "XREAD 读取消息",
-        "detail": "把机制拆成可解释的链路",
+        "label": "消息 ID",
+        "detail": "时间戳加序列号，支持范围读取",
         "tone": "safe"
       },
       {
-        "label": "消费者组支持多个消费者协…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "XREAD 读取",
+        "detail": "普通消费者按 ID 读取消息",
         "tone": "safe"
       },
       {
-        "label": "PEL 待确认列表记录已…",
-        "detail": "结合项目给出处理动作",
+        "label": "消费组",
+        "detail": "多个消费者分摊同一组消息",
         "tone": "safe"
       },
       {
-        "label": "XACK 确认消息处理完…",
-        "detail": "用日志、指标或测试验证",
+        "label": "PEL 待确认",
+        "detail": "记录已投递未确认消息",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "保留策略",
+        "detail": "MAXLEN 控制长度和内存",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：XADD 追加消息 -> XREAD 读取消息 -> 消费者组支持多个消费者协… -> PEL 待确认列表记录已… -> XACK 确认消息处理完… -> 面试收束。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "Stream 是 Redis 流水账，能追号、能分组、能确认。"
+    "prompt": "画一张结构图：XADD 追加 -> 消息 ID -> XREAD 读取 -> 消费组 -> PEL 待确认 -> 保留策略。突出 Stream 是可追溯消息流。",
+    "takeaway": "Stream 是 Redis 里的轻量消息日志。"
   },
   "redis-transaction": {
-    "type": "structure",
-    "title": "Redis 事务是什么：结构一眼看懂",
-    "summary": "Redis 事务通过 MULTI、EXEC 把多条命令按顺序执行，但不支持传统数据库那种回滚。",
+    "type": "sequence",
+    "title": "Redis 事务：排队执行和乐观锁",
+    "summary": "Redis 事务用 MULTI/EXEC 排队执行命令，WATCH 提供乐观锁，但不等同数据库事务回滚。",
     "nodes": [
       {
-        "label": "MULTI 开启事务",
-        "detail": "Redis 事务通过 MULTI、EXEC 把多条命令按顺序执行，但不支持传统数据库那种回滚。",
+        "label": "MULTI 开启",
+        "detail": "后续命令进入事务队列",
         "tone": "main"
       },
       {
-        "label": "后续命令进入队列",
-        "detail": "把机制拆成可解释的链路",
+        "label": "命令排队",
+        "detail": "返回 QUEUED，不立即执行",
         "tone": "safe"
       },
       {
-        "label": "EXEC 执行队列命令",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "EXEC 执行",
+        "detail": "按顺序执行队列命令",
         "tone": "safe"
       },
       {
-        "label": "DISCARD 可以丢弃…",
-        "detail": "结合项目给出处理动作",
-        "tone": "warn"
-      },
-      {
-        "label": "WATCH 可以监控 k…",
-        "detail": "用日志、指标或测试验证",
+        "label": "DISCARD 放弃",
+        "detail": "丢弃队列中的命令",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "WATCH 监控",
+        "detail": "被监控 key 变化则 EXEC 失败",
+        "tone": "safe"
+      },
+      {
+        "label": "不自动回滚",
+        "detail": "执行期错误不会回滚已执行命令",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：MULTI 开启事务 -> 后续命令进入队列 -> EXEC 执行队列命令 -> DISCARD 可以丢弃… -> WATCH 可以监控 k… -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Redis 事务是排队执行，不是数据库回滚。"
+    "prompt": "画一张时序图：MULTI 开启 -> 命令排队 -> EXEC 执行 -> DISCARD 放弃 -> WATCH 监控 -> 不自动回滚。突出 Redis 事务不是数据库事务。",
+    "takeaway": "Redis 事务会排队执行，但不负责自动回滚。"
   },
   "redis-redlock": {
     "type": "structure",
-    "title": "Redis RedLock 是什么？有什么争议：交互一眼看懂",
-    "summary": "RedLock 通过多个独立 Redis 节点加锁提升可用性，但在时钟、网络分区和强一致语义上有争议。",
+    "title": "RedLock：多数派加锁与争议边界",
+    "summary": "RedLock 通过多个独立 Redis 实例多数派加锁提高可用性，但仍要面对时钟、网络分区和 fencing token 问题。",
     "nodes": [
       {
-        "label": "问题背景",
-        "detail": "RedLock 通过多个独立 Redis 节点加锁提升可用性，但在时钟、网络分区和强一致语义上有争议。",
+        "label": "多个独立实例",
+        "detail": "向 N 个 Redis 实例尝试加锁",
         "tone": "main"
       },
       {
-        "label": "RedLock 通过多个…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "多数派成功",
+        "detail": "超过半数实例 SET NX PX 成功",
         "tone": "safe"
       },
       {
-        "label": "核心机制",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "计算有效期",
+        "detail": "扣除请求耗时和时钟漂移余量",
         "tone": "safe"
       },
       {
-        "label": "关键风险",
-        "detail": "结合项目给出处理动作",
+        "label": "失败释放",
+        "detail": "未达多数派要释放已获得的锁",
         "tone": "warn"
       },
       {
-        "label": "工程处理",
-        "detail": "用日志、指标或测试验证",
+        "label": "争议边界",
+        "detail": "网络分区、暂停和时钟漂移影响安全性",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "fencing token",
+        "detail": "资源侧用单调 token 拒绝旧持有者",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：问题背景 -> RedLock 通过多个… -> 核心机制 -> 关键风险 -> 工程处理 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "RedLock 是多数保安签字，但分布式世界里手表和网络都可能骗人。"
+    "prompt": "画一张结构图：多个独立实例 -> 多数派成功 -> 计算有效期 -> 失败释放 -> 争议边界 -> fencing token。突出 RedLock 不是强一致银弹。",
+    "takeaway": "RedLock 提高锁可用性，但强一致还要靠资源侧校验。"
   },
   "redis-zset-ranking": {
-    "type": "structure",
-    "title": "Redis ZSet 怎么实现排行榜：结构一眼看懂",
-    "summary": "ZSet 用 member 表示对象、score 表示分数，可以快速按分数排序和查询排名。",
+    "type": "flow",
+    "title": "Redis ZSet 排行榜：写入、查询与治理",
+    "summary": "ZSet 用 member 表示对象、score 表示分数，排行榜要处理并列、分页、周期榜和大榜单裁剪。",
     "nodes": [
       {
-        "label": "ZADD 添加或更新分数",
-        "detail": "ZSet 用 member 表示对象、score 表示分数，可以快速按分数排序和查询排名。",
+        "label": "ZADD 写分数",
+        "detail": "新增或更新用户、商品、帖子分数",
         "tone": "main"
       },
       {
-        "label": "ZREVRANGE 查询…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "ZINCRBY 加分",
+        "detail": "按行为增量更新 score",
         "tone": "safe"
       },
       {
-        "label": "ZRANK 或 ZREV…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "ZREVRANGE 查榜",
+        "detail": "按分数倒序分页返回榜单",
         "tone": "safe"
       },
       {
-        "label": "ZINCRBY 增加分数",
-        "detail": "结合项目给出处理动作",
+        "label": "ZRANK 查名次",
+        "detail": "查询个人排名和周围区间",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "周期 key 滚动",
+        "detail": "日榜、周榜、总榜分 key 管理",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "裁剪和监控",
+        "detail": "控制榜单大小、延迟、内存和热 key",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：ZADD 添加或更新分数 -> ZREVRANGE 查询… -> ZRANK 或 ZREV… -> ZINCRBY 增加分数 -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "ZSet 是自动排序成绩单：member 是人，score 是分。"
+    "prompt": "画一张流程图：ZADD 写分数 -> ZINCRBY 加分 -> ZREVRANGE 查榜 -> ZRANK 查名次 -> 周期 key 滚动 -> 裁剪和监控。突出排行榜读写路径和治理点。",
+    "takeaway": "ZSet 排行榜简单在命令，难在分页、并列和大榜治理。"
   },
   "autowired-resource": {
     "type": "compare",
-    "title": "@Autowired 和 @Resource 有什么区别：差异一眼看懂",
-    "summary": "区分按类型注入、按名称注入和来源规范。",
+    "title": "@Autowired 与 @Resource：注入规则对比",
+    "summary": "@Autowired 默认按类型装配，@Resource 默认按名称优先；工程上更推荐构造器注入表达必需依赖。",
     "nodes": [
       {
         "label": "@Autowired",
-        "detail": "Spring 提供，默认更偏按类型注入",
+        "detail": "Spring 提供，默认按类型查找 Bean",
         "tone": "main"
       },
       {
+        "label": "@Qualifier",
+        "detail": "多个候选时指定名称或限定符",
+        "tone": "safe"
+      },
+      {
         "label": "@Resource",
-        "detail": "JSR 规范注解，默认更偏按名称匹配",
+        "detail": "JSR 注解，默认按名称优先",
         "tone": "safe"
       },
       {
         "label": "候选歧义",
-        "detail": "多个同类型 Bean 时要配合名称或限定符",
+        "detail": "多个同类型 Bean 要显式消除歧义",
         "tone": "safe"
       },
       {
-        "label": "依赖语义",
-        "detail": "构造器注入、字段注入、setter 注入都能结合用",
+        "label": "构造器注入",
+        "detail": "依赖必需、便于测试、支持不可变",
         "tone": "safe"
       },
       {
-        "label": "工程习惯",
-        "detail": "现代 Spring 更常见 @Autowired 配合构造器",
-        "tone": "safe"
-      },
-      {
-        "label": "本质理解",
-        "detail": "两者都是声明依赖，差别在匹配规则和生态归属",
+        "label": "字段注入风险",
+        "detail": "隐藏依赖，不利于单测和重构",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：@Autowired -> @Resource -> 候选歧义 -> 依赖语义 -> 工程习惯 -> 本质理解。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "Autowired 先看类型，Resource 先叫名字。"
+    "prompt": "画一张对比图：@Autowired -> @Qualifier -> @Resource -> 候选歧义 -> 构造器注入 -> 字段注入风险。突出注入规则和工程推荐。",
+    "takeaway": "注入不是谁更高级，而是依赖语义要清楚。"
   },
   "spring-bean-scope": {
-    "type": "compare",
-    "title": "Spring Bean 有哪些作用域：结构一眼看懂",
-    "summary": "理解 singleton、prototype 以及 Web 场景下 request/session 作用域。",
+    "type": "structure",
+    "title": "Spring Bean 作用域：生命周期边界",
+    "summary": "Bean 作用域决定实例复用范围和生命周期管理方式，常见 singleton、prototype、request、session 和 application。",
     "nodes": [
       {
         "label": "singleton",
-        "detail": "容器里默认单例作用域",
+        "detail": "容器内单例，默认作用域",
         "tone": "main"
       },
       {
         "label": "prototype",
-        "detail": "每次获取都创建新实例",
+        "detail": "每次获取创建新对象",
         "tone": "safe"
       },
       {
-        "label": "request/session",
-        "detail": "Web 环境里绑定请求或会话生命周期",
+        "label": "request",
+        "detail": "一次 HTTP 请求内共享",
+        "tone": "safe"
+      },
+      {
+        "label": "session",
+        "detail": "一个 HTTP Session 内共享",
         "tone": "safe"
       },
       {
         "label": "application",
-        "detail": "ServletContext 级共享实例",
+        "detail": "ServletContext 级别共享",
         "tone": "safe"
       },
       {
-        "label": "生命周期差异",
-        "detail": "创建、复用和销毁责任并不一样",
-        "tone": "safe"
-      },
-      {
-        "label": "设计建议",
-        "detail": "状态对象慎放单例，无状态服务更适合默认作用域",
+        "label": "scoped proxy",
+        "detail": "单例依赖短作用域 Bean 时使用代理",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：singleton -> prototype -> request/session -> application -> 生命周期差异 -> 设计建议。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "singleton 共用一个，prototype 每次新的。"
+    "prompt": "画一张结构图：singleton -> prototype -> request -> session -> application -> scoped proxy。突出实例复用范围和生命周期差异。",
+    "takeaway": "作用域回答要讲复用范围，也要讲谁负责销毁。"
   },
   "beanfactory-applicationcontext": {
     "type": "compare",
-    "title": "BeanFactory 和 ApplicationContext 有什么区别：差异一眼看懂",
-    "summary": "BeanFactory 是基础 IoC 容器，ApplicationContext 在其基础上提供事件、国际化、资源加载等企业级能力。",
+    "title": "BeanFactory 与 ApplicationContext：容器能力对比",
+    "summary": "BeanFactory 是基础 Bean 容器，ApplicationContext 在此基础上提供事件、国际化、资源、环境和 Web 集成。",
     "nodes": [
       {
-        "label": "国际化消息",
-        "detail": "BeanFactory 是基础 IoC 容器，ApplicationContext 在其基础上提供事件、国际化、资源加载等企业级能力。",
+        "label": "BeanFactory",
+        "detail": "基础 IoC 容器，提供 Bean 获取和管理",
         "tone": "main"
       },
       {
-        "label": "事件发布和监听",
-        "detail": "把机制拆成可解释的链路",
+        "label": "延迟创建倾向",
+        "detail": "按需创建 Bean 的基础能力",
         "tone": "safe"
       },
       {
-        "label": "资源加载",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "ApplicationContext",
+        "detail": "更完整的应用上下文",
         "tone": "safe"
       },
       {
-        "label": "更方便的注解和自动装配支…",
-        "detail": "结合项目给出处理动作",
+        "label": "预实例化单例",
+        "detail": "启动 refresh 时创建大多数单例 Bean",
         "tone": "safe"
       },
       {
-        "label": "与 Web、AOP、事务…",
-        "detail": "用日志、指标或测试验证",
+        "label": "扩展能力",
+        "detail": "事件、国际化、资源、Environment",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "实际开发首选",
+        "detail": "Boot 和 Web 项目通常使用 ApplicationContext",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：国际化消息 -> 事件发布和监听 -> 资源加载 -> 更方便的注解和自动装配支… -> 与 Web、AOP、事务… -> 面试收束。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "BeanFactory 是仓库，ApplicationContext 是公司系统。"
+    "prompt": "画一张对比图：BeanFactory -> 延迟创建倾向 -> ApplicationContext -> 预实例化单例 -> 扩展能力 -> 实际开发首选。突出基础容器和应用上下文的差异。",
+    "takeaway": "BeanFactory 管 Bean，ApplicationContext 管应用上下文。"
   },
   "beanpostprocessor": {
-    "type": "structure",
-    "title": "BeanPostProcessor 是什么：流程一眼看懂",
-    "summary": "BeanPostProcessor 是 Spring Bean 初始化前后的扩展点，很多框架能力都依赖它增强 Bean。",
+    "type": "flow",
+    "title": "BeanPostProcessor：初始化前后的扩展点",
+    "summary": "BeanPostProcessor 在 Bean 初始化前后介入，是 AOP、代理增强和框架扩展的重要入口。",
     "nodes": [
       {
-        "label": "BeanPostProc…",
-        "detail": "BeanPostProcessor 是 Spring Bean 初始化前后的扩展点，很多框架能力都依赖它增强 Bean。",
+        "label": "实例化 Bean",
+        "detail": "构造对象",
         "tone": "main"
       },
       {
-        "label": "- 初始化后",
-        "detail": "把机制拆成可解释的链路",
+        "label": "属性填充",
+        "detail": "注入依赖和配置值",
         "tone": "safe"
       },
       {
-        "label": "很多 Spring 能力…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "初始化前处理",
+        "detail": "postProcessBeforeInitialization",
         "tone": "safe"
       },
       {
-        "label": "它发生在 Bean 生命…",
-        "detail": "结合项目给出处理动作",
+        "label": "初始化方法",
+        "detail": "afterPropertiesSet 或 init-method",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "初始化后处理",
+        "detail": "postProcessAfterInitialization",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "可能生成代理",
+        "detail": "AOP 等能力常在初始化后返回代理对象",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：BeanPostProc… -> - 初始化后 -> 很多 Spring 能力… -> 它发生在 Bean 生命… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "BeanPostProcessor 是 Bean 出厂前后的质检员。"
+    "prompt": "画一张流程图：实例化 Bean -> 属性填充 -> 初始化前处理 -> 初始化方法 -> 初始化后处理 -> 可能生成代理。突出 BeanPostProcessor 的生命周期位置。",
+    "takeaway": "BeanPostProcessor 不是创建 Bean，而是在初始化前后加工 Bean。"
   },
   "spring-circular-dependency": {
     "type": "flow",
-    "title": "Spring 如何解决循环依赖：流程一眼看懂",
-    "summary": "理解单例 Bean 的三级缓存，以及构造器循环依赖为什么解决不了。",
+    "title": "Spring 循环依赖：三级缓存处理路径",
+    "summary": "Spring 只能解决部分单例 setter/字段注入循环依赖，构造器循环依赖和设计耦合仍要主动规避。",
     "nodes": [
       {
-        "label": "问题出现",
-        "detail": "Bean A 依赖 B，Bean B 又依赖 A",
+        "label": "A 创建中",
+        "detail": "实例化 A 但属性还没填完",
         "tone": "main"
       },
       {
-        "label": "实例化先行",
-        "detail": "Spring 先创建原始对象再填充属性",
+        "label": "暴露早期工厂",
+        "detail": "把 ObjectFactory 放入三级缓存",
         "tone": "safe"
       },
       {
-        "label": "三级缓存",
-        "detail": "提前暴露单例引用以打破 setter 循环",
+        "label": "A 依赖 B",
+        "detail": "填充属性时需要创建 B",
         "tone": "safe"
       },
       {
-        "label": "代理处理",
-        "detail": "必要时提前暴露代理而不是原始对象",
+        "label": "B 依赖 A",
+        "detail": "从缓存拿到 A 的早期引用",
+        "tone": "safe"
+      },
+      {
+        "label": "处理代理一致性",
+        "detail": "AOP 场景可能暴露早期代理",
         "tone": "safe"
       },
       {
         "label": "边界限制",
-        "detail": "构造器循环和原型 Bean 解决不了",
-        "tone": "safe"
-      },
-      {
-        "label": "设计建议",
-        "detail": "能重构职责就别把框架能力当设计常态",
-        "tone": "safe"
+        "detail": "构造器循环依赖通常无法解决",
+        "tone": "warn"
       }
     ],
-    "prompt": "站内图解：问题出现 -> 实例化先行 -> 三级缓存 -> 代理处理 -> 边界限制 -> 设计建议。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "属性循环能借半成品，构造循环连半成品都造不出来。"
+    "prompt": "画一张流程图：A 创建中 -> 暴露早期工厂 -> A 依赖 B -> B 依赖 A -> 处理代理一致性 -> 边界限制。突出三级缓存和构造器限制。",
+    "takeaway": "能解决循环依赖，不代表应该设计循环依赖。"
   },
   "spring-conditional-annotation": {
     "type": "structure",
-    "title": "@Conditional 注解有什么用：结构一眼看懂",
-    "summary": "@Conditional 用于按条件决定 Bean 是否装配，是 Spring Boot 自动配置的重要基础。",
+    "title": "@Conditional：条件装配判断链",
+    "summary": "@Conditional 通过 Condition 接口在 Bean 注册阶段判断是否加载配置或 Bean，是自动配置的基础。",
     "nodes": [
       {
-        "label": "@Conditional…",
-        "detail": "@Conditional 用于按条件决定 Bean 是否装配，是 Spring Boot 自动配置的重要基础。",
+        "label": "读取注解元数据",
+        "detail": "AnnotatedTypeMetadata 提供类和方法注解信息",
         "tone": "main"
       },
       {
-        "label": "@Conditional…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "创建 Condition",
+        "detail": "实现 matches 方法",
         "tone": "safe"
       },
       {
-        "label": "@Conditional…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "查看上下文",
+        "detail": "ConditionContext 提供环境、BeanFactory、类加载器",
         "tone": "safe"
       },
       {
-        "label": "@Conditional…",
-        "detail": "结合项目给出处理动作",
+        "label": "判断是否匹配",
+        "detail": "按类存在、属性、Bean、Profile 等条件判断",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "决定注册 Bean",
+        "detail": "匹配才注册配置类或 BeanDefinition",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "自动配置使用",
+        "detail": "@ConditionalOnClass/OnMissingBean/OnProperty",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：@Conditional… -> @Conditional… -> @Conditional… -> @Conditional… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Conditional 是装配开关：条件满足才上车。"
+    "prompt": "画一张结构图：读取注解元数据 -> 创建 Condition -> 查看上下文 -> 判断是否匹配 -> 决定注册 Bean -> 自动配置使用。突出条件装配发生在注册阶段。",
+    "takeaway": "@Conditional 的本质是有条件地注册 Bean。"
   },
   "spring-boot-configuration-priority": {
-    "type": "structure",
-    "title": "Spring Boot 配置加载优先级怎么理解：流程一眼看懂",
-    "summary": "Spring Boot 配置来源很多，优先级决定同名配置最终谁生效，线上排查要先确认实际配置值。",
+    "type": "flow",
+    "title": "Spring Boot 配置优先级：覆盖和排查",
+    "summary": "Spring Boot 配置按来源加载并互相覆盖，排查时要看 ConfigData、profile、环境变量、系统属性和命令行参数。",
     "nodes": [
       {
-        "label": "application.…",
-        "detail": "Spring Boot 配置来源很多，优先级决定同名配置最终谁生效，线上排查要先确认实际配置值。",
+        "label": "默认配置文件",
+        "detail": "application.yml/properties 提供基础值",
         "tone": "main"
       },
       {
-        "label": "不同环境的 profil…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "Profile 配置",
+        "detail": "application-dev.yml 覆盖同名 key",
+        "tone": "safe"
+      },
+      {
+        "label": "外部配置",
+        "detail": "jar 外配置和 ConfigData 优先级更高",
         "tone": "safe"
       },
       {
         "label": "环境变量",
-        "detail": "说明什么时候会失效或变慢",
+        "detail": "适合容器部署，注意命名转换",
         "tone": "safe"
       },
       {
-        "label": "JVM 系统属性",
-        "detail": "结合项目给出处理动作",
+        "label": "系统和命令行",
+        "detail": "JVM -D 与启动参数常用于临时覆盖",
         "tone": "safe"
       },
       {
-        "label": "命令行参数",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "配置中心",
-        "detail": "最后补一句取舍和边界",
+        "label": "Actuator 排查",
+        "detail": "/actuator/env 查看属性来源",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：application.… -> 不同环境的 profil… -> 环境变量 -> JVM 系统属性 -> 命令行参数 -> 配置中心。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "配置不是看谁先写，而是看谁优先级高。"
+    "prompt": "画一张流程图：默认配置文件 -> Profile 配置 -> 外部配置 -> 环境变量 -> 系统和命令行 -> Actuator 排查。突出同名 key 覆盖和来源定位。",
+    "takeaway": "配置优先级不是背表，而是能找出值从哪里来。"
   },
   "controller-restcontroller": {
     "type": "compare",
-    "title": "@Controller 和 @RestController 有什么区别：差异一眼看懂",
-    "summary": "@RestController 等价于 @Controller 加 @ResponseBody，默认返回 JSON 等响应体。",
+    "title": "@Controller 与 @RestController：返回模型对比",
+    "summary": "@Controller 常用于页面和视图，@RestController 等价于 @Controller 加 @ResponseBody，默认返回响应体。",
     "nodes": [
       {
-        "label": "@Controller…",
-        "detail": "@RestController 等价于 @Controller 加 @ResponseBody，默认返回 JSON 等响应体。",
+        "label": "@Controller",
+        "detail": "返回视图名或配合 ResponseBody 返回数据",
         "tone": "main"
       },
       {
-        "label": "如果要返回 JSON",
-        "detail": "把机制拆成可解释的链路",
+        "label": "视图解析",
+        "detail": "字符串可能被当作模板视图名",
         "tone": "safe"
       },
       {
-        "label": "@RestControl…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "@ResponseBody",
+        "detail": "把返回值写入 HTTP 响应体",
         "tone": "safe"
       },
       {
-        "label": "现在前后端分离项目里",
-        "detail": "结合项目给出处理动作",
+        "label": "@RestController",
+        "detail": "类级别默认所有方法返回响应体",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "消息转换器",
+        "detail": "JSON/XML 序列化依赖 HttpMessageConverter",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "接口实践",
+        "detail": "REST API 常配 ResponseEntity 和统一异常",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：@Controller… -> 如果要返回 JSON -> @RestControl… -> 现在前后端分离项目里 -> 验证闭环 -> 面试收束。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "Controller 找页面，RestController 给数据。"
+    "prompt": "画一张对比图：@Controller -> 视图解析 -> @ResponseBody -> @RestController -> 消息转换器 -> 接口实践。突出返回视图和返回响应体的区别。",
+    "takeaway": "@RestController 是接口默认写响应体，不是更高级的 Controller。"
   },
   "factorybean": {
     "type": "structure",
-    "title": "FactoryBean 是什么：结构一眼看懂",
-    "summary": "FactoryBean 是一种特殊 Bean，它本身是工厂，容器获取它时通常返回工厂生产的对象。",
+    "title": "FactoryBean：工厂本身和产品 Bean",
+    "summary": "FactoryBean 让一个 Bean 负责创建另一个复杂对象，常用于代理、连接工厂和框架集成。",
     "nodes": [
       {
-        "label": "问题背景",
-        "detail": "FactoryBean 是一种特殊 Bean，它本身是工厂，容器获取它时通常返回工厂生产的对象。",
+        "label": "FactoryBean 本身",
+        "detail": "实现 getObject、getObjectType、isSingleton",
         "tone": "main"
       },
       {
-        "label": "FactoryBean…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "getObject",
+        "detail": "返回真正暴露给容器的产品对象",
         "tone": "safe"
       },
       {
-        "label": "核心机制",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "getObjectType",
+        "detail": "告诉容器产品类型便于按类型查找",
         "tone": "safe"
       },
       {
-        "label": "关键风险",
-        "detail": "结合项目给出处理动作",
-        "tone": "warn"
-      },
-      {
-        "label": "工程处理",
-        "detail": "用日志、指标或测试验证",
+        "label": "isSingleton",
+        "detail": "声明产品对象是否单例",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "&beanName",
+        "detail": "加 & 获取工厂本身而不是产品",
+        "tone": "safe"
+      },
+      {
+        "label": "典型场景",
+        "detail": "MyBatis Mapper、代理工厂、复杂客户端",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：问题背景 -> FactoryBean… -> 核心机制 -> 关键风险 -> 工程处理 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "FactoryBean 是容器里的造物机器。"
+    "prompt": "画一张结构图：FactoryBean 本身 -> getObject -> getObjectType -> isSingleton -> &beanName -> 典型场景。突出工厂 Bean 和产品 Bean 的区别。",
+    "takeaway": "FactoryBean 是生产 Bean 的 Bean。"
   },
   "filter-interceptor-aop": {
     "type": "compare",
-    "title": "Filter、Interceptor、AOP 有什么区别：差异一眼看懂",
-    "summary": "从所属体系、执行位置和适用场景区分过滤器、拦截器和切面。",
+    "title": "Filter、Interceptor、AOP：拦截位置对比",
+    "summary": "Filter 在 Servlet 容器层，Interceptor 在 Spring MVC Handler 链路，AOP 在 Spring Bean 方法调用边界。",
     "nodes": [
       {
-        "label": "Filter",
-        "detail": "Servlet 层最靠前，和容器规范绑定",
+        "label": "Filter 层",
+        "detail": "进入 DispatcherServlet 前后，适合编码、鉴权粗过滤、跨域",
         "tone": "main"
       },
       {
-        "label": "Interceptor",
-        "detail": "Spring MVC 层，围绕 Handler 执行",
+        "label": "Servlet 容器",
+        "detail": "由 Web 容器管理，可拦静态资源和非 Spring 请求",
         "tone": "safe"
       },
       {
-        "label": "AOP",
-        "detail": "更通用的代理增强，不局限于 Web 请求",
+        "label": "Interceptor 层",
+        "detail": "HandlerMapping 找到处理器后进入 Spring MVC 回调",
         "tone": "safe"
       },
       {
-        "label": "作用位置",
-        "detail": "越靠前越偏协议，越靠后越偏业务",
+        "label": "Controller 前后",
+        "detail": "preHandle、postHandle、afterCompletion 处理请求链",
         "tone": "safe"
       },
       {
-        "label": "典型用途",
-        "detail": "编码、鉴权、日志、事务、监控各有分工",
+        "label": "AOP 代理层",
+        "detail": "拦截 Spring Bean 方法，适合事务、日志、权限切面",
         "tone": "safe"
       },
       {
-        "label": "选择原则",
-        "detail": "按处理层级选，不要把三者混成同一件事",
+        "label": "按边界选择",
+        "detail": "看是否需要 HTTP 原始信息、MVC 上下文或方法语义",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：Filter -> Interceptor -> AOP -> 作用位置 -> 典型用途 -> 选择原则。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "Filter 看大门，Interceptor 看 Controller，AOP 看方法。"
+    "prompt": "画一张对比图：Filter 层 -> Servlet 容器 -> Interceptor 层 -> Controller 前后 -> AOP 代理层 -> 按边界选择。突出三者所在层次、管理者和适用场景差异。",
+    "takeaway": "三者不是谁替代谁，而是拦截边界不同。"
   },
   "filter-interceptor-order": {
-    "type": "structure",
-    "title": "多个 Filter 和 Interceptor 的执行顺序怎么理解：流程一眼看懂",
-    "summary": "Filter 发生在 Servlet 容器层，Interceptor 发生在 Spring MVC 层，多个组件按注册顺序和配置顺序形成调用链。",
+    "type": "sequence",
+    "title": "Filter 与 Interceptor：请求执行顺序",
+    "summary": "请求先进入 Filter 链，再到 DispatcherServlet 和 Interceptor，返回时按相反方向收尾。",
     "nodes": [
       {
-        "label": "请求进入 Servlet…",
-        "detail": "Filter 发生在 Servlet 容器层，Interceptor 发生在 Spring MVC 层，多个组件按注册顺序和配置顺序形成调用链。",
+        "label": "进入 Filter1",
+        "detail": "按 order 或注册顺序执行 doFilter 前置逻辑",
         "tone": "main"
       },
       {
-        "label": "先经过 Filter 链",
-        "detail": "把机制拆成可解释的链路",
+        "label": "进入 Filter2",
+        "detail": "多个 Filter 像洋葱一样嵌套",
         "tone": "safe"
       },
       {
-        "label": "到达 Dispatche…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "DispatcherServlet",
+        "detail": "完成 HandlerMapping 和 HandlerAdapter 调度",
         "tone": "safe"
       },
       {
-        "label": "Spring MVC 执…",
-        "detail": "结合项目给出处理动作",
+        "label": "preHandle",
+        "detail": "多个 Interceptor 按注册顺序前置执行",
         "tone": "safe"
       },
       {
-        "label": "调用 Controlle…",
-        "detail": "用日志、指标或测试验证",
+        "label": "Controller 执行",
+        "detail": "HandlerAdapter 调用控制器方法",
         "tone": "safe"
       },
       {
-        "label": "执行 postHandl…",
-        "detail": "最后补一句取舍和边界",
+        "label": "返回和清理",
+        "detail": "postHandle、afterCompletion、Filter 后置依次收尾",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：请求进入 Servlet… -> 先经过 Filter 链 -> 到达 Dispatche… -> Spring MVC 执… -> 调用 Controlle… -> 执行 postHandl…。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Filter 是小区门，Interceptor 是办公楼前台。"
+    "prompt": "画一张时序图：进入 Filter1 -> 进入 Filter2 -> DispatcherServlet -> preHandle -> Controller 执行 -> 返回和清理。标出返回阶段 Filter 后置、postHandle、afterCompletion 的顺序。",
+    "takeaway": "请求进来先 Filter 后 Interceptor，返回时外层 Filter 最后收尾。"
   },
   "spring-boot-actuator": {
     "type": "structure",
-    "title": "Spring Boot Actuator 有什么用：结构一眼看懂",
-    "summary": "Actuator 提供健康检查、指标、环境信息等运维端点，方便服务监控和诊断。",
+    "title": "Spring Boot Actuator：端点、指标与安全边界",
+    "summary": "Actuator 是生产观测入口，必须同时讲健康检查、Micrometer 指标、端点暴露和敏感信息保护。",
     "nodes": [
       {
-        "label": "健康检查",
-        "detail": "Actuator 提供健康检查、指标、环境信息等运维端点，方便服务监控和诊断。",
+        "label": "Health 端点",
+        "detail": "readiness/liveness 判断服务是否可接流量",
         "tone": "main"
       },
       {
-        "label": "指标监控",
-        "detail": "把机制拆成可解释的链路",
+        "label": "Metrics 指标",
+        "detail": "Micrometer 暴露 JVM、HTTP、线程池和业务指标",
         "tone": "safe"
       },
       {
-        "label": "配置信息",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "Prometheus 抓取",
+        "detail": "/actuator/prometheus 对接监控系统",
         "tone": "safe"
       },
       {
-        "label": "应用信息",
-        "detail": "结合项目给出处理动作",
+        "label": "Env 和 Config",
+        "detail": "排查属性来源，但包含敏感信息风险",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "暴露控制",
+        "detail": "management.endpoints.web.exposure.include 精准开放",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "安全隔离",
+        "detail": "鉴权、内网、脱敏、禁止公开敏感端点",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：健康检查 -> 指标监控 -> 配置信息 -> 应用信息 -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Actuator 是服务仪表盘，看状态，不做业务。"
+    "prompt": "画一张结构图：Health 端点 -> Metrics 指标 -> Prometheus 抓取 -> Env 和 Config -> 暴露控制 -> 安全隔离。突出 Actuator 既是观测入口也是安全风险点。",
+    "takeaway": "Actuator 能帮你看见应用，也可能泄露应用。"
   },
   "spring-aop": {
-    "type": "structure",
-    "title": "Spring AOP 是什么？适合解决什么问题：结构一眼看懂",
-    "summary": "从横切逻辑和代理机制理解 AOP，而不是只背面向切面。",
+    "type": "flow",
+    "title": "Spring AOP：代理增强调用链",
+    "summary": "Spring AOP 通过代理对象在方法调用前后织入通知，适合横切关注点但受代理边界限制。",
     "nodes": [
       {
-        "label": "横切关注点",
-        "detail": "日志、事务、权限、监控等通用逻辑",
+        "label": "业务调用代理",
+        "detail": "调用方拿到的是 Spring 生成的代理对象",
         "tone": "main"
       },
       {
-        "label": "切点",
-        "detail": "定义哪些方法需要增强",
+        "label": "匹配切点",
+        "detail": "Pointcut 判断类、方法、注解或包路径",
         "tone": "safe"
       },
       {
-        "label": "通知",
-        "detail": "定义增强逻辑何时执行",
+        "label": "执行前置通知",
+        "detail": "鉴权、日志、参数校验等前置逻辑",
         "tone": "safe"
       },
       {
-        "label": "代理对象",
-        "detail": "调用先进入代理再到目标方法",
+        "label": "调用目标方法",
+        "detail": "代理委托真实 Bean 方法执行",
         "tone": "safe"
       },
       {
-        "label": "适用场景",
-        "detail": "无侵入地复用通用能力",
-        "tone": "safe"
-      },
-      {
-        "label": "失效边界",
-        "detail": "内部调用、final、非代理对象等",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：横切关注点 -> 切点 -> 通知 -> 代理对象 -> 适用场景 -> 失效边界。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "AOP 就是给业务方法套流程外壳：进门检查，出门记录，出错兜底。"
-  },
-  "spring-async": {
-    "type": "structure",
-    "title": "@Async 异步方法为什么可能不生效：结构一眼看懂",
-    "summary": "@Async 依赖 Spring 代理，自调用、未开启异步、方法不可代理、线程池配置不当都可能导致不生效。",
-    "nodes": [
-      {
-        "label": "启动类或配置类开启 @E…",
-        "detail": "@Async 依赖 Spring 代理，自调用、未开启异步、方法不可代理、线程池配置不当都可能导致不生效。",
-        "tone": "main"
-      },
-      {
-        "label": "异步方法所在类要被 Sp…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "外部通过代理对象调用方法",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "避免同类内部自调用",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "配置合理线程池",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：启动类或配置类开启 @E… -> 异步方法所在类要被 Sp… -> 外部通过代理对象调用方法 -> 避免同类内部自调用 -> 配置合理线程池 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "异步要走代理，自己喊自己没用。"
-  },
-  "spring-event": {
-    "type": "structure",
-    "title": "Spring 事件机制是什么？适合什么场景：结构一眼看懂",
-    "summary": "Spring 事件机制用于发布和监听应用内事件，适合做解耦，但不适合替代可靠消息队列。",
-    "nodes": [
-      {
-        "label": "问题背景",
-        "detail": "Spring 事件机制用于发布和监听应用内事件，适合做解耦，但不适合替代可靠消息队列。",
-        "tone": "main"
-      },
-      {
-        "label": "Spring 事件机制用…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "核心机制",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "关键风险",
-        "detail": "结合项目给出处理动作",
+        "label": "异常或返回通知",
+        "detail": "afterReturning、afterThrowing、around 收尾",
         "tone": "warn"
       },
       {
-        "label": "工程处理",
-        "detail": "用日志、指标或测试验证",
+        "label": "代理边界限制",
+        "detail": "自调用、final/private、非 Spring Bean 可能失效",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "画一张流程图：业务调用代理 -> 匹配切点 -> 执行前置通知 -> 调用目标方法 -> 异常或返回通知 -> 代理边界限制。突出代理对象和目标对象的区别。",
+    "takeaway": "AOP 的关键不是切面语法，而是调用必须经过代理。"
+  },
+  "spring-async": {
+    "type": "flow",
+    "title": "@Async：代理、线程池与上下文边界",
+    "summary": "@Async 依赖代理调用和 AsyncTaskExecutor，异步线程不会自动继承事务、安全和 MDC 上下文。",
+    "nodes": [
+      {
+        "label": "开启异步支持",
+        "detail": "@EnableAsync 注册异步后处理器",
+        "tone": "main"
+      },
+      {
+        "label": "调用代理对象",
+        "detail": "外部 Bean 调用才会进入代理增强",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "提交线程池",
+        "detail": "AsyncTaskExecutor 接收任务并排队执行",
+        "tone": "safe"
+      },
+      {
+        "label": "异步方法执行",
+        "detail": "在新线程处理业务逻辑",
+        "tone": "safe"
+      },
+      {
+        "label": "返回 Future",
+        "detail": "Future、CompletableFuture 承载异步结果",
+        "tone": "safe"
+      },
+      {
+        "label": "上下文和异常",
+        "detail": "事务、MDC、安全上下文和 void 异常要单独处理",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "画一张流程图：开启异步支持 -> 调用代理对象 -> 提交线程池 -> 异步方法执行 -> 返回 Future -> 上下文和异常。突出不生效原因和生产线程池治理。",
+    "takeaway": "@Async 不是开新线程这么简单，核心是代理和线程池边界。"
+  },
+  "spring-event": {
+    "type": "sequence",
+    "title": "Spring 事件：发布、监听与边界",
+    "summary": "Spring 事件适合进程内解耦，默认同步执行，可结合异步或事务事件处理不同阶段。",
+    "nodes": [
+      {
+        "label": "发布业务事件",
+        "detail": "ApplicationEventPublisher 发布对象或事件",
+        "tone": "main"
+      },
+      {
+        "label": "查找监听器",
+        "detail": "ApplicationEventMulticaster 匹配 @EventListener",
+        "tone": "safe"
+      },
+      {
+        "label": "默认同步执行",
+        "detail": "监听器在发布线程内被调用",
+        "tone": "safe"
+      },
+      {
+        "label": "可切换异步",
+        "detail": "@Async 或自定义 multicaster executor",
+        "tone": "safe"
+      },
+      {
+        "label": "异常传播边界",
+        "detail": "同步异常可能影响发布方，异步异常需单独处理",
+        "tone": "warn"
+      },
+      {
+        "label": "可靠性边界",
+        "detail": "进程内解耦不能替代 MQ 的持久化和重放",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：问题背景 -> Spring 事件机制用… -> 核心机制 -> 关键风险 -> 工程处理 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Spring 事件是应用内广播，MQ 是跨系统物流。"
+    "prompt": "画一张时序图：发布业务事件 -> 查找监听器 -> 默认同步执行 -> 可切换异步 -> 异常传播边界 -> 可靠性边界。突出 Spring 事件和 MQ 的区别。",
+    "takeaway": "Spring 事件是进程内解耦，不是可靠消息队列。"
   },
   "spring-profiles": {
     "type": "structure",
-    "title": "Spring Profile 有什么用：结构一眼看懂",
-    "summary": "Profile 用于区分不同环境的配置和 Bean，让 dev、test、prod 可以使用不同配置。",
+    "title": "Spring Profile：环境激活与配置覆盖",
+    "summary": "Profile 用来按环境启用 Bean 和配置文件，但要注意多 profile 合并、默认 profile 和配置优先级。",
     "nodes": [
       {
-        "label": "问题背景",
-        "detail": "Profile 用于区分不同环境的配置和 Bean，让 dev、test、prod 可以使用不同配置。",
+        "label": "定义环境差异",
+        "detail": "dev、test、prod 或 region、tenant 等维度",
         "tone": "main"
       },
       {
-        "label": "Profile 用于区分…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "激活 profile",
+        "detail": "spring.profiles.active、环境变量、启动参数",
         "tone": "safe"
       },
       {
-        "label": "核心机制",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "Profile 配置文件",
+        "detail": "application-dev.yml 覆盖基础配置",
         "tone": "safe"
       },
       {
-        "label": "关键风险",
-        "detail": "结合项目给出处理动作",
-        "tone": "warn"
-      },
-      {
-        "label": "工程处理",
-        "detail": "用日志、指标或测试验证",
+        "label": "条件化 Bean",
+        "detail": "@Profile 控制 Bean 是否注册",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "多 profile 合并",
+        "detail": "顺序和覆盖决定最终属性值",
+        "tone": "safe"
+      },
+      {
+        "label": "排查来源",
+        "detail": "Actuator env、启动日志和配置报告",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：问题背景 -> Profile 用于区分… -> 核心机制 -> 关键风险 -> 工程处理 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Profile 是环境工作服，在哪个环境穿哪套。"
+    "prompt": "画一张结构图：定义环境差异 -> 激活 profile -> Profile 配置文件 -> 条件化 Bean -> 多 profile 合并 -> 排查来源。突出配置覆盖和 Bean 注册差异。",
+    "takeaway": "Profile 管环境差异，但最终值要看激活顺序和属性来源。"
   },
   "spring-security-authentication-authorization": {
-    "type": "flow",
-    "title": "Spring Security 认证和授权有什么区别：差异一眼看懂",
-    "summary": "把你是谁和你能做什么分清楚，理解安全过滤链的基本位置。",
+    "type": "sequence",
+    "title": "Spring Security：认证与授权链路",
+    "summary": "认证确认你是谁，授权判断你能做什么，过滤器链负责在进入业务前构建上下文并做访问决策。",
     "nodes": [
       {
-        "label": "认证",
-        "detail": "确认你是谁",
+        "label": "进入过滤器链",
+        "detail": "SecurityFilterChain 在 Controller 前拦截请求",
         "tone": "main"
       },
       {
-        "label": "凭证校验",
-        "detail": "用户名密码、token、短信、OAuth2",
+        "label": "提取凭证",
+        "detail": "用户名密码、Session、JWT 或其他 token",
         "tone": "safe"
       },
       {
-        "label": "SecurityContext",
-        "detail": "保存当前登录主体",
+        "label": "认证管理器",
+        "detail": "AuthenticationManager 委托 Provider 校验",
         "tone": "safe"
       },
       {
-        "label": "授权",
-        "detail": "判断你能访问什么",
+        "label": "保存上下文",
+        "detail": "SecurityContextHolder 或 Repository 保存认证结果",
         "tone": "safe"
       },
       {
-        "label": "权限规则",
-        "detail": "角色、权限、资源、表达式",
+        "label": "授权决策",
+        "detail": "URL 规则、方法注解、权限表达式判断",
         "tone": "safe"
       },
       {
-        "label": "拒绝或放行",
-        "detail": "未登录 401，无权限 403",
-        "tone": "warn"
+        "label": "返回结果",
+        "detail": "未认证 401，权限不足 403，成功放行业务",
+        "tone": "safe"
       }
     ],
-    "prompt": "站内图解：认证 -> 凭证校验 -> SecurityContext -> 授权 -> 权限规则 -> 拒绝或放行。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "认证问“你是谁”，授权问“你能去哪”。"
+    "prompt": "画一张时序图：进入过滤器链 -> 提取凭证 -> 认证管理器 -> 保存上下文 -> 授权决策 -> 返回结果。突出认证和授权的区别以及 401/403。",
+    "takeaway": "认证是识别身份，授权是做访问决策。"
   },
   "spring-security-jwt": {
-    "type": "structure",
-    "title": "Spring Security 里 JWT 登录大致怎么做：交互一眼看懂",
-    "summary": "JWT 登录通常在认证成功后签发 Token，请求进入过滤器校验 Token 并写入安全上下文。",
+    "type": "sequence",
+    "title": "Spring Security JWT：登录到鉴权链路",
+    "summary": "JWT 登录先完成认证并签发令牌，后续请求由过滤器校验令牌、构建 Authentication 并进入授权判断。",
     "nodes": [
       {
-        "label": "用户提交用户名密码",
-        "detail": "JWT 登录通常在认证成功后签发 Token，请求进入过滤器校验 Token 并写入安全上下文。",
+        "label": "用户名密码登录",
+        "detail": "AuthenticationManager 校验账号、密码和用户状态",
         "tone": "main"
       },
       {
-        "label": "Spring Secur…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "签发访问令牌",
+        "detail": "生成 access token，设置过期时间和签名算法",
         "tone": "safe"
       },
       {
-        "label": "服务端生成 JWT 返回…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "携带 Authorization",
+        "detail": "前端后续请求放入 Bearer token",
         "tone": "safe"
       },
       {
-        "label": "前端后续请求携带 Tok…",
-        "detail": "结合项目给出处理动作",
+        "label": "JWT 过滤器解析",
+        "detail": "校验签名、过期、issuer、用户版本和黑名单",
         "tone": "safe"
       },
       {
-        "label": "自定义过滤器解析 Tok…",
-        "detail": "用日志、指标或测试验证",
+        "label": "写入安全上下文",
+        "detail": "构建 Authentication 放入 SecurityContext",
         "tone": "safe"
       },
       {
-        "label": "校验签名、过期时间和用户…",
-        "detail": "最后补一句取舍和边界",
+        "label": "授权和刷新",
+        "detail": "进入 URL/方法授权，配合 refresh token 和密钥轮换",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：用户提交用户名密码 -> Spring Secur… -> 服务端生成 JWT 返回… -> 前端后续请求携带 Tok… -> 自定义过滤器解析 Tok… -> 校验签名、过期时间和用户…。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "JWT 是签名通行证，过滤器是门卫。"
+    "prompt": "画一张时序图：用户名密码登录 -> 签发访问令牌 -> 携带 Authorization -> JWT 过滤器解析 -> 写入安全上下文 -> 授权和刷新。突出无状态认证、401/403 和 token 生命周期。",
+    "takeaway": "JWT 是认证载体，SecurityContext 才是后续授权的依据。"
   },
   "spring-validation": {
-    "type": "structure",
-    "title": "Spring 参数校验怎么做：流程一眼看懂",
-    "summary": "Spring 参数校验常用 Bean Validation 注解配合 @Valid 或 @Validated，统一处理参数错误。",
+    "type": "flow",
+    "title": "Spring Validation：DTO 到统一错误响应",
+    "summary": "参数校验通过 Bean Validation 注解、Valid/Validated、分组、嵌套校验和全局异常处理形成接口防线。",
     "nodes": [
       {
-        "label": "在 DTO 字段上加校验…",
-        "detail": "Spring 参数校验常用 Bean Validation 注解配合 @Valid 或 @Validated，统一处理参数错误。",
+        "label": "DTO 声明约束",
+        "detail": "NotNull、NotBlank、Size、Pattern 等字段规则",
         "tone": "main"
       },
       {
-        "label": "Controller 方…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "触发校验",
+        "detail": "@Valid 或 @Validated 放在参数或类上",
         "tone": "safe"
       },
       {
-        "label": "使用全局异常处理统一返回…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "分组和嵌套",
+        "detail": "新增/修改分组，嵌套对象和集合也要触发",
+        "tone": "safe"
+      },
+      {
+        "label": "方法级校验",
+        "detail": "Validated 类上启用方法参数和返回值校验",
+        "tone": "safe"
+      },
+      {
+        "label": "BindingResult",
+        "detail": "可手动接收错误，避免直接抛异常",
+        "tone": "safe"
+      },
+      {
+        "label": "统一异常响应",
+        "detail": "ControllerAdvice 返回字段、错误码和可读提示",
         "tone": "warn"
-      },
-      {
-        "label": "对分组场景使用 vali…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
       }
     ],
-    "prompt": "站内图解：在 DTO 字段上加校验… -> Controller 方… -> 使用全局异常处理统一返回… -> 对分组场景使用 vali… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "参数先进安检，再进业务。"
+    "prompt": "画一张流程图：DTO 声明约束 -> 触发校验 -> 分组和嵌套 -> 方法级校验 -> BindingResult -> 统一异常响应。突出 400 响应和复杂业务规则边界。",
+    "takeaway": "校验要前置，但复杂业务规则不能全塞进注解。"
   },
   "spring-boot-starter": {
     "type": "structure",
-    "title": "Spring Boot Starter 是什么：结构一眼看懂",
-    "summary": "理解 starter 是依赖聚合和自动配置入口，不是魔法。",
+    "title": "Spring Boot Starter：依赖和自动配置组合",
+    "summary": "Starter 通常负责依赖聚合，真正的默认 Bean、属性绑定和条件装配在 autoconfigure 中完成。",
     "nodes": [
       {
-        "label": "依赖打包",
-        "detail": "把一类能力常用依赖聚合起来",
+        "label": "Starter 依赖",
+        "detail": "业务方引入一个 starter 获得一组能力",
         "tone": "main"
       },
       {
-        "label": "自动配置入口",
-        "detail": "starter 往往配合自动配置一起工作",
+        "label": "传递功能库",
+        "detail": "带入核心 SDK、客户端或框架依赖",
         "tone": "safe"
       },
       {
-        "label": "开箱即用",
-        "detail": "引入后少写样板配置",
+        "label": "Autoconfigure",
+        "detail": "自动配置模块声明默认配置类",
         "tone": "safe"
       },
       {
-        "label": "约定组合",
-        "detail": "统一版本和推荐组件搭配",
+        "label": "条件装配",
+        "detail": "类存在、配置开启、用户未定义 Bean 才生效",
         "tone": "safe"
       },
       {
-        "label": "自定义 starter",
-        "detail": "可为团队沉淀内部能力包",
+        "label": "属性绑定",
+        "detail": "ConfigurationProperties 暴露可调参数",
         "tone": "safe"
       },
       {
-        "label": "本质",
-        "detail": "它是能力装配入口，不是魔法黑盒",
+        "label": "开箱和覆盖",
+        "detail": "默认可用，同时允许业务自定义 Bean",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：依赖打包 -> 自动配置入口 -> 开箱即用 -> 约定组合 -> 自定义 starter -> 本质。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "starter 是套餐，自动配置是厨师按条件上菜。"
+    "prompt": "画一张结构图：Starter 依赖 -> 传递功能库 -> Autoconfigure -> 条件装配 -> 属性绑定 -> 开箱和覆盖。突出 starter 与 autoconfigure 的分工。",
+    "takeaway": "Starter 是入口包装，自动配置才是开箱即用的核心。"
   },
   "spring-transaction-isolation": {
     "type": "structure",
-    "title": "Spring 事务隔离级别怎么配置：结构一眼看懂",
-    "summary": "Spring 事务隔离级别本质还是数据库隔离级别，配置在 @Transactional 的 isolation 属性上。",
+    "title": "Spring 事务隔离：声明到数据库实现",
+    "summary": "Spring 的 isolation 属性会传给数据库连接，真正语义由数据库隔离级别、MVCC 和锁机制决定。",
     "nodes": [
       {
-        "label": "DEFAULT",
-        "detail": "Spring 事务隔离级别本质还是数据库隔离级别，配置在 @Transactional 的 isolation 属性上。",
+        "label": "Isolation DEFAULT",
+        "detail": "使用数据库默认隔离级别",
         "tone": "main"
       },
       {
-        "label": "READ_UNCOMMI…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "READ COMMITTED",
+        "detail": "常见于 Oracle/PostgreSQL，避免脏读",
         "tone": "safe"
       },
       {
-        "label": "READ_COMMITT…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "REPEATABLE_R…",
-        "detail": "结合项目给出处理动作",
+        "label": "REPEATABLE READ",
+        "detail": "MySQL InnoDB 默认常见级别，结合 MVCC",
         "tone": "safe"
       },
       {
         "label": "SERIALIZABLE",
-        "detail": "用日志、指标或测试验证",
+        "detail": "隔离最强，并发代价最高",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "数据库实现",
+        "detail": "MVCC、Next-Key Lock、快照读和当前读差异",
+        "tone": "safe"
+      },
+      {
+        "label": "性能取舍",
+        "detail": "隔离越强不一定越好，要按业务一致性选择",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：DEFAULT -> READ_UNCOMMI… -> READ_COMMITT… -> REPEATABLE_R… -> SERIALIZABLE -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Spring 负责下单，数据库负责真正隔离。"
+    "prompt": "画一张结构图：Isolation DEFAULT -> READ COMMITTED -> REPEATABLE READ -> SERIALIZABLE -> 数据库实现 -> 性能取舍。突出 Spring 声明和数据库实现的关系。",
+    "takeaway": "隔离级别写在 Spring，真正执行在数据库。"
   },
   "spring-transaction-propagation": {
     "type": "compare",
-    "title": "Spring 事务传播行为怎么理解：结构一眼看懂",
-    "summary": "掌握 REQUIRED、REQUIRES_NEW、NESTED 等常见传播行为的区别。",
+    "title": "Spring 事务传播：加入、创建和挂起",
+    "summary": "传播行为决定方法进入时如何处理已有事务，重点是 REQUIRED、REQUIRES_NEW、NESTED 及异常传播边界。",
     "nodes": [
       {
         "label": "REQUIRED",
-        "detail": "有事务就加入，没有就新建",
+        "detail": "有事务就加入，没有就新建，默认最常用",
         "tone": "main"
       },
       {
         "label": "REQUIRES_NEW",
-        "detail": "挂起外层事务，自己独立开新事务",
+        "detail": "挂起外部事务，自己开启独立新事务",
         "tone": "safe"
       },
       {
         "label": "NESTED",
-        "detail": "在当前事务里建保存点做局部回滚",
+        "detail": "使用 savepoint 嵌套回滚，依赖事务管理器支持",
         "tone": "safe"
       },
       {
-        "label": "SUPPORTS 等",
-        "detail": "按是否存在事务决定是否跟随",
+        "label": "SUPPORTS",
+        "detail": "有事务就加入，没有就非事务执行",
         "tone": "safe"
       },
       {
-        "label": "传播本质",
-        "detail": "解决方法嵌套调用时事务边界怎么传递",
+        "label": "MANDATORY 和 NEVER",
+        "detail": "强制必须有事务或必须没有事务",
         "tone": "safe"
       },
       {
-        "label": "易错点",
-        "detail": "自调用、异常捕获和代理边界影响生效",
+        "label": "异常传播",
+        "detail": "内外事务回滚关系取决于传播、异常和捕获方式",
         "tone": "warn"
       }
     ],
-    "prompt": "站内图解：REQUIRED -> REQUIRES_NEW -> NESTED -> SUPPORTS 等 -> 传播本质 -> 易错点。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "传播行为就是事务报销单：同一张、另开张、开子单。"
+    "prompt": "画一张对比图：REQUIRED -> REQUIRES_NEW -> NESTED -> SUPPORTS -> MANDATORY 和 NEVER -> 异常传播。突出挂起、新事务和 savepoint。",
+    "takeaway": "传播行为不是事务强弱，而是进入方法时怎么处理已有事务。"
   },
   "spring-transaction-readonly": {
     "type": "structure",
-    "title": "Spring 事务 readOnly 有什么用：结构一眼看懂",
-    "summary": "readOnly 表示只读事务意图，可帮助框架和数据库做优化，但不是绝对禁止写入的安全边界。",
+    "title": "readOnly 事务：语义、优化和误区",
+    "summary": "readOnly 是只读意图提示，可影响 ORM、连接和读写路由，但不是所有场景都强制禁止写入。",
     "nodes": [
       {
-        "label": "表达方法语义",
-        "detail": "readOnly 表示只读事务意图，可帮助框架和数据库做优化，但不是绝对禁止写入的安全边界。",
+        "label": "声明只读意图",
+        "detail": "@Transactional(readOnly = true) 表达查询事务",
         "tone": "main"
       },
       {
-        "label": "某些 ORM 可以减少脏…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "ORM 优化",
+        "detail": "Hibernate 可能调整 flush mode，减少脏检查",
         "tone": "safe"
       },
       {
-        "label": "数据库或连接池可能根据只…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "数据库连接提示",
+        "detail": "部分驱动可设置 read only 或 START TRANSACTION READ ONLY",
         "tone": "safe"
       },
       {
-        "label": "有些读写分离场景会根据它…",
-        "detail": "结合项目给出处理动作",
+        "label": "读写分离路由",
+        "detail": "框架可能据此路由到只读库",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "不是绝对禁写",
+        "detail": "是否禁止写取决于数据库、驱动和事务管理器",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "监控和误路由",
+        "detail": "关注只读库写入异常、延迟和事务语义",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：表达方法语义 -> 某些 ORM 可以减少脏… -> 数据库或连接池可能根据只… -> 有些读写分离场景会根据它… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "readOnly 是只读提示牌，不是防盗锁。"
+    "prompt": "画一张结构图：声明只读意图 -> ORM 优化 -> 数据库连接提示 -> 读写分离路由 -> 不是绝对禁写 -> 监控和误路由。突出 readOnly 的提示语义和边界。",
+    "takeaway": "readOnly 是优化和路由信号，不是万能写保护。"
   },
   "spring-transaction-rollback-rules": {
-    "type": "structure",
-    "title": "Spring 事务回滚规则是什么：结构一眼看懂",
-    "summary": "Spring 默认对运行时异常和 Error 回滚，对受检异常不自动回滚，可通过 rollbackFor 配置。",
+    "type": "flow",
+    "title": "事务回滚规则：异常到 rollbackOnly",
+    "summary": "Spring 默认运行时异常和 Error 回滚，受检异常需 rollbackFor，异常被吞或异步抛出不会自动影响原事务。",
     "nodes": [
       {
-        "label": "问题背景",
-        "detail": "Spring 默认对运行时异常和 Error 回滚，对受检异常不自动回滚，可通过 rollbackFor 配置。",
+        "label": "方法进入事务",
+        "detail": "事务拦截器开启或加入事务",
         "tone": "main"
       },
       {
-        "label": "Spring 默认对运行…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "核心机制",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "关键风险",
-        "detail": "结合项目给出处理动作",
+        "label": "抛出运行时异常",
+        "detail": "RuntimeException/Error 默认触发回滚",
         "tone": "warn"
       },
       {
-        "label": "工程处理",
-        "detail": "用日志、指标或测试验证",
+        "label": "抛出受检异常",
+        "detail": "checked exception 默认不回滚",
+        "tone": "warn"
+      },
+      {
+        "label": "配置规则",
+        "detail": "rollbackFor 和 noRollbackFor 覆盖默认行为",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "异常被捕获",
+        "detail": "catch 后正常返回不会自动回滚",
+        "tone": "warn"
+      },
+      {
+        "label": "标记和异步边界",
+        "detail": "setRollbackOnly、异步线程异常要单独处理",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：问题背景 -> Spring 默认对运行… -> 核心机制 -> 关键风险 -> 工程处理 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "事务默认见运行时异常才撤单，受检异常要提前说明。"
+    "prompt": "画一张流程图：方法进入事务 -> 抛出运行时异常 -> 抛出受检异常 -> 配置规则 -> 异常被捕获 -> 标记和异步边界。突出默认规则和失效边界。",
+    "takeaway": "能不能回滚，取决于异常类型、是否抛出和回滚规则。"
   },
   "spring-mvc-webflux": {
     "type": "compare",
-    "title": "Spring MVC 和 WebFlux 有什么区别：差异一眼看懂",
-    "summary": "Spring MVC 是传统 Servlet 阻塞模型，WebFlux 是响应式非阻塞模型，适合高并发 IO 场景。",
+    "title": "Spring MVC vs WebFlux：线程模型与选型",
+    "summary": "MVC 采用传统请求线程模型，WebFlux 采用响应式非阻塞模型；选型取决于链路是否真正非阻塞。",
     "nodes": [
       {
-        "label": "编程模型",
-        "detail": "Spring MVC 是传统 Servlet 阻塞模型，WebFlux 是响应式非阻塞模型，适合高并发 IO 场景。",
+        "label": "MVC Servlet 模型",
+        "detail": "一个请求占用工作线程，代码同步直观",
         "tone": "main"
       },
       {
-        "label": "底层模型",
-        "detail": "把机制拆成可解释的链路",
+        "label": "WebFlux 事件循环",
+        "detail": "少量线程处理大量非阻塞 IO",
         "tone": "safe"
       },
       {
-        "label": "适用场景",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "Mono 和 Flux",
+        "detail": "0/1 个结果和 0/N 个结果的响应式类型",
         "tone": "safe"
       },
       {
-        "label": "学习成本",
-        "detail": "结合项目给出处理动作",
+        "label": "背压机制",
+        "detail": "Reactive Streams 控制生产和消费速度",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
+        "label": "阻塞调用风险",
+        "detail": "JDBC、阻塞 SDK、block 会削弱收益",
         "tone": "safe"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "选型取舍",
+        "detail": "CRUD 用 MVC 更稳，高并发 IO/流式链路考虑 WebFlux",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：编程模型 -> 底层模型 -> 适用场景 -> 学习成本 -> 验证闭环 -> 面试收束。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "MVC 等菜，WebFlux 下单后先去忙别的。"
+    "prompt": "画一张对比图：MVC Servlet 模型 -> WebFlux 事件循环 -> Mono 和 Flux -> 背压机制 -> 阻塞调用风险 -> 选型取舍。突出不是新技术一定更快。",
+    "takeaway": "WebFlux 适合非阻塞 IO 链路，不是 MVC 的全面替代。"
   },
   "bulkhead-isolation": {
     "type": "scenario",
@@ -14899,704 +14899,704 @@
   },
   "redis-acl": {
     "type": "structure",
-    "title": "Redis ACL 解决什么问题：结构一眼看懂",
-    "summary": "Redis ACL 用于按用户控制命令、key 范围和权限，提升访问安全性。",
+    "title": "Redis ACL：用户、命令和 key 范围",
+    "summary": "Redis ACL 用用户维度限制命令、key pattern、频道和密码，核心是最小权限。",
     "nodes": [
       {
-        "label": "可以创建多个用户并设置密…",
-        "detail": "Redis ACL 用于按用户控制命令、key 范围和权限，提升访问安全性。",
+        "label": "创建独立用户",
+        "detail": "为不同应用或角色拆分账号",
         "tone": "main"
       },
       {
-        "label": "可限制允许执行的命令类别…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "设置密码和状态",
+        "detail": "on/off 与多密码轮换",
         "tone": "safe"
       },
       {
-        "label": "可用 key patte…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "适合多应用共享 Redi…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：可以创建多个用户并设置密… -> 可限制允许执行的命令类别… -> 可用 key patte… -> 适合多应用共享 Redi… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Redis ACL 做最小权限：用户、命令、key 范围一起控。"
-  },
-  "redis-client-output-buffer": {
-    "type": "structure",
-    "title": "Redis 客户端输出缓冲区为什么会爆：结构一眼看懂",
-    "summary": "输出缓冲区爆通常是 Redis 生成响应速度超过客户端消费速度。",
-    "nodes": [
-      {
-        "label": "普通客户端执行大范围查询…",
-        "detail": "输出缓冲区爆通常是 Redis 生成响应速度超过客户端消费速度。",
-        "tone": "main"
-      },
-      {
-        "label": "慢网络或客户端处理慢会导…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "Pub/Sub 订阅者消…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "可通过 client l…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：普通客户端执行大范围查询… -> 慢网络或客户端处理慢会导… -> Pub/Sub 订阅者消… -> 可通过 client l… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "输出缓冲区问题往往在客户端慢，不只在 Redis 慢。"
-  },
-  "redis-cluster-failover": {
-    "type": "structure",
-    "title": "Redis Cluster 故障转移过程是什么：流程一眼看懂",
-    "summary": "Redis Cluster 通过节点通信、故障判定和从节点选举完成主从切换。",
-    "nodes": [
-      {
-        "label": "节点先从 PFAIL 主…",
-        "detail": "Redis Cluster 通过节点通信、故障判定和从节点选举完成主从切换。",
-        "tone": "main"
-      },
-      {
-        "label": "从节点根据复制偏移量、优…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "获多数主节点投票后",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "客户端会通过 MOVED…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：节点先从 PFAIL 主… -> 从节点根据复制偏移量、优… -> 获多数主节点投票后 -> 客户端会通过 MOVED… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Cluster failover 看三步：判故障，选从库，迁槽路由。"
-  },
-  "redis-quicklist-listpack": {
-    "type": "structure",
-    "title": "Redis quicklist/listpack 是什么：结构一眼看懂",
-    "summary": "quicklist 和 listpack 是 Redis 为节省内存和兼顾性能设计的紧凑结构。",
-    "nodes": [
-      {
-        "label": "quicklist 可以…",
-        "detail": "quicklist 和 listpack 是 Redis 为节省内存和兼顾性能设计的紧凑结构。",
-        "tone": "main"
-      },
-      {
-        "label": "listpack 是紧凑…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "小对象紧凑存储能省内存",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "面试重点是理解 Redi…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：quicklist 可以… -> listpack 是紧凑… -> 小对象紧凑存储能省内存 -> 面试重点是理解 Redi… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Redis 底层编码核心是省内存和控性能成本的折中。"
-  },
-  "redis-rate-limit-lua": {
-    "type": "structure",
-    "title": "Redis + Lua 限流怎么做：场景一眼看懂",
-    "summary": "Redis + Lua 常用于把限流判断和计数更新合成原子操作。",
-    "nodes": [
-      {
-        "label": "固定窗口可用 INCR…",
-        "detail": "Redis + Lua 常用于把限流判断和计数更新合成原子操作。",
-        "tone": "main"
-      },
-      {
-        "label": "滑动窗口可用 ZSET…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "Lua 脚本把检查、清理…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "高流量场景要评估脚本耗时…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：固定窗口可用 INCR… -> 滑动窗口可用 ZSET… -> Lua 脚本把检查、清理… -> 高流量场景要评估脚本耗时… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Lua 限流的价值是原子闭环：查、改、过期一次完成。"
-  },
-  "redis-scan-vs-keys": {
-    "type": "compare",
-    "title": "Redis SCAN 和 KEYS 有什么区别：差异一眼看懂",
-    "summary": "KEYS 会一次性遍历所有 key，SCAN 是渐进式游标遍历，更适合线上使用。",
-    "nodes": [
-      {
-        "label": "KEYS 是阻塞式全量匹…",
-        "detail": "KEYS 会一次性遍历所有 key，SCAN 是渐进式游标遍历，更适合线上使用。",
-        "tone": "main"
-      },
-      {
-        "label": "SCAN 每次返回一部分…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "SCAN 可能返回重复…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "删除大量 key 时可用…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：KEYS 是阻塞式全量匹… -> SCAN 每次返回一部分… -> SCAN 可能返回重复… -> 删除大量 key 时可用… -> 验证闭环 -> 面试收束。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "线上查 key 用 SCAN 分批，KEYS 只适合小数据或离线环境。"
-  },
-  "redis-stream-consumer-group": {
-    "type": "flow",
-    "title": "Redis Stream 消费组怎么理解：交互一眼看懂",
-    "summary": "Stream 消费组让多个消费者协同消费同一条消息流，并记录待确认消息。",
-    "nodes": [
-      {
-        "label": "XADD 写入消息",
-        "detail": "Stream 消费组让多个消费者协同消费同一条消息流，并记录待确认消息。",
-        "tone": "main"
-      },
-      {
-        "label": "每条消息被投递后会进入…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "消费者宕机后可通过 XP…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "要设计消息幂等",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：XADD 写入消息 -> 每条消息被投递后会进入… -> 消费者宕机后可通过 XP… -> 要设计消息幂等 -> 验证闭环 -> 面试收束。要求用中文短标签画成flow图，突出顺序、结构和风险落点。",
-    "takeaway": "Stream 消费组重点看 PEL：读了要确认，失败能转移。"
-  },
-  "redis-unlink-vs-del": {
-    "type": "compare",
-    "title": "Redis UNLINK 和 DEL 有什么区别：差异一眼看懂",
-    "summary": "DEL 同步释放 key，UNLINK 先解除引用再异步释放内存。",
-    "nodes": [
-      {
-        "label": "DEL 会同步删除并释放…",
-        "detail": "DEL 同步释放 key，UNLINK 先解除引用再异步释放内存。",
-        "tone": "main"
-      },
-      {
-        "label": "UNLINK 会把 ke…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "删除大 hash、lis…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "UNLINK 不代表内存…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：DEL 会同步删除并释放… -> UNLINK 会把 ke… -> 删除大 hash、lis… -> UNLINK 不代表内存… -> 验证闭环 -> 面试收束。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "大 key 删除优先 UNLINK，减少主线程释放压力。"
-  },
-  "spring-application-event-transaction": {
-    "type": "structure",
-    "title": "事务内发布 Spring 事件要注意什么：结构一眼看懂",
-    "summary": "事务内发布事件要区分立即执行和事务提交后执行。",
-    "nodes": [
-      {
-        "label": "ApplicationE…",
-        "detail": "事务内发布事件要区分立即执行和事务提交后执行。",
-        "tone": "main"
-      },
-      {
-        "label": "@Transaction…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "发送 MQ、短信、清缓存…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "异步事件还要处理线程池、…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：ApplicationE… -> @Transaction… -> 发送 MQ、短信、清缓存… -> 异步事件还要处理线程池、… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "事务事件看时机：立即监听不等提交，提交后用 TransactionalEventListener。"
-  },
-  "spring-boot-starter-custom": {
-    "type": "scenario",
-    "title": "自定义 Spring Boot Starter 怎么设计：流程一眼看懂",
-    "summary": "自定义 Starter 要提供依赖、自动配置、属性绑定和条件装配。",
-    "nodes": [
-      {
-        "label": "拆分 autoconfi…",
-        "detail": "自定义 Starter 要提供依赖、自动配置、属性绑定和条件装配。",
-        "tone": "main"
-      },
-      {
-        "label": "用 @Configura…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "用条件注解控制 Bean…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "提供合理默认值、元数据提…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：拆分 autoconfi… -> 用 @Configura… -> 用条件注解控制 Bean… -> 提供合理默认值、元数据提… -> 验证闭环 -> 面试收束。要求用中文短标签画成scenario图，突出顺序、结构和风险落点。",
-    "takeaway": "Starter 设计四件套：依赖、配置、条件装配、可覆盖。"
-  },
-  "spring-boot-startup-flow": {
-    "type": "structure",
-    "title": "Spring Boot 启动流程大致是什么：流程一眼看懂",
-    "summary": "Spring Boot 启动可以按环境准备、上下文创建、Bean 加载和应用运行四段理解。",
-    "nodes": [
-      {
-        "label": "SpringApplic…",
-        "detail": "Spring Boot 启动可以按环境准备、上下文创建、Bean 加载和应用运行四段理解。",
-        "tone": "main"
-      },
-      {
-        "label": "创建 Applicati…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "执行自动配置、Bean…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "Web 应用还会启动内嵌…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：SpringApplic… -> 创建 Applicati… -> 执行自动配置、Bean… -> Web 应用还会启动内嵌… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Boot 启动四段：环境、上下文、Bean、容器就绪。"
-  },
-  "spring-cache-annotation": {
-    "type": "structure",
-    "title": "Spring Cache 注解怎么用：结构一眼看懂",
-    "summary": "Spring Cache 用注解抽象缓存读写，但一致性和 key 设计仍要自己负责。",
-    "nodes": [
-      {
-        "label": "@Cacheable 命…",
-        "detail": "Spring Cache 用注解抽象缓存读写，但一致性和 key 设计仍要自己负责。",
-        "tone": "main"
-      },
-      {
-        "label": "@CachePut 通常…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "@CacheEvict…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "key 要包含影响结果的…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：@Cacheable 命… -> @CachePut 通常… -> @CacheEvict… -> key 要包含影响结果的… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "Cache 注解不是魔法：key、失效和自调用都要讲清楚。"
-  },
-  "spring-configuration-properties": {
-    "type": "structure",
-    "title": "@ConfigurationProperties 适合什么场景：结构一眼看懂",
-    "summary": "@ConfigurationProperties 适合把一组有层级的配置绑定成类型安全对象。",
-    "nodes": [
-      {
-        "label": "可以按 prefix 把…",
-        "detail": "@ConfigurationProperties 适合把一组有层级的配置绑定成类型安全对象。",
-        "tone": "main"
-      },
-      {
-        "label": "适合数据库、第三方服务、…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "可以结合校验注解在启动期…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "比大量 @Value 更…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：可以按 prefix 把… -> 适合数据库、第三方服务、… -> 可以结合校验注解在启动期… -> 比大量 @Value 更… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "成组配置用 ConfigurationProperties，零散值才考虑 Value。"
-  },
-  "spring-import-selector": {
-    "type": "structure",
-    "title": "@Import 有哪些用法：结构一眼看懂",
-    "summary": "@Import 可以导入配置类、ImportSelector 或 ImportBeanDefinitionRegistrar。",
-    "nodes": [
-      {
-        "label": "直接导入普通配置类",
-        "detail": "@Import 可以导入配置类、ImportSelector 或 ImportBeanDefinitionRegistrar。",
-        "tone": "main"
-      },
-      {
-        "label": "通过 ImportSel…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "通过 ImportBea…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "EnableSchedu…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：直接导入普通配置类 -> 通过 ImportSel… -> 通过 ImportBea… -> EnableSchedu… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "@Import 三种层级：配置类、选择器、手动注册器。"
-  },
-  "spring-mvc-argument-resolver": {
-    "type": "structure",
-    "title": "Spring MVC 参数解析器是什么：结构一眼看懂",
-    "summary": "参数解析器负责把 HTTP 请求中的数据转换成 Controller 方法参数。",
-    "nodes": [
-      {
-        "label": "DispatcherSe…",
-        "detail": "参数解析器负责把 HTTP 请求中的数据转换成 Controller 方法参数。",
-        "tone": "main"
-      },
-      {
-        "label": "@RequestPara…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "自定义解析器可以统一注入…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "解析失败通常会进入参数绑…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：DispatcherSe… -> @RequestPara… -> 自定义解析器可以统一注入… -> 解析失败通常会进入参数绑… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "MVC 参数能自动进方法，是参数解析器链在帮你搬运。"
-  },
-  "spring-mvc-message-converter": {
-    "type": "structure",
-    "title": "HttpMessageConverter 有什么作用：结构一眼看懂",
-    "summary": "HttpMessageConverter 负责请求体和响应体与 Java 对象之间的转换。",
-    "nodes": [
-      {
-        "label": "读取请求时",
-        "detail": "HttpMessageConverter 负责请求体和响应体与 Java 对象之间的转换。",
-        "tone": "main"
-      },
-      {
-        "label": "写响应时",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "常见实现包括 Mappi…",
-        "detail": "说明什么时候会失效或变慢",
-        "tone": "safe"
-      },
-      {
-        "label": "配置不当会导致 415、…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
-      },
-      {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
-        "tone": "safe"
-      }
-    ],
-    "prompt": "站内图解：读取请求时 -> 写响应时 -> 常见实现包括 Mappi… -> 配置不当会导致 415、… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "消息转换器管 Body：Content-Type 决定怎么读，Accept 影响怎么写。"
-  },
-  "spring-scheduled-pitfalls": {
-    "type": "structure",
-    "title": "@Scheduled 定时任务有什么坑：结构一眼看懂",
-    "summary": "@Scheduled 简单好用，但要注意单机多实例、阻塞和异常处理。",
-    "nodes": [
-      {
-        "label": "默认调度线程较少",
-        "detail": "@Scheduled 简单好用，但要注意单机多实例、阻塞和异常处理。",
-        "tone": "main"
-      },
-      {
-        "label": "多实例部署时每个实例都会…",
-        "detail": "把机制拆成可解释的链路",
-        "tone": "safe"
-      },
-      {
-        "label": "任务异常要记录和告警",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "限制命令类别",
+        "detail": "+@read、+@write、-FLUSHALL",
         "tone": "warn"
       },
       {
-        "label": "分布式场景可考虑 XXL…",
-        "detail": "结合项目给出处理动作",
-        "tone": "safe"
+        "label": "限制 key pattern",
+        "detail": "用 ~app:* 控制可访问 key",
+        "tone": "warn"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
+        "label": "限制频道权限",
+        "detail": "用 &channel 控制 Pub/Sub 范围",
+        "tone": "warn"
       },
       {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "审计和轮换",
+        "detail": "定期 ACL LIST、ACL LOG 和密钥轮换",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：默认调度线程较少 -> 多实例部署时每个实例都会… -> 任务异常要记录和告警 -> 分布式场景可考虑 XXL… -> 验证闭环 -> 面试收束。要求用中文短标签画成structure图，突出顺序、结构和风险落点。",
-    "takeaway": "定时任务三问：会不会重复，会不会阻塞，失败知不知道。"
+    "prompt": "画一张结构图：创建独立用户 -> 设置密码和状态 -> 限制命令类别 -> 限制 key pattern -> 限制频道权限 -> 审计和轮换。突出最小权限和危险命令隔离。",
+    "takeaway": "Redis ACL 的核心是把用户、命令、key 范围一起收紧。"
   },
-  "spring-webclient": {
-    "type": "compare",
-    "title": "WebClient 和 RestTemplate 有什么区别：差异一眼看懂",
-    "summary": "WebClient 是响应式非阻塞 HTTP 客户端，RestTemplate 是传统阻塞式客户端。",
+  "redis-client-output-buffer": {
+    "type": "flow",
+    "title": "Redis 输出缓冲区爆掉：原因和排查",
+    "summary": "输出缓冲区爆掉通常是 Redis 产生响应快于客户端消费，常见于大查询、慢网络和 Pub/Sub 慢订阅者。",
     "nodes": [
       {
-        "label": "RestTemplate…",
-        "detail": "WebClient 是响应式非阻塞 HTTP 客户端，RestTemplate 是传统阻塞式客户端。",
+        "label": "Redis 生成响应",
+        "detail": "大查询或订阅消息产生大量返回数据",
         "tone": "main"
       },
       {
-        "label": "WebClient 基于…",
-        "detail": "把机制拆成可解释的链路",
+        "label": "客户端消费变慢",
+        "detail": "网络慢、业务线程阻塞或订阅者处理慢",
         "tone": "safe"
       },
       {
-        "label": "在 MVC 项目里也能用…",
-        "detail": "说明什么时候会失效或变慢",
+        "label": "输出缓冲堆积",
+        "detail": "obl、oll、omem 指标持续上涨",
         "tone": "safe"
       },
       {
-        "label": "连接池、超时、重试和日志…",
-        "detail": "结合项目给出处理动作",
+        "label": "触发限制断开",
+        "detail": "client-output-buffer-limit 生效",
+        "tone": "warn"
+      },
+      {
+        "label": "定位慢客户端",
+        "detail": "CLIENT LIST、日志、网络和业务线程",
         "tone": "safe"
       },
       {
-        "label": "验证闭环",
-        "detail": "用日志、指标或测试验证",
-        "tone": "safe"
-      },
-      {
-        "label": "面试收束",
-        "detail": "最后补一句取舍和边界",
+        "label": "限流和拆分",
+        "detail": "限制大查询、隔离订阅者、拆分返回",
         "tone": "safe"
       }
     ],
-    "prompt": "站内图解：RestTemplate… -> WebClient 基于… -> 在 MVC 项目里也能用… -> 连接池、超时、重试和日志… -> 验证闭环 -> 面试收束。要求用中文短标签画成compare图，突出顺序、结构和风险落点。",
-    "takeaway": "WebClient 的核心是非阻塞，但配置超时和少 block 更关键。"
+    "prompt": "画一张流程图：Redis 生成响应 -> 客户端消费变慢 -> 输出缓冲堆积 -> 触发限制断开 -> 定位慢客户端 -> 限流和拆分。突出问题常在客户端消费慢。",
+    "takeaway": "输出缓冲区爆，不一定是 Redis 慢，常常是客户端接不动。"
+  },
+  "redis-cluster-failover": {
+    "type": "flow",
+    "title": "Redis Cluster 故障转移：从 PFAIL 到新主",
+    "summary": "Cluster 通过 gossip 探测、客观 FAIL、从节点竞选、多数派投票和 config epoch 完成故障转移。",
+    "nodes": [
+      {
+        "label": "gossip 探测异常",
+        "detail": "节点互相发送 ping/pong 发现不可达",
+        "tone": "main"
+      },
+      {
+        "label": "标记 PFAIL",
+        "detail": "本节点主观认为目标节点疑似故障",
+        "tone": "warn"
+      },
+      {
+        "label": "升级 FAIL",
+        "detail": "多数主节点报告后形成客观故障",
+        "tone": "warn"
+      },
+      {
+        "label": "从节点发起竞选",
+        "detail": "按复制偏移量、优先级和延迟选择候选",
+        "tone": "safe"
+      },
+      {
+        "label": "多数主节点投票",
+        "detail": "获得授权后提升为新主并接管槽",
+        "tone": "safe"
+      },
+      {
+        "label": "客户端刷新路由",
+        "detail": "通过 MOVED 更新 slot cache",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张流程图：gossip 探测异常 -> 标记 PFAIL -> 升级 FAIL -> 从节点发起竞选 -> 多数主节点投票 -> 客户端刷新路由。突出多数派、复制偏移量和 config epoch。",
+    "takeaway": "Cluster failover 是判故障、选新主、刷路由三件事。"
+  },
+  "redis-quicklist-listpack": {
+    "type": "structure",
+    "title": "quicklist 与 listpack：Redis 紧凑编码",
+    "summary": "quicklist 用链表串起多个 listpack，兼顾插入删除和紧凑存储。",
+    "nodes": [
+      {
+        "label": "listpack",
+        "detail": "紧凑连续内存存储小元素",
+        "tone": "main"
+      },
+      {
+        "label": "quicklist 节点",
+        "detail": "每个节点内部保存一个 listpack",
+        "tone": "safe"
+      },
+      {
+        "label": "双向链表组织",
+        "detail": "多个节点前后连接便于两端操作",
+        "tone": "safe"
+      },
+      {
+        "label": "节省小对象内存",
+        "detail": "减少指针和对象头开销",
+        "tone": "safe"
+      },
+      {
+        "label": "控制节点大小",
+        "detail": "配置影响压缩率和修改成本",
+        "tone": "safe"
+      },
+      {
+        "label": "观察编码",
+        "detail": "用 OBJECT ENCODING 和 MEMORY USAGE 验证",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张结构图：listpack -> quicklist 节点 -> 双向链表组织 -> 节省小对象内存 -> 控制节点大小 -> 观察编码。突出 quicklist 是链表加紧凑块。",
+    "takeaway": "quicklist 是链表骨架，listpack 是紧凑内容块。"
+  },
+  "redis-rate-limit-lua": {
+    "type": "flow",
+    "title": "Redis + Lua 限流：检查到放行流程",
+    "summary": "Redis + Lua 限流把计数、清理、判断和过期设置合成原子步骤，但要控制热点 key 和脚本耗时。",
+    "nodes": [
+      {
+        "label": "接收请求标识",
+        "detail": "按用户、IP、接口或租户生成限流 key",
+        "tone": "main"
+      },
+      {
+        "label": "Lua 原子检查",
+        "detail": "计数、清理、判断在服务端一次完成",
+        "tone": "safe"
+      },
+      {
+        "label": "固定窗口计数",
+        "detail": "INCR 加 EXPIRE，简单但边界突刺",
+        "tone": "safe"
+      },
+      {
+        "label": "滑动窗口统计",
+        "detail": "ZSET 记录时间戳并清理窗口外请求",
+        "tone": "safe"
+      },
+      {
+        "label": "返回限流结果",
+        "detail": "放行、拒绝或返回剩余额度",
+        "tone": "safe"
+      },
+      {
+        "label": "降级和监控",
+        "detail": "关注热点 key、脚本耗时、拒绝率和错误率",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "画一张流程图：接收请求标识 -> Lua 原子检查 -> 固定窗口计数 -> 滑动窗口统计 -> 返回限流结果 -> 降级和监控。突出原子性、热点 key 和脚本耗时。",
+    "takeaway": "Redis Lua 限流强在原子判断，风险在热点和长脚本。"
+  },
+  "redis-scan-vs-keys": {
+    "type": "compare",
+    "title": "SCAN 与 KEYS：全量匹配风险对比",
+    "summary": "KEYS 一次性阻塞扫描全部 key，SCAN 用 cursor 渐进遍历但不保证快照一致。",
+    "nodes": [
+      {
+        "label": "KEYS 全量阻塞",
+        "detail": "一次扫描整个 keyspace，生产风险高",
+        "tone": "main"
+      },
+      {
+        "label": "SCAN cursor",
+        "detail": "每次返回游标和一批 key",
+        "tone": "safe"
+      },
+      {
+        "label": "COUNT 只是提示",
+        "detail": "不是严格返回条数",
+        "tone": "safe"
+      },
+      {
+        "label": "可能重复返回",
+        "detail": "遍历期间 key 变化会导致重复或遗漏",
+        "tone": "safe"
+      },
+      {
+        "label": "Cluster 分节点扫",
+        "detail": "每个主节点都有自己的 keyspace",
+        "tone": "safe"
+      },
+      {
+        "label": "生产限速处理",
+        "detail": "分批、去重、节流和低峰执行",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张对比图：KEYS 全量阻塞 -> SCAN cursor -> COUNT 只是提示 -> 可能重复返回 -> Cluster 分节点扫 -> 生产限速处理。突出 SCAN 更安全但不是快照。",
+    "takeaway": "KEYS 是一次扫全场，SCAN 是拿游标慢慢走。"
+  },
+  "redis-stream-consumer-group": {
+    "type": "flow",
+    "title": "Redis Stream 消费组：投递确认和转移",
+    "summary": "消费组通过 XREADGROUP 分摊消息，用 PEL 记录未确认消息，并通过 XACK/XAUTOCLAIM 处理失败转移。",
+    "nodes": [
+      {
+        "label": "XGROUP CREATE",
+        "detail": "创建消费组和起始消费位置",
+        "tone": "main"
+      },
+      {
+        "label": "XREADGROUP 读取",
+        "detail": "消费者从组内领取消息",
+        "tone": "safe"
+      },
+      {
+        "label": "进入 PEL",
+        "detail": "已投递未确认消息进入待确认列表",
+        "tone": "safe"
+      },
+      {
+        "label": "业务幂等处理",
+        "detail": "消费者处理消息并防重复",
+        "tone": "safe"
+      },
+      {
+        "label": "XACK 确认",
+        "detail": "处理成功后从 PEL 移除",
+        "tone": "safe"
+      },
+      {
+        "label": "XAUTOCLAIM 转移",
+        "detail": "宕机或超时消息转给其他消费者",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张流程图：XGROUP CREATE -> XREADGROUP 读取 -> 进入 PEL -> 业务幂等处理 -> XACK 确认 -> XAUTOCLAIM 转移。突出确认和失败转移。",
+    "takeaway": "Stream 消费组可靠性的核心是 PEL、XACK 和幂等。"
+  },
+  "redis-unlink-vs-del": {
+    "type": "compare",
+    "title": "UNLINK 与 DEL：同步删除和异步释放",
+    "summary": "DEL 同步删除并释放对象，UNLINK 先摘除 key 再由后台线程异步释放内存。",
+    "nodes": [
+      {
+        "label": "DEL 同步释放",
+        "detail": "删除 key 并在主线程释放内存",
+        "tone": "main"
+      },
+      {
+        "label": "大 key 阻塞风险",
+        "detail": "释放大对象可能卡住事件循环",
+        "tone": "safe"
+      },
+      {
+        "label": "UNLINK 摘除 key",
+        "detail": "先从 keyspace 删除引用",
+        "tone": "safe"
+      },
+      {
+        "label": "后台异步释放",
+        "detail": "lazy free 线程回收对象内存",
+        "tone": "safe"
+      },
+      {
+        "label": "内存延迟下降",
+        "detail": "RSS 和 used_memory 不一定立即同步下降",
+        "tone": "safe"
+      },
+      {
+        "label": "分批低峰治理",
+        "detail": "大 key 清理要节流、监控和回滚",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张对比图：DEL 同步释放 -> 大 key 阻塞风险 -> UNLINK 摘除 key -> 后台异步释放 -> 内存延迟下降 -> 分批低峰治理。突出删除可见性和释放成本分离。",
+    "takeaway": "DEL 立刻干活，UNLINK 先摘牌再后台清理。"
+  },
+  "spring-application-event-transaction": {
+    "type": "sequence",
+    "title": "事务事件：发布时机和监听阶段",
+    "summary": "普通事件会立即同步执行，事务事件可以绑定提交前、提交后、回滚后和完成后阶段。",
+    "nodes": [
+      {
+        "label": "业务事务开始",
+        "detail": "Service 方法进入 @Transactional 边界",
+        "tone": "main"
+      },
+      {
+        "label": "发布领域事件",
+        "detail": "ApplicationEventPublisher 发布事件对象",
+        "tone": "safe"
+      },
+      {
+        "label": "普通监听立即执行",
+        "detail": "@EventListener 默认同步调用",
+        "tone": "safe"
+      },
+      {
+        "label": "注册事务同步",
+        "detail": "@TransactionalEventListener 绑定事务阶段",
+        "tone": "safe"
+      },
+      {
+        "label": "事务提交或回滚",
+        "detail": "提交成功、回滚失败或完成阶段确定",
+        "tone": "safe"
+      },
+      {
+        "label": "阶段监听执行",
+        "detail": "AFTER_COMMIT 发 MQ、清缓存或通知下游",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张时序图：业务事务开始 -> 发布领域事件 -> 普通监听立即执行 -> 注册事务同步 -> 事务提交或回滚 -> 阶段监听执行。突出普通监听和事务阶段监听的区别。",
+    "takeaway": "事务事件问的是时机：别在提交前做不可逆副作用。"
+  },
+  "spring-boot-starter-custom": {
+    "type": "structure",
+    "title": "自定义 Starter：依赖聚合到自动配置",
+    "summary": "自定义 Starter 应拆分 starter 与 autoconfigure，提供属性绑定、条件装配、元数据和测试覆盖。",
+    "nodes": [
+      {
+        "label": "starter 模块",
+        "detail": "只聚合业务方需要引入的依赖",
+        "tone": "main"
+      },
+      {
+        "label": "autoconfigure 模块",
+        "detail": "放 @AutoConfiguration 和默认 Bean 逻辑",
+        "tone": "safe"
+      },
+      {
+        "label": "配置属性类",
+        "detail": "@ConfigurationProperties 定义前缀和默认值",
+        "tone": "safe"
+      },
+      {
+        "label": "条件化装配",
+        "detail": "OnClass、OnProperty、OnMissingBean 控制创建",
+        "tone": "safe"
+      },
+      {
+        "label": "Boot 3 注册文件",
+        "detail": "AutoConfiguration.imports 暴露自动配置类",
+        "tone": "safe"
+      },
+      {
+        "label": "元数据和测试",
+        "detail": "configuration metadata、ApplicationContextRunner 验证",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张结构图：starter 模块 -> autoconfigure 模块 -> 配置属性类 -> 条件化装配 -> Boot 3 注册文件 -> 元数据和测试。突出 starter 设计的包结构和覆盖机制。",
+    "takeaway": "好 Starter 的标准是开箱即用、按需开启、业务可覆盖。"
+  },
+  "spring-boot-startup-flow": {
+    "type": "flow",
+    "title": "Spring Boot 启动流程：从 run 到 Ready",
+    "summary": "Boot 启动经历环境准备、上下文创建、refresh、Bean 生命周期、Web 容器启动和 Runner 执行。",
+    "nodes": [
+      {
+        "label": "调用 run 方法",
+        "detail": "创建 SpringApplication 并触发启动监听器",
+        "tone": "main"
+      },
+      {
+        "label": "准备 Environment",
+        "detail": "加载配置、profile、命令行参数和外部属性",
+        "tone": "safe"
+      },
+      {
+        "label": "创建上下文",
+        "detail": "选择 Servlet、Reactive 或普通 ApplicationContext",
+        "tone": "safe"
+      },
+      {
+        "label": "执行 refresh",
+        "detail": "加载 BeanDefinition，执行工厂后处理器和 Bean 创建",
+        "tone": "safe"
+      },
+      {
+        "label": "启动 Web 容器",
+        "detail": "内嵌 Tomcat、Jetty 或 Netty 开始接收请求",
+        "tone": "safe"
+      },
+      {
+        "label": "Runner 和 Ready",
+        "detail": "执行 ApplicationRunner/CommandLineRunner 并发布就绪事件",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张流程图：调用 run 方法 -> 准备 Environment -> 创建上下文 -> 执行 refresh -> 启动 Web 容器 -> Runner 和 Ready。突出启动阶段和常见扩展点。",
+    "takeaway": "Boot 启动不是 main 一行代码，而是环境、上下文、Bean、容器和就绪事件的组合。"
+  },
+  "spring-cache-annotation": {
+    "type": "flow",
+    "title": "Spring Cache：读写、失效与一致性",
+    "summary": "Spring Cache 用注解抽象缓存操作，但 key 设计、事务后失效、TTL 和缓存穿透仍要由方案负责。",
+    "nodes": [
+      {
+        "label": "@Cacheable 读缓存",
+        "detail": "命中直接返回，未命中才执行方法并写入缓存",
+        "tone": "main"
+      },
+      {
+        "label": "Key 生成规则",
+        "detail": "包含租户、参数、版本等影响结果的字段",
+        "tone": "safe"
+      },
+      {
+        "label": "condition 和 unless",
+        "detail": "调用前后判断是否缓存，避免缓存空洞或异常值",
+        "tone": "safe"
+      },
+      {
+        "label": "@CachePut 更新",
+        "detail": "方法总会执行，适合同步刷新缓存",
+        "tone": "safe"
+      },
+      {
+        "label": "@CacheEvict 删除",
+        "detail": "更新或删除数据后清理缓存",
+        "tone": "safe"
+      },
+      {
+        "label": "事务和 TTL",
+        "detail": "提交后失效、过期策略由 Redis/Caffeine 等实现控制",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张流程图：@Cacheable 读缓存 -> Key 生成规则 -> condition 和 unless -> @CachePut 更新 -> @CacheEvict 删除 -> 事务和 TTL。突出缓存注解和一致性边界。",
+    "takeaway": "Cache 注解省的是样板代码，不省 key、一致性和失效设计。"
+  },
+  "spring-configuration-properties": {
+    "type": "structure",
+    "title": "@ConfigurationProperties：配置绑定与校验",
+    "summary": "ConfigurationProperties 适合一组结构化配置，支持宽松绑定、嵌套对象、集合、校验和元数据提示。",
+    "nodes": [
+      {
+        "label": "定义 prefix",
+        "detail": "按业务域聚合配置项",
+        "tone": "main"
+      },
+      {
+        "label": "宽松绑定",
+        "detail": "kebab、camel、下划线和环境变量转换",
+        "tone": "safe"
+      },
+      {
+        "label": "嵌套和集合",
+        "detail": "绑定对象、列表、Map 等结构",
+        "tone": "safe"
+      },
+      {
+        "label": "类型转换",
+        "detail": "Duration、DataSize、枚举等类型安全绑定",
+        "tone": "safe"
+      },
+      {
+        "label": "Validated 校验",
+        "detail": "启动期发现缺失或非法配置",
+        "tone": "safe"
+      },
+      {
+        "label": "元数据提示",
+        "detail": "生成配置提示并提升 starter 可用性",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张结构图：定义 prefix -> 宽松绑定 -> 嵌套和集合 -> 类型转换 -> Validated 校验 -> 元数据提示。突出和 @Value 的维护性差异。",
+    "takeaway": "@ConfigurationProperties 适合成组配置，@Value 适合少量离散值。"
+  },
+  "spring-import-selector": {
+    "type": "structure",
+    "title": "@Import：三类导入路径",
+    "summary": "@Import 可以导入普通配置类、ImportSelector 返回的类名，也可以通过 ImportBeanDefinitionRegistrar 直接注册 BeanDefinition。",
+    "nodes": [
+      {
+        "label": "导入配置类",
+        "detail": "@Import 普通 @Configuration 或组件类",
+        "tone": "main"
+      },
+      {
+        "label": "ImportSelector",
+        "detail": "selectImports 返回要导入的类名",
+        "tone": "safe"
+      },
+      {
+        "label": "DeferredImportSelector",
+        "detail": "延迟选择，自动配置常见扩展点",
+        "tone": "safe"
+      },
+      {
+        "label": "Registrar",
+        "detail": "ImportBeanDefinitionRegistrar 编程式注册定义",
+        "tone": "safe"
+      },
+      {
+        "label": "Enable 模式",
+        "detail": "@EnableXxx 封装 Import 细节",
+        "tone": "safe"
+      },
+      {
+        "label": "条件配合",
+        "detail": "结合 @Conditional 控制导入和注册",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张结构图：导入配置类 -> ImportSelector -> DeferredImportSelector -> Registrar -> Enable 模式 -> 条件配合。突出三种 Import 用法和自动配置关系。",
+    "takeaway": "@Import 是把外部配置和 BeanDefinition 带进容器的入口。"
+  },
+  "spring-mvc-argument-resolver": {
+    "type": "flow",
+    "title": "MVC 参数解析器：从请求到方法参数",
+    "summary": "HandlerMethodArgumentResolver 链负责判断参数是否支持，并把请求数据、上下文或请求体解析为 Controller 参数。",
+    "nodes": [
+      {
+        "label": "匹配 HandlerMethod",
+        "detail": "DispatcherServlet 找到 Controller 方法",
+        "tone": "main"
+      },
+      {
+        "label": "遍历参数列表",
+        "detail": "逐个处理方法形参",
+        "tone": "safe"
+      },
+      {
+        "label": "supportsParameter",
+        "detail": "判断某个解析器是否支持该参数",
+        "tone": "safe"
+      },
+      {
+        "label": "resolveArgument",
+        "detail": "从请求、路径、Header、Body 或上下文取值",
+        "tone": "safe"
+      },
+      {
+        "label": "绑定和转换",
+        "detail": "WebDataBinder、ConversionService 做类型转换",
+        "tone": "safe"
+      },
+      {
+        "label": "失败进入异常",
+        "detail": "缺参、类型错误或 Body 解析失败返回 400 等",
+        "tone": "warn"
+      }
+    ],
+    "prompt": "画一张流程图：匹配 HandlerMethod -> 遍历参数列表 -> supportsParameter -> resolveArgument -> 绑定和转换 -> 失败进入异常。突出自定义解析器注入当前用户的场景。",
+    "takeaway": "Controller 参数不是凭空来的，是解析器链一个个解析出来的。"
+  },
+  "spring-mvc-message-converter": {
+    "type": "flow",
+    "title": "HttpMessageConverter：读 Body 与写响应",
+    "summary": "消息转换器根据 Content-Type、Accept、目标类型和返回值类型在 HTTP Body 与 Java 对象之间转换。",
+    "nodes": [
+      {
+        "label": "读取请求体",
+        "detail": "@RequestBody 触发读取 Body",
+        "tone": "main"
+      },
+      {
+        "label": "匹配 Content-Type",
+        "detail": "选择能读 application/json 等媒体类型的转换器",
+        "tone": "safe"
+      },
+      {
+        "label": "反序列化对象",
+        "detail": "Jackson 等组件把 JSON 转成 Java 对象",
+        "tone": "safe"
+      },
+      {
+        "label": "执行 Controller",
+        "detail": "业务方法拿到解析后的参数",
+        "tone": "safe"
+      },
+      {
+        "label": "匹配 Accept",
+        "detail": "根据客户端可接受类型和返回值选择转换器",
+        "tone": "safe"
+      },
+      {
+        "label": "写出响应体",
+        "detail": "@ResponseBody 或 RestController 输出 JSON 等内容",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张流程图：读取请求体 -> 匹配 Content-Type -> 反序列化对象 -> 执行 Controller -> 匹配 Accept -> 写出响应体。标出 415、406 和 JSON 序列化异常。",
+    "takeaway": "Content-Type 决定怎么读，Accept 影响怎么写。"
+  },
+  "spring-scheduled-pitfalls": {
+    "type": "flow",
+    "title": "@Scheduled：单机任务到生产治理",
+    "summary": "Scheduled 简单易用，但要处理线程池、异常、多实例重复、任务重入、时区、补偿和可观测性。",
+    "nodes": [
+      {
+        "label": "定义触发方式",
+        "detail": "fixedRate、fixedDelay、cron 语义不同",
+        "tone": "main"
+      },
+      {
+        "label": "配置线程池",
+        "detail": "默认单线程容易阻塞后续任务",
+        "tone": "safe"
+      },
+      {
+        "label": "处理异常",
+        "detail": "异常要记录、告警，避免任务悄悄停止或反复失败",
+        "tone": "warn"
+      },
+      {
+        "label": "防止重复执行",
+        "detail": "多实例部署要分布式锁或调度平台",
+        "tone": "safe"
+      },
+      {
+        "label": "幂等和补偿",
+        "detail": "任务重试、漏跑、超时后要可恢复",
+        "tone": "safe"
+      },
+      {
+        "label": "监控和时区",
+        "detail": "记录耗时、成功率、延迟、时区和下一次执行时间",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张流程图：定义触发方式 -> 配置线程池 -> 处理异常 -> 防止重复执行 -> 幂等和补偿 -> 监控和时区。突出单机定时任务的生产坑。",
+    "takeaway": "Scheduled 适合轻量单体任务，生产多实例要治理重复和补偿。"
+  },
+  "spring-webclient": {
+    "type": "compare",
+    "title": "WebClient vs RestTemplate：阻塞和响应式边界",
+    "summary": "RestTemplate 是同步阻塞客户端，WebClient 基于 Reactor Netty 支持非阻塞、流式、超时重试和组合式调用。",
+    "nodes": [
+      {
+        "label": "RestTemplate 阻塞",
+        "detail": "调用线程等待远端响应，模型直观",
+        "tone": "main"
+      },
+      {
+        "label": "WebClient 非阻塞",
+        "detail": "返回 Mono/Flux，事件循环处理 IO",
+        "tone": "safe"
+      },
+      {
+        "label": "连接池和超时",
+        "detail": "Reactor Netty 配置连接、读写超时和资源上限",
+        "tone": "safe"
+      },
+      {
+        "label": "retrieve 读取响应",
+        "detail": "适合普通状态码处理和 body 转换",
+        "tone": "safe"
+      },
+      {
+        "label": "exchangeToMono",
+        "detail": "需要精细处理状态码、Header 和 Body",
+        "tone": "safe"
+      },
+      {
+        "label": "阻塞隔离",
+        "detail": "MVC 中可用，但 block 和阻塞 SDK 要隔离",
+        "tone": "safe"
+      }
+    ],
+    "prompt": "画一张对比图：RestTemplate 阻塞 -> WebClient 非阻塞 -> 连接池和超时 -> retrieve 读取响应 -> exchangeToMono -> 阻塞隔离。突出响应式收益和误用边界。",
+    "takeaway": "WebClient 的收益来自非阻塞链路，随手 block 会把收益吃掉。"
   }
 }

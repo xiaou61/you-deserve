@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { useStudy } from "@/components/study-provider";
+import type { QuestionActivity } from "@/lib/study-store";
 
 type QuestionEngagementProps = {
   slug: string;
@@ -40,16 +41,16 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
     toggleLike,
     toggleMastered
   } = useStudy();
-  const activity = ready
-    ? getActivity(slug)
-    : {
-        views: 0,
-        likedBy: [],
-        favoritedBy: [],
-        masteredBy: [],
-        notesByUser: {},
-        comments: []
-      };
+  const fallbackActivity: QuestionActivity = {
+    views: 0,
+    likedBy: [],
+    favoritedBy: [],
+    masteredBy: [],
+    viewedByUser: {},
+    notesByUser: {},
+    comments: []
+  };
+  const activity = ready ? getActivity(slug) : fallbackActivity;
   const [draftNotes, setDraftNotes] = useState<Record<string, string>>({});
   const [comment, setComment] = useState("");
   const [message, setMessage] = useState("");
@@ -76,6 +77,10 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
     setMessage(result.message);
   };
 
+  const handleAsyncResult = async (action: Promise<{ ok: boolean; message: string }>) => {
+    handleResult(await action);
+  };
+
   return (
     <section className="mt-6 space-y-6">
       <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
@@ -84,7 +89,7 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
             <p className="text-sm font-black uppercase tracking-[0.22em] text-coral">Engagement</p>
             <h2 className="mt-2 text-2xl font-black text-ink">这道题别只是看过</h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-ink/60">
-              点赞、收藏、掌握、评论、笔记、浏览都已经接上本地记录。你现在打开的就是：
+              点赞、收藏、掌握、评论、笔记、浏览都会保存到 PostgreSQL。你现在打开的就是：
               <span className="font-black text-ink"> {title}</span>
             </p>
           </div>
@@ -116,7 +121,7 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
         <div className="mt-5 flex flex-wrap gap-3">
           <button
             className={`engagement-action ${status.liked ? "is-active" : ""}`}
-            onClick={() => handleResult(toggleLike(slug))}
+            onClick={() => void handleAsyncResult(toggleLike(slug))}
             type="button"
           >
             <Heart className="h-4 w-4" />
@@ -124,7 +129,7 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
           </button>
           <button
             className={`engagement-action ${status.favorited ? "is-active" : ""}`}
-            onClick={() => handleResult(toggleFavorite(slug))}
+            onClick={() => void handleAsyncResult(toggleFavorite(slug))}
             type="button"
           >
             <Bookmark className="h-4 w-4" />
@@ -132,7 +137,7 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
           </button>
           <button
             className={`engagement-action ${status.mastered ? "is-active mastered" : ""}`}
-            onClick={() => handleResult(toggleMastered(slug))}
+            onClick={() => void handleAsyncResult(toggleMastered(slug))}
             type="button"
           >
             <BookHeart className="h-4 w-4" />
@@ -168,15 +173,15 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
                 [noteKey]: event.target.value
               }))
             }
-            placeholder={currentUser ? "把你真正会忘的点写下来。" : "先登录，笔记才会保存到本地。"}
+            placeholder={currentUser ? "把你真正会忘的点写下来。" : "先登录，笔记才会保存到数据库。"}
             value={note}
           />
 
           <div className="mt-4 flex justify-end">
             <button
               className="primary-action"
-              onClick={() => {
-                const result = saveNote(slug, note);
+              onClick={() => void (async () => {
+                const result = await saveNote(slug, note);
                 handleResult(result);
                 if (result.ok) {
                   setDraftNotes((previous) => ({
@@ -184,7 +189,7 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
                     [noteKey]: note.trim()
                   }));
                 }
-              }}
+              })()}
               type="button"
             >
               <Save className="h-4 w-4" />
@@ -214,13 +219,13 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
           <div className="mt-4 flex justify-end">
             <button
               className="primary-action"
-              onClick={() => {
-                const result = addComment(slug, comment);
+              onClick={() => void (async () => {
+                const result = await addComment(slug, comment);
                 handleResult(result);
                 if (result.ok) {
                   setComment("");
                 }
-              }}
+              })()}
               type="button"
             >
               发表评论

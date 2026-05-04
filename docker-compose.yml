@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: you-deserve-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: you_deserve
+      POSTGRES_USER: you_deserve
+      POSTGRES_PASSWORD: you_deserve_dev
+    ports:
+      - "55432:5432"
+    volumes:
+      - you_deserve_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U you_deserve -d you_deserve"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  you_deserve_postgres_data:

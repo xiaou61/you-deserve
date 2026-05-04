@@ -34,13 +34,21 @@ Filter 更适合通用底层处理，比如编码、跨域、安全过滤；Inte
 
 ## 常见追问
 
-### Filter 能拿到 Spring Bean 吗？
+### postHandle 一定会执行吗？
 
-可以通过 Spring 管理或手动注入方式实现，但它本质属于 Servlet 过滤器。
+不一定。Controller 抛异常或 preHandle 短路时，postHandle 可能不执行，因此清理资源不要依赖它。
 
-### afterCompletion 一定会执行吗？
+### afterCompletion 适合做什么？
 
-在请求进入拦截器链后，通常用于资源清理和异常后处理，但具体要看请求是否到达对应阶段。
+适合记录最终耗时、清理 ThreadLocal、释放上下文，因为它更接近请求完成的收尾阶段。
+
+### Filter 的后置逻辑怎么保证执行？
+
+用 try/finally 包住 chain.doFilter，避免下游异常导致上下文无法清理。
+
+### Filter 和 Interceptor 顺序能混排吗？
+
+不能跨层混排。Filter 永远在 Servlet 容器层，Interceptor 在 DispatcherServlet 调度之后。
 
 ## 易错点
 
@@ -50,19 +58,21 @@ Filter 更适合通用底层处理，比如编码、跨域、安全过滤；Inte
 
 ## 详细讲解
 
-多个 Filter 和 Interceptor 的执行顺序怎么理解 这道题不能只按定义回答，因为面试官通常不是在确认你会不会背概念，而是在看你能不能把它放回真实系统的链路里。可以先用一句话定调：Filter 发生在 Servlet 容器层，Interceptor 发生在 Spring MVC 层，多个组件按注册顺序和配置顺序形成调用链。有了这个结论，再往下拆“为什么需要它、它靠什么机制工作、什么时候会出问题、项目里怎么验证”，答案就会比简单罗列更稳定。  
+多个 Filter 和 Interceptor 的顺序可以用“洋葱模型”理解。请求进入应用时，先经过 Servlet Filter 链，Filter1 前置逻辑执行后调用 chain.doFilter，进入 Filter2，再继续进入 DispatcherServlet。Controller 执行完返回时，会从内到外依次回到 Filter2 后置逻辑、Filter1 后置逻辑。所以 Filter 的前置按顺序进入，后置按反向退出。
 
-第一层要讲背景。Spring、Filter、Interceptor、执行顺序 相关问题通常都不是孤立出现的，而是和流量、并发、数据规模、调用链路或资源限制绑在一起。回答时先说明它解决的矛盾：一边是业务希望简单、快速、稳定地完成请求，另一边是系统内部存在状态变化、失败重试、性能成本和一致性边界。把这个矛盾讲出来，后面再解释机制才不会像背书。  
+Interceptor 的位置在 DispatcherServlet 之内。DispatcherServlet 通过 HandlerMapping 找到 HandlerExecutionChain 后，会按注册顺序执行多个 Interceptor 的 preHandle。只有所有 preHandle 都返回 true，Controller 才会执行。Controller 正常返回 ModelAndView 后，postHandle 按反向顺序执行；请求完成后，afterCompletion 也按反向顺序执行，用来释放 ThreadLocal、记录耗时和清理上下文。
 
-第二层要讲核心机制：请求进入 Servlet 容器。。这里最好把动作讲成链路，而不是只说名词。比如谁先发生、谁依赖谁、哪个状态会改变、失败时会留下什么痕迹。如果能把输入、处理、输出和副作用串起来，面试官继续追问时，你也能沿着链路往下展开，而不是被单点概念卡住。  
+异常和短路是这道题的追问重点。如果某个 preHandle 返回 false，后续 Interceptor 和 Controller 不会执行，已经成功执行过 preHandle 的 Interceptor 可能进入 afterCompletion 收尾。Controller 抛异常时，postHandle 通常不会按正常路径执行，但 afterCompletion 仍然是重要的清理入口。Filter 如果要保证上下文清理，必须用 try/finally 包住 chain.doFilter。
 
-第三层要讲边界和代价：先经过 Filter 链。。任何方案都有适用范围，真正成熟的回答要主动说明它在哪些条件下有效，哪些条件下会失效或成本变高。比如数据量变大、并发提升、节点故障、网络抖动、下游变慢、配置不一致，都可能让原本简单的方案暴露问题。这里可以补一句 不要只背 API 名称，要说清触发条件、默认行为和失效边界。  
+顺序配置也要分层看。Filter 可通过 FilterRegistrationBean、@Order 或容器注册顺序控制；Interceptor 通过 WebMvcConfigurer.addInterceptors 的注册顺序控制，也可以配 includePathPatterns 和 excludePathPatterns。AOP 发生在 Controller 或 Service 方法调用边界，若 Controller 方法本身被代理，才会出现在方法执行附近；多数业务 Service AOP 则发生在 Controller 调用 Service 之后。
 
-第四层要落到工程排查。项目里遇到类似问题，不要只说“改配置”或“加组件”，而是先看信号：日志、单元测试、线程栈、JFR/GC 日志、最小复现和配置对照。能用证据定位问题，说明你知道这件事在线上会长什么样；能说出验证方式，说明你不是只会写 happy path。  
+面试回答可以先画顺序，再补短路和异常。完整链路是：Filter 前置 -> DispatcherServlet -> Interceptor preHandle -> Controller -> Interceptor postHandle -> 视图或响应处理 -> Interceptor afterCompletion -> Filter 后置。能把 false、异常、finally、ThreadLocal 清理讲出来，说明你不是只背调用顺序。
 
-最后用一句话收束：到达 DispatcherServlet。。回答模板可以是“先给结论，再讲机制，再补边界，最后落到项目验证”。图解时适合把它画成六个节点：问题背景、核心机制、关键风险、工程处理、验证闭环、面试收束。这样既能覆盖概念，也能展示你对真实系统复杂度的判断。
+如果把这道题讲成项目经历，可以从“进入 Filter1、进入 Filter2、DispatcherServlet”切入，先交代触发条件、请求或容器阶段，再展开关键机制。接着用“preHandle、Controller 执行、返回和清理”说明处理动作、验证指标和失败兜底。这样面试官继续追问时，你可以沿着一条真实链路回答：请求从哪里进入，Spring 容器或代理对象做了什么，哪个上下文会变化，失败时怎样限制影响面。
 
-如果还要把答案讲得更像项目经验，可以用验证闭环收束：先说明这个问题在什么条件下出现，再说线上能从哪些信号确认，最后讲处理后怎么证明风险已经下降。对这道题来说，可以围绕“Filter 发生在 Servlet 容器层，Interceptor 发生在 Spring MVC 层，多个组件按注册顺序和配置顺序形成调用链”展开，再结合 日志、单元测试、线程栈、JFR/GC 日志、最小复现和配置对照 做交叉验证。这样回答不会停在概念层，而是把发现问题、定位原因、采取动作、验证结果串成一条完整链路。最后再补一句边界：方案要和业务容忍度匹配，不能只追求理论正确，还要考虑性能、复杂度、维护成本和失败后的恢复路径。
+图解时不要只画名词列表，要把状态变化画出来：哪些节点代表入口，哪些节点代表容器扩展点，哪些节点代表代理、事务或线程上下文，哪些节点代表验证闭环。回答最后再补一句取舍：Spring 方案通常是在开发效率、扩展性、运行时代理边界和排障复杂度之间做平衡，不能只说“加注解”或“改配置”，必须说明生效时机、失效条件、灰度策略、告警阈值和回滚方式。
+
+落到线上时，还要主动补监控证据：启动日志、Bean 创建顺序、ConditionEvaluationReport、Actuator 端点、请求链路、线程池指标、事务日志、异常栈、接口 P95/P99 和安全审计等信号。能把这些信号讲出来，答案才从“知道 Spring 注解”升级为“能维护 Spring 应用”。如果面试官继续追问，还可以补一次故障演练：如何模拟代理失效、如何观察上下文、如何灰度恢复、如何持续复盘防止同类问题再次发生和扩大。
 
 ## 深挖理解
 
@@ -102,7 +112,7 @@ Filter 更适合通用底层处理，比如编码、跨域、安全过滤；Inte
 
 ## 图解提示
 
-适合画一张流程图：多个 Filter 和 Interceptor 的执行顺序怎么理解。核心节点：请求进入 Servlet 容器 -> 经过 Filter 链 -> 到达 DispatcherServl… -> Spring MVC 执行 Inte… -> 调用 Controller。画面重点突出“问题从哪里来、机制如何工作、风险在哪里、怎么落到实践”。补充一句背景：Filter 发生在 Servlet 容器层，Interceptor 发生在 Spring MVC 层，多个组件按注册顺序和配置顺序形成调用链。。
+适合画一张时序图：进入 Filter1 -> 进入 Filter2 -> DispatcherServlet -> preHandle -> Controller 执行 -> 返回和清理。画面重点突出：请求先进入 Filter 链，再到 DispatcherServlet 和 Interceptor，返回时按相反方向收尾。
 
 ## 记忆钩子
 

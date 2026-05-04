@@ -15,11 +15,14 @@ export function SiteHeader() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    const result = mode === "login" ? login(username, password) : register(username, password);
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    const result = mode === "login" ? await login(username, password) : await register(username, password);
+    setSubmitting(false);
+
     setMessage(result.message);
-
     if (result.ok) {
       setUsername("");
       setPassword("");
@@ -48,7 +51,15 @@ export function SiteHeader() {
             <Link className="nav-link" href="/routes">
               路线
             </Link>
-            <span className="nav-link text-ink/38">复习</span>
+            <Link className="nav-link" href="/review">
+              复习模式
+            </Link>
+            <Link className="nav-link" href="/me">
+              个人中心
+            </Link>
+            <Link className="nav-link" href="/admin">
+              后台
+            </Link>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -65,12 +76,15 @@ export function SiteHeader() {
 
             {ready && currentUser ? (
               <div className="flex items-center gap-2">
-                <span className="hidden rounded-full bg-white px-3 py-2 text-sm font-black text-ink/68 sm:inline-flex">
+                <Link
+                  className="hidden rounded-full bg-white px-3 py-2 text-sm font-black text-ink/68 transition hover:bg-ink hover:text-white sm:inline-flex"
+                  href="/me"
+                >
                   {currentUser}
-                </span>
+                </Link>
                 <button
                   className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-black text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-coral"
-                  onClick={logout}
+                  onClick={() => void logout()}
                   type="button"
                 >
                   <LogOut className="h-4 w-4" />
@@ -107,9 +121,9 @@ export function SiteHeader() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.22em] text-coral">Account</p>
-                <h2 className="mt-2 text-2xl font-black text-ink">{mode === "login" ? "欢迎回来" : "先注册一个本地账号"}</h2>
+                <h2 className="mt-2 text-2xl font-black text-ink">{mode === "login" ? "欢迎回来" : "先注册一个用户账号"}</h2>
                 <p className="mt-2 text-sm leading-6 text-ink/58">
-                  这里是浏览器本地存储版账号，只为了让你的学习记录、笔记和评论能真的用起来。
+                  这里是用户端账号，只保存学习记录、笔记和评论；后台管理员账号在独立入口登录。
                 </p>
               </div>
               <button className="auth-close" onClick={() => setOpen(false)} type="button">
@@ -169,8 +183,8 @@ export function SiteHeader() {
               <button className="ghost-action" onClick={() => setOpen(false)} type="button">
                 稍后再说
               </button>
-              <button className="primary-action" onClick={handleSubmit} type="button">
-                {mode === "login" ? "进入学习" : "注册并开始"}
+              <button className="primary-action" disabled={submitting} onClick={() => void handleSubmit()} type="button">
+                {submitting ? "处理中..." : mode === "login" ? "进入学习" : "注册并开始"}
               </button>
             </div>
           </div>

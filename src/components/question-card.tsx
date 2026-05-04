@@ -5,6 +5,7 @@ import { ArrowUpRight, Bookmark, Clock3, Eye, Heart, NotebookPen } from "lucide-
 
 import { useStudy } from "@/components/study-provider";
 import type { QuestionMeta } from "@/lib/content";
+import type { QuestionActivity } from "@/lib/study-store";
 
 const difficultyText: Record<QuestionMeta["difficulty"], string> = {
   easy: "入门",
@@ -19,16 +20,16 @@ type QuestionCardProps = {
 
 export function QuestionCard({ question, compact = false }: QuestionCardProps) {
   const { currentUser, getActivity, ready } = useStudy();
-  const activity = ready
-    ? getActivity(question.slug)
-    : {
-        views: 0,
-        likedBy: [],
-        favoritedBy: [],
-        masteredBy: [],
-        notesByUser: {},
-        comments: []
-      };
+  const fallbackActivity: QuestionActivity = {
+    views: 0,
+    likedBy: [],
+    favoritedBy: [],
+    masteredBy: [],
+    viewedByUser: {},
+    notesByUser: {},
+    comments: []
+  };
+  const activity = ready ? getActivity(question.slug) : fallbackActivity;
   const isMastered = ready && !!currentUser && activity.masteredBy.includes(currentUser);
   const hasNote = ready && !!currentUser && !!activity.notesByUser[currentUser]?.trim();
   const isFavorited = ready && !!currentUser && activity.favoritedBy.includes(currentUser);

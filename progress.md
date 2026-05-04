@@ -202,3 +202,183 @@
 - 独立校验结果：batch 40 的 `详细讲解` 去空白长度范围 1130-1151；10 道题的 visual 节点均为 6 个。
 - 当前 `content/question-detail-progress.json` 显示 `completedSlugs = 400`，`currentBatch = 40`，`nextBatch = 41`。
 - 全部 400 道题的第二轮内容增强已完成：每题已补入 `## 详细讲解`，并同步更新站内图解 visual 数据。
+- 2026-05-03：新增第三轮规划文档 `docs/plans/2026-05-03-common-followup-expansion-plan.md`，把后续目标切到 `## 常见追问` 详细化。
+- 这轮规划明确：仍按 `10 篇一批` 推进，总计 40 批；单篇追问目标从 2 个短追问升级到 4 个左右可继续展开的追问。
+- 规划里同步写清了单篇标准、批处理工作流、验收标准、40 批主题分配和推荐优先顺序，后续可以直接按批次开工。
+- 已开始执行第三轮 Batch 1，完成前 10 篇高频基础题的 `## 常见追问` 扩写：`java-hashmap-thread-unsafe`、`jvm-gc-roots`、`spring-ioc`、`mysql-index-left-prefix`、`mysql-transaction-isolation`、`redis-cache-penetration-breakdown-avalanche`、`tcp-three-way-handshake`、`thread-pool-core-parameters`、`volatile-visibility`、`jvm-memory-areas`。
+- 本批统一把追问从“2 个短问短答”扩成“4 个左右可展开追问”，每个追问都补了结论和继续展开抓手，优先覆盖原理、场景、故障、对比四类问题。
+- 下一批可直接继续 Batch 2（11-20）：`spring-transaction-failure`、`mysql-index-failure`、`mysql-explain`、`redis-rdb-aof`、`redis-distributed-lock`、`tcp-four-way-wave`、`process-thread-difference`、`mq-reliable-message`、`spring-bean-lifecycle`、`arraylist-linkedlist`。
+- 已继续完成第三轮 Batch 2：`spring-transaction-failure`、`mysql-index-failure`、`mysql-explain`、`redis-rdb-aof`、`redis-distributed-lock`、`tcp-four-way-wave`、`process-thread-difference`、`mq-reliable-message`、`spring-bean-lifecycle`、`arraylist-linkedlist`。
+- Batch 2 仍按统一规则把追问补到 4 个左右，并重点加强了“为什么失效、怎么排查、线上怎么验证、相近方案怎么选”这几类继续深挖的问题。
+- 下一批可直接进入 Batch 3（21-30）：`cas-aba`、`jvm-class-loading`、`jvm-gc-collectors`、`spring-aop`、`spring-mvc-flow`、`spring-boot-autoconfiguration`、`mysql-mvcc`、`mysql-b-plus-tree`、`mysql-redo-undo-binlog`、`mysql-lock-deadlock`。
+- 2026-05-03：开始做站点体验增强，不再继续补内容，转而补“个人中心”能力。
+- 已为本地学习仓库增加 `viewedByUser` 记录结构，题目浏览现在除了累计全站浏览量外，也会记录当前登录用户对每道题的浏览次数与最后浏览时间。
+- 已新增 `/me` 页面和 `PersonalCenter` 组件，个人中心目前包含：继续学习入口、浏览记录、收藏/点赞/掌握汇总、我的笔记、我的评论、常刷专题、账户状态。
+- 已把头部导航接入“个人中心”入口，登录后的用户名也可以直接跳转到 `/me`。
+- 已完成基础验证：`npm run lint` 通过，`npm run build` 通过；本地 dev server 已在 `http://127.0.0.1:3001/me` 返回 200。
+- 已继续增强个人中心，把“展示信息”推进到“驱动下一步动作”：新增自动优先级的复习队列，以及可按收藏/笔记/掌握/浏览筛选的学习资产区。
+- 当前 `/me` 已经不只是统计页，而是具备：状态总览、继续学习、复习优先级、专题热度、浏览记录、收藏/点赞/掌握聚合、笔记、评论、个人资产筛选。
+- 本轮增强后再次完成验证：`npm run lint` 通过，`npm run build` 通过。
+- 已继续完成后台管理界面：新增 `/admin` 页面和 `AdminDashboard`，覆盖后台总览、用户管理、题库管理、评论管理、笔记管理、数据导入导出和本地数据清空。
+- 后台已接入头部导航；`StudyProvider` 新增后台专用数据更新、导入和重置能力，能真实操作浏览器本地学习数据。
+- 已验证 `/admin` 登录门槛、后台总览、题库页、数据页；打开题目后浏览记录会回流到 `/me`，后台全站信号也同步更新。
+- 已继续补后台管理缺口：用户页新增后台建用户、用户改名、密码重置；评论和笔记页新增关键词搜索；数据页新增巡检面板和一键修复/空活动瘦身能力。
+- 已用浏览器验证后台新建用户、数据巡检、评论搜索面板能正常交互，并清理了测试 localStorage。
+# 2026-05-03 Question Audit
+
+- 启动第四轮题目质检：按排序每 10 道一批检查题目 Markdown，不直接重写正文，先记录事实错误、表达问题、理解门槛、过浅段落和增强建议。
+- Batch 1 范围确定为前 10 道算法题：`bfs-dfs`、`binary-search`、`dynamic-programming`、`hash-collision`、`linked-list-cycle`、`lru-cache`、`sliding-window`、`sort-stability`、`top-k`、`trie`。
+- 已完成 Batch 1 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-01-algorithm.md`。
+- Batch 1 主要结论：没有发现必须立即下线的硬伤；需要优先修复的是模板污染、DP 示例不足、哈希冲突术语不够细、滑动窗口负数边界缺失。
+- Batch 2 范围确定为排序第 11-20 题：`two-pointers`、`union-find`、`api-gateway`、`bulkhead-isolation`、`cap-base`、`circuit-breaker`、`config-center`、`consistent-hash`、`distributed-cache-coherence`、`distributed-clock-skew`。
+- 已完成 Batch 2 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-02-algorithm-distributed.md`。
+- Batch 2 主要结论：核心短答案多数可用，但分布式题后半段被 MQ 模板污染严重，算法题仍有泛化系统设计话术；下一批进入排序第 21-30 题，从 `distributed-id` 到 `leader-election`。
+- Batch 3 范围确定为排序第 21-30 题：`distributed-id`、`distributed-session`、`distributed-transaction`、`dubbo-service-governance`、`etcd-watch-lease`、`fencing-token`、`gateway-rate-limiter`、`idempotency-token`、`idempotent-distributed`、`leader-election`。
+- 已完成 Batch 3 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-03-distributed.md`。
+- Batch 3 主要结论：基础答案总体能用，但高阶分布式题需要补安全边界和专项追问；下一批进入排序第 31-40 题，从 `load-balancing-algorithms` 到 `sentinel-circuit-breaker`。
+- Batch 4 范围确定为排序第 31-40 题：`load-balancing-algorithms`、`nacos-config-center`、`nacos-service-discovery`、`raft-basic`、`rate-limiter`、`rpc-serialization-protocol`、`rpc-timeout-retry`、`saga-transaction`、`seata-at-transaction`、`sentinel-circuit-breaker`。
+- 已完成 Batch 4 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-04-distributed.md`。
+- Batch 4 主要结论：主体概念可保留，但 Nacos、Raft、RPC、Saga、Seata、Sentinel 的专项机制、重复图解和截断节点需要集中修；下一批进入排序第 41-50 题，从 `sentinel-flow-control` 到 `docker-basic`。
+- Batch 5 范围确定为排序第 41-50 题：`sentinel-flow-control`、`service-discovery`、`service-mesh`、`spring-cloud-gateway-route`、`tcc-transaction`、`trace-id`、`blue-green-canary`、`blue-green-gray`、`ci-cd`、`docker-basic`。
+- 已完成 Batch 5 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-05-distributed-engineering.md`。
+- Batch 5 主要结论：工程化题基础质量较好，分布式题仍需补专项追问和清理模板；下一批进入排序第 51-60 题，从 `docker-image-layer` 到 `linux-high-cpu`。
+- Batch 6 范围确定为排序第 51-60 题：`docker-image-layer`、`docker-multi-stage-build`、`health-check`、`k8s-configmap-secret`、`k8s-ingress`、`k8s-liveness-readiness-startup`、`kubernetes-basic`、`linux-common-debug`、`linux-disk-full`、`linux-high-cpu`。
+- 已完成 Batch 6 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-06-engineering.md`。
+- Batch 6 主要结论：正文整体可用，重点改追问专项化、重复图解和截断节点；下一批进入排序第 61-70 题，从 `linux-high-memory` 到 `aqs`。
+- Batch 7 范围确定为排序第 61-70 题：`linux-high-memory`、`linux-network-troubleshooting`、`logging-tracing`、`nginx-reverse-proxy`、`observability`、`opentelemetry-three-pillars`、`prometheus-grafana-alerting`、`rollback-strategy`、`abstract-class-interface`、`aqs`。
+- 已完成 Batch 7 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-07-engineering-java.md`。
+- Batch 7 主要结论：工程化题基础能用但专项深度不足，`opentelemetry-three-pillars` 题目定位需要重点修，Java 题正文较好但后半段被通用工程模板污染；下一批进入排序第 71-80 题，从 `arraylist-fail-fast` 到 `concurrenthashmap`。
+- Batch 8 范围确定为排序第 71-80 题：`arraylist-fail-fast`、`arraylist-linkedlist`、`atomic-classes-cas`、`bigdecimal-precision`、`blockingqueue`、`cas-aba`、`checked-runtime-exception`、`completablefuture-exception`、`completablefuture`、`concurrenthashmap`。
+- 已完成 Batch 8 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-08-java.md`。
+- Batch 8 主要结论：Java 基础答案多数可用，但所有题都存在工程化通用模板污染，部分 `常见追问` 过像占位；下一批进入排序第 81-90 题，从 `copyonwritearraylist` 到 `hashmap-thread-unsafe`。
+- Batch 9 范围确定为排序第 81-90 题：`copyonwritearraylist`、`countdownlatch-cyclicbarrier-semaphore`、`enum`、`false-sharing`、`final-finally-finalize`、`forkjoinpool`、`generic-erasure`、`hashmap-load-factor`、`hashmap-resize`、`hashmap-thread-unsafe`。
+- 已完成 Batch 9 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-09-java.md`。
+- Batch 9 主要结论：泛型擦除题存在泛型示例丢失，HashMap 两题有代码块拼接痕迹，并发工具题需要补异常边界；下一批进入排序第 91-100 题，从 `java-annotation-retention-target` 到 `lambda-effectively-final`。
+- Batch 10 范围确定为排序第 91-100 题：`java-annotation-retention-target`、`java-classpath-jar-conflict`、`java-generics-wildcard`、`java-object-immutability`、`java-record`、`java-sealed-class`、`java-spi`、`java-time-api`、`jvm-gc-roots`、`lambda-effectively-final`。
+- 已完成 Batch 10 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-10-java-jvm.md`。
+- Batch 10 主要结论：`java-time-api` 的 Date 表述需优先修，Java 新特性题重复图解集中且追问占位明显；下一批进入排序第 101-110 题，从 `lock-upgrade` 到 `stampedlock`。
+- Batch 11 范围确定为排序第 101-110 题：`lock-upgrade`、`locksupport`、`notify-notifyall`、`object-common-methods`、`optional`、`reentrantreadwritelock`、`reflection`、`serialization`、`spring-ioc`、`stampedlock`。
+- 已完成 Batch 11 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-11-java-spring.md`。
+- Batch 11 主要结论：锁相关题需要补使用边界，`locksupport` 有列表拼接，`spring-ioc` 等正文质量较好但仍需清理模板；下一批进入排序第 111-120 题，从 `stream-api` 到 `threadlocal-inheritable`。
+- Batch 12 范围确定为排序第 111-120 题：`stream-api`、`string-equals-hashcode`、`string-intern`、`string-stringbuilder-stringbuffer`、`synchronized-reentrantlock`、`thread-interrupt`、`thread-pool-core-parameters`、`thread-pool-rejection-policy`、`thread-states`、`threadlocal-inheritable`。
+- 已完成 Batch 12 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-12-java.md`。
+- Batch 12 主要结论：字符串题存在缺字和列表拼接，线程相关题需要补中断/拒绝/上下文透传边界；下一批进入排序第 121-130 题，从 `threadlocal` 到 `g1-gc`。
+- Batch 13 范围确定为排序第 121-130 题：`threadlocal`、`virtual-threads`、`volatile-visibility`、`wait-sleep`、`class-file-structure`、`class-loading`、`classloader-parent-delegation`、`direct-memory`、`escape-analysis`、`g1-gc`。
+- 已完成 Batch 13 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-13-java-jvm.md`。
+- Batch 13 主要结论：Java/JVM 基础概念多数正确，但通用模板污染继续存在；`direct-memory` 图解截断、`g1-gc` 重复图解和 JVM 专项追问不足需要优先修；下一批进入排序第 131-140 题，从 `gc-collectors` 到 `jvm-jit-compiler`。
+- Batch 14 范围确定为排序第 131-140 题：`gc-collectors`、`gc-log-analysis`、`gc-tuning-parameters`、`jfr`、`jmm-happens-before`、`jstack-jmap`、`jvm-biased-locking`、`jvm-class-unloading`、`jvm-code-cache`、`jvm-jit-compiler`。
+- 已完成 Batch 14 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-14-jvm.md`。
+- Batch 14 主要结论：JVM 排障题方向大多正确，但重复图解和占位追问集中，GC 日志/JFR/jcmd/JIT/Code Cache 这些线上证据链需要补强；下一批进入排序第 141-150 题，从 `jvm-memory-areas` 到 `strong-soft-weak-phantom-reference`。
+- Batch 15 范围确定为排序第 141-150 题：`jvm-memory-areas`、`jvm-native-memory-tracking`、`jvm-string-deduplication`、`jvm-tlab`、`jvm-zgc-shenandoah`、`metaspace`、`minor-full-gc`、`oom-troubleshooting`、`safepoint`、`strong-soft-weak-phantom-reference`。
+- 已完成 Batch 15 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-15-jvm.md`。
+- Batch 15 主要结论：内存区域和 OOM 正文较强，但 NMT/String Deduplication/TLAB/ZGC-Shenandoah 重复图解与占位追问明显；下一批进入排序第 151-160 题，开始 MQ 专题，从 `consumer-backpressure` 到 `kafka-idempotent-producer`。
+- Batch 16 范围确定为排序第 151-160 题：`consumer-backpressure`、`consumer-lag`、`dead-letter-queue`、`delayed-message`、`delayed-retry-wheel`、`exactly-once`、`kafka-acks`、`kafka-consumer-group`、`kafka-controller`、`kafka-idempotent-producer`。
+- 已完成 Batch 16 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-16-mq-kafka.md`。
+- Batch 16 主要结论：MQ 基础方向可用，Kafka 高阶语义需要补 EOS 范围、acks/ISR/min.insync、Controller KRaft、幂等生产者边界；下一批进入排序第 161-170 题，从 `kafka-isr` 到 `mq-idempotent-consume`。
+- Batch 17 范围确定为排序第 161-170 题：`kafka-isr`、`kafka-log-compaction`、`kafka-offset`、`kafka-page-cache`、`kafka-partition-selection`、`kafka-rebalance`、`kafka-storage`、`kafka-transactions`、`message-backlog`、`mq-idempotent-consume`。
+- 已完成 Batch 17 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-17-mq-kafka.md`。
+- Batch 17 主要结论：Kafka offset、消息积压、消费幂等内容较扎实；Log Compaction/Page Cache/分区选择/事务题需要修重复图解并补 Kafka 机制细节；下一批进入排序第 171-180 题，从 `mq-ordering` 到 `transaction-message`。
+- Batch 18 范围确定为排序第 171-180 题：`mq-ordering`、`mq-out-of-order-compensation`、`mq-poison-message`、`mq-reliable-message`、`outbox-pattern`、`retry-strategy`、`rocketmq-delay-level`、`rocketmq-kafka`、`rocketmq-tag-key`、`transaction-message`。
+- 已完成 Batch 18 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-18-mq.md`。
+- Batch 18 主要结论：MQ 收尾题主体方向可用，但乱序补偿、毒丸消息、RocketMQ 延迟等级和 Tag/Key 题重复图解与占位追问明显；下一批进入排序第 181-190 题，从 `mybatis/batch-insert` 到 `mybatis/mybatis-sqlsession-thread-safe`。
+- Batch 19 范围确定为排序第 181-190 题：`mybatis-batch-insert`、`mybatis-cache`、`mybatis-dynamic-sql`、`mybatis-hash-dollar`、`mybatis-lazy-loading`、`mybatis-mapper-proxy`、`mybatis-dynamic-table-name`、`mybatis-executor-types`、`mybatis-second-cache-pitfalls`、`mybatis-sqlsession-thread-safe`。
+- 已完成 Batch 19 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-19-mybatis.md`。
+- Batch 19 主要结论：MyBatis 基础答案整体较稳，但动态表名、ExecutorType、二级缓存坑点和 SqlSession 线程安全题重复图解与占位追问集中；下一批进入排序第 191-200 题，从 `mybatis-typehandler` 到 `mysql/connection-pool`。
+- Batch 20 范围确定为排序第 191-200 题：`mybatis-typehandler`、`n-plus-one-query`、`mybatis-pagination-plugin`、`mybatis-plugin-interceptor`、`mybatis-resulttype-resultmap`、`mysql-binlog-format`、`mysql-char-varchar`、`clustered-secondary-index`、`cold-hot-data-archive`、`connection-pool`。
+- 已完成 Batch 20 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-20-mybatis-mysql.md`。
+- Batch 20 主要结论：N+1、resultMap/resultType、聚簇索引/二级索引内容较好；TypeHandler、插件机制、冷热归档、连接池需要补专项机制、指标和重复图解；下一批进入排序第 201-210 题，从 `mysql/count-optimization` 到 `mysql/mysql-buffer-pool`。
+- Batch 21 范围确定为排序第 201-210 题：`mysql-count-difference`、`covering-index`、`mysql-explain-analyze`、`mysql-filesort`、`mysql-index-condition-pushdown`、`invisible-index`、`mysql-join-algorithms`、`mysql-adaptive-hash-index`、`mysql-b-plus-tree`、`mysql-buffer-pool`。
+- 已完成 Batch 21 精读和记录，输出文件：`docs/question-audit/2026-05-03-batch-21-mysql-index.md`。
+- Batch 21 主要结论：覆盖索引、ICP、B+ 树、Buffer Pool 基础较稳；count 题文件名与 slug/标题定位不一致，Join 算法和 EXPLAIN ANALYZE 需要补深度；下一批进入排序第 211-220 题，从 `mysql-change-buffer` 到 `mysql-lock-deadlock`。
+- Batch 22 范围确定为排序第 211-220 题：`mysql-change-buffer`、`mysql-deadlock-log`、`mysql-explain`、`mysql-gap-lock`、`mysql-index-failure`、`mysql-index-left-prefix`、`mysql-index-skip-scan`、`mysql-insert-intention-lock`、`mysql-json-index`、`mysql-lock-deadlock`。
+- 已完成 Batch 22 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-22-mysql-lock-index.md`。
+- Batch 22 主要结论：EXPLAIN、索引失效、最左前缀、死锁主体较稳；Change Buffer、死锁日志、Gap Lock、Skip Scan、插入意向锁、JSON 索引存在通用模板污染，其中 5 篇重复 `## 图解提示`，多处 visual 节点截断；后续校准确认第四轮审计序列按文件路径排序推进，下一批进入第 221-230 题，从 `mysql-master-slave` 到 `mysql-sharding`。
+- Batch 23 范围确定为按文件路径排序第 221-230 题：`mysql-master-slave`、`mysql-mvcc`、`mysql-next-key-lock`、`mysql-optimizer`、`mysql-pagination-optimization`、`mysql-partitioning`、`mysql-phantom-read`、`mysql-redo-undo-binlog`、`mysql-replication-gtid`、`mysql-sharding`。
+- 已完成 Batch 23 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-23-mysql-replication-sharding.md`。
+- Batch 23 主要结论：MVCC 与 redo/undo/binlog 正文质量较好；主从复制、Next-Key Lock、优化器、深分页、分区、幻读、GTID、分库分表仍有通用模板污染，其中 4 篇重复 `## 图解提示`，复制和锁相关 visual 节点截断明显；下一批进入按文件路径排序第 231-240 题，从 `mysql-slow-query` 到 `mysql-temporary-table`。
+- Batch 24 范围确定为按文件路径排序第 231-240 题：`mysql-slow-query`、`mysql-transaction-isolation`、`mysql-undo-log-purge`、`mysql-online-ddl`、`optimistic-pessimistic-lock`、`optimizer-histogram`、`mysql-prefix-index`、`read-write-splitting-delay`、`sql-execution-order`、`mysql-temporary-table`。
+- 已完成 Batch 24 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-24-mysql-sql-optimization.md`。
+- Batch 24 主要结论：事务隔离题正文较强；慢 SQL、undo purge、Online DDL、直方图、读写分离延迟、SQL 逻辑顺序和临时表仍需补命令、参数、执行计划字段和监控指标，其中 3 篇重复 `## 图解提示`；本轮已完成 `npm run lint`，结果通过；下一批进入网络专题第 241-250 题，从 `cdn` 到 `http-cache`。
+- Batch 25 范围确定为按文件路径排序第 241-250 题：`cdn`、`cookie-session-token`、`cors`、`dns-cache`、`dns-resolution`、`forward-proxy-reverse-proxy`、`get-post`、`grpc-rest`、`grpc-streaming`、`http-cache`。
+- 已完成 Batch 25 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-25-network-http-dns.md`。
+- Batch 25 主要结论：DNS 解析和 GET/POST 正文较好；Cookie/Session/Token、CORS、DNS 缓存、gRPC 流式调用和 HTTP 缓存需要补安全头、预检、TTL、HTTP/2 流控、Cache-Control 等协议细节，其中 3 篇重复 `## 图解提示`；下一批继续网络专题第 251-260 题，从 `http-https` 到 `tcp-time-wait`。
+- Batch 26 范围确定为按文件路径排序第 251-260 题：`http-https`、`http-keep-alive`、`http-range-request`、`http-status-codes`、`http2-http3`、`tcp-four-way-wave`、`tcp-nagle-delayed-ack`、`tcp-reliable`、`tcp-three-way-handshake`、`tcp-time-wait`。
+- 已完成 Batch 26 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-26-network-http-tcp.md`。
+- Batch 26 主要结论：HTTP/HTTPS、状态码、HTTP/2/3、TCP 三次握手、四次挥手和可靠传输正文较好；HTTP Keep-Alive、Range、Nagle/Delayed ACK、TIME_WAIT 仍有通用模板污染，其中 3 篇重复 `## 图解提示`；下一批进入网络收尾和 OS 专题第 261-270 题，从 `tcp-udp` 到 `linux-ebpf`。
+- Batch 27 范围确定为按文件路径排序第 261-270 题：`tcp-udp`、`tls-handshake`、`tls13-vs-tls12`、`websocket-http`、`context-switch`、`os-deadlock`、`epoll`、`io-multiplexing`、`linux-cgroup`、`linux-ebpf`。
+- 已完成 Batch 27 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-27-network-os.md`。
+- Batch 27 主要结论：TCP/UDP、上下文切换、OS 死锁、IO 多路复用正文较好；TLS 握手、TLS 1.3、WebSocket、epoll、cgroup、eBPF 仍需补握手字段、系统调用、内核对象和排障命令，其中 3 篇重复 `## 图解提示`；下一批进入 OS 收尾与项目设计第 271-280 题，从 `linux-file-descriptor` 到 `anti-brush`。
+- Batch 28 范围确定为按文件路径排序第 271-280 题：`linux-file-descriptor`、`linux-namespace`、`mmap`、`page-replacement`、`process-thread-difference`、`user-kernel-mode`、`virtual-memory`、`zero-copy`、`alert-fatigue`、`anti-brush`。
+- 已完成 Batch 28 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-28-os-project.md`。
+- Batch 28 主要结论：进程线程、用户态/内核态、虚拟内存正文较好；fd、namespace、mmap、页面置换、零拷贝仍需补内核对象和观测命令，告警疲劳和接口防刷需要补指标、误伤、审计和治理闭环，其中 3 篇重复 `## 图解提示`；下一批进入项目设计第 281-290 题，从 `api-compatibility` 到 `coupon-anti-abuse`。
+- Batch 29 范围确定为按文件路径排序第 281-290 题：`api-compatibility`、`api-idempotency`、`api-signature`、`api-versioning`、`audit-log-tamper-proof`、`audit-log`、`canary-monitoring`、`capacity-planning`、`comment-system`、`coupon-anti-abuse`。
+- 已完成 Batch 29 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-29-project-api-governance.md`。
+- Batch 29 主要结论：接口幂等题正文较好；接口兼容、签名、版本、审计、防篡改、灰度、容量、评论和优惠券防刷需要补字段规范、数据结构、状态机、唯一约束、回滚和监控指标，其中 5 篇重复 `## 图解提示`；本轮 `npm run lint` 再次通过；下一批进入项目设计第 291-300 题，从 `coupon-system` 到 `excel-import-export`。
+- Batch 30 范围确定为按文件路径排序第 291-300 题：`coupon-system`、`data-migration-plan`、`data-permission`、`data-sync-binlog-mq`、`es-index-sync`、`feature-flag`、`file-upload`、`gateway-auth-design`、`global-exception-handler`、`excel-import-export`。
+- 已完成 Batch 30 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-30-project-data-platform.md`。
+- Batch 30 主要结论：全局异常处理题正文较好；优惠券系统、数据迁移、数据权限、DB/MQ/ES 同步、功能开关、文件上传、网关鉴权和 Excel 导入导出需要补状态机、失败补偿、安全校验、权限脱敏和清理计划，其中 4 篇重复 `## 图解提示`；下一批进入项目设计第 301-310 题，从 `incident-review` 到 `order-state-machine`。
+- Batch 31 范围确定为按文件路径排序第 301-310 题：`incident-review`、`inventory-deduction`、`inventory-reservation`、`job-scheduler-design`、`jwt-login`、`multi-region-disaster-recovery`、`multi-tenant-isolation`、`notification-system`、`oauth2-oidc`、`order-state-machine`。
+- 已完成 Batch 31 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-31-project-transactions-identity.md`。
+- Batch 31 主要结论：JWT 登录题正文较好；故障复盘、库存扣减/预占、分布式调度、多地域、多租户、通知、OAuth/OIDC 和订单状态机需要补状态流转、协议参数、故障演练、幂等补偿和审计闭环，其中 6 篇重复 `## 图解提示`；下一批进入项目设计第 311-320 题，从 `oss-file-storage` 到 `search-relevance-ranking`。
+- Batch 32 范围确定为按文件路径排序第 311-320 题：`oss-file-storage`、`pagination-design`、`payment-system-design`、`pressure-testing`、`rbac`、`reconciliation-system`、`runbook-design`、`search-autocomplete`、`search-design`、`search-relevance-ranking`。
+- 已完成 Batch 32 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-32-project-search-payment.md`。
+- Batch 32 主要结论：分页和 RBAC 正文较好；对象存储、支付、压测、对账、Runbook、搜索联想、站内搜索和搜索相关性需要补直传安全、资金状态、压测模型、差错处理、可执行步骤和搜索评估指标，其中 6 篇重复 `## 图解提示`；下一批进入项目收尾与 Redis 第 321-330 题，从 `seckill-system-design` 到 `cache-db-consistency`。
+- Batch 33 范围确定为按文件路径排序第 321-330 题：`seckill-system-design`、`sensitive-data-masking`、`slo-sli-error-budget`、`sso-design`、`webhook-design`、`redis-bitmap-hyperloglog`、`bloom-filter`、`cache-aside`、`cache-breakdown-mutex`、`cache-db-consistency`。
+- 已完成 Batch 33 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-33-project-redis-cache.md`。
+- Batch 33 主要结论：秒杀、布隆过滤器、缓存一致性正文较好；敏感数据脱敏、SLO/SLI、SSO、Webhook、Bitmap/HLL、Cache Aside、缓存击穿需要补数据分级、错误预算、协议流、Redis 命令、参数和竞态窗口，其中 5 篇重复 `## 图解提示`；本轮 `npm run lint` 通过；下一批进入 Redis Cluster 和缓存专题第 331-340 题。
+- Batch 34 范围确定为按文件路径排序第 331-340 题：`cache-preheat-degrade`、`cache-warming`、`redis-cluster-moved-ask`、`redis-memory-fragmentation`、`redis-pubsub-vs-stream`、`redis-acl`、`redis-cache-penetration-breakdown-avalanche`、`redis-client-output-buffer`、`redis-cluster-failover`、`redis-cluster-hash-slot`。
+- 已完成 Batch 34 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-34-redis-cluster-cache.md`。
+- Batch 34 主要结论：缓存三大问题正文较好；Cluster、ACL、输出缓冲区、内存碎片和缓存预热/降级需要补命令、参数、状态机和线上排查证据，其中 5 篇重复 `## 图解提示`；下一批进入 Redis 数据结构与工具机制第 341-350 题。
+- Batch 35 范围确定为按文件路径排序第 341-350 题：`redis-data-structures`、`redis-distributed-lock`、`redis-expire-eviction`、`redis-geo`、`redis-hot-key-big-key`、`redis-key-design`、`redis-lua`、`redis-rdb-aof`、`redis-pipeline`、`redis-quicklist-listpack`。
+- 已完成 Batch 35 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-35-redis-structures-tools.md`。
+- Batch 35 主要结论：Redis 数据结构、分布式锁、过期淘汰、热 key/大 key 和持久化主体较好；GEO、key 设计、Lua、Pipeline、quicklist/listpack 需要补命令、内部编码和风险边界，其中 2 篇重复 `## 图解提示`；下一批进入 Redis 运维与语义机制第 351-360 题。
+- Batch 36 范围确定为按文件路径排序第 351-360 题：`redis-rate-limit-lua`、`redis-scan-vs-keys`、`redis-sentinel-cluster`、`redis-single-thread-fast`、`redis-slowlog`、`redis-stream-consumer-group`、`redis-stream`、`redis-transaction`、`redis-unlink-vs-del`、`redis-redlock`。
+- 已完成 Batch 36 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-36-redis-ops-semantics.md`。
+- Batch 36 主要结论：Redis 单线程题正文较好；限流、SCAN、SlowLog、Stream、事务、UNLINK 和 RedLock 需要补语义边界、失败补偿、争议点和运维命令，其中 4 篇重复 `## 图解提示`；下一批进入 Redis 排行榜与 Spring 基础第 361-370 题。
+- Batch 37 范围确定为按文件路径排序第 361-370 题：`redis-zset-ranking`、`autowired-resource`、`spring-bean-scope`、`beanfactory-applicationcontext`、`beanpostprocessor`、`spring-circular-dependency`、`spring-conditional-annotation`、`spring-boot-configuration-priority`、`controller-restcontroller`、`factorybean`。
+- 已完成 Batch 37 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-37-redis-spring-basics.md`。
+- Batch 37 主要结论：Spring 依赖注入、Bean 作用域和循环依赖正文较好；ZSet 排行榜、容器差异、BeanPostProcessor、条件装配、配置优先级和 FactoryBean 需要补生命周期位置、源码术语和工程边界；下一批进入 Spring Web、Boot 与 AOP 第 371-380 题。
+- Batch 38 范围确定为按文件路径排序第 371-380 题：`filter-interceptor-aop`、`filter-interceptor-order`、`spring-boot-actuator`、`spring-aop`、`spring-application-event-transaction`、`spring-async`、`spring-bean-lifecycle`、`spring-boot-autoconfiguration`、`spring-boot-starter-custom`、`spring-boot-startup-flow`。
+- 已完成 Batch 38 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-38-spring-web-boot-aop.md`。
+- Batch 38 主要结论：Filter/Interceptor/AOP、Spring AOP、Bean 生命周期和自动配置正文较好；Actuator、事务事件、`@Async`、自定义 Starter 和启动流程需要补安全边界、代理边界、线程池和 Boot 3 机制，其中 3 篇重复 `## 图解提示`；下一批进入 Spring Cache、MVC 扩展与 Security 第 381-390 题。
+- Batch 39 范围确定为按文件路径排序第 381-390 题：`spring-cache-annotation`、`spring-configuration-properties`、`spring-event`、`spring-import-selector`、`spring-mvc-argument-resolver`、`spring-mvc-flow`、`spring-mvc-message-converter`、`spring-profiles`、`spring-scheduled-pitfalls`、`spring-security-authentication-authorization`。
+- 已完成 Batch 39 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-39-spring-cache-mvc-security.md`。
+- Batch 39 主要结论：Spring MVC 流程和 Security 基础正文较好；Cache、ConfigurationProperties、Import、参数解析器、消息转换器、Profile 和 Scheduled 需要补调用链、状态码、配置覆盖和生产坑位，其中 6 篇重复 `## 图解提示`；下一批进入 Spring Security、事务与 WebFlux 第 391-400 题。
+- Batch 40 范围确定为按文件路径排序第 391-400 题：`spring-security-jwt`、`spring-transaction-failure`、`spring-validation`、`spring-webclient`、`spring-boot-starter`、`spring-transaction-isolation`、`spring-transaction-propagation`、`spring-transaction-readonly`、`spring-transaction-rollback-rules`、`spring-mvc-webflux`。
+- 已完成 Batch 40 精读和记录，输出文件：`docs/question-audit/2026-05-04-batch-40-spring-security-transaction-webflux.md`。
+- Batch 40 主要结论：事务失效、Starter 和传播行为正文较好；JWT、Validation、WebClient、事务隔离/readOnly/rollback、WebFlux 需要补安全链路、数据库映射和响应式边界，其中 1 篇重复 `## 图解提示`。
+- 第四轮题目质检已按文件路径排序完成第 1-400 题，全部审计记录位于 `docs/question-audit/`；下一阶段建议按 P1 优先级批量修正文、重复 `## 图解提示` 和 visual 节点截断。
+- 本轮验证：`docs/question-audit/` 下审计文件数量为 40；`npm run lint` 通过。
+- 第五轮内容修复已启动：新增 `scripts/repair-audit-batch.mjs`，用于按审计批次替换指定题目的 `详细讲解`、`常见追问`、`图解提示`，并同步更新 `content/visuals/question-visuals.json` 和 `content/question-repair-progress.json`。
+- 已完成第五轮 Batch 34 修复，范围为按文件路径排序第 331-340 题：`cache-preheat-degrade`、`cache-warming`、`redis-cluster-moved-ask`、`redis-memory-fragmentation`、`redis-pubsub-vs-stream`、`redis-acl`、`redis-cache-penetration-breakdown-avalanche`、`redis-client-output-buffer`、`redis-cluster-failover`、`redis-cluster-hash-slot`。
+- Batch 34 修复验证：10 篇 `详细讲解` 去空白长度均在 1000-2000 字符之间；`相关问题通常都不是孤立出现` 模板句清零；每篇只有 1 个 `## 详细讲解`、1 个 `## 常见追问`、1 个 `## 图解提示`；每篇常见追问为 4 个；对应 visual 均为 6 个节点且无 `...`/`…` 截断标签。
+- `content/question-repair-progress.json` 已记录 `completedRepairBatches: [34]`，下一批为 Batch 35。
+- 本轮工程验证：`npm run lint` 通过；`npm run build` 通过，Next.js 成功生成 430 个页面。
+- 已完成第五轮 Batch 35 修复，范围为按文件路径排序第 341-350 题：`redis-data-structures`、`redis-distributed-lock`、`redis-expire-eviction`、`redis-geo`、`redis-hot-key-big-key`、`redis-key-design`、`redis-lua`、`redis-rdb-aof`、`redis-pipeline`、`redis-quicklist-listpack`。
+- Batch 35 修复验证：10 篇 `详细讲解` 去空白长度均在 1000-2000 字符之间；`相关问题通常都不是孤立出现` 模板句清零；每篇只有 1 个 `## 详细讲解`、1 个 `## 常见追问`、1 个 `## 图解提示`；每篇常见追问为 4 个；对应 visual 均为 6 个节点且无 `...`/`…` 截断标签。
+- `content/question-repair-progress.json` 已记录 `completedRepairBatches: [34, 35]`，下一批为 Batch 36。
+- Batch 35 工程验证：`npm run lint` 通过；`npm run build` 通过，Next.js 成功生成 430 个页面。
+- 已完成第五轮 Batch 36 修复，范围为按文件路径排序第 351-360 题：`redis-rate-limit-lua`、`redis-scan-vs-keys`、`redis-sentinel-cluster`、`redis-single-thread-fast`、`redis-slowlog`、`redis-stream-consumer-group`、`redis-stream`、`redis-transaction`、`redis-unlink-vs-del`、`redis-redlock`。
+- Batch 36 修复验证：10 篇 `详细讲解` 去空白长度均在 1000-2000 字符之间；`相关问题通常都不是孤立出现` 模板句清零；每篇只有 1 个 `## 详细讲解`、1 个 `## 常见追问`、1 个 `## 图解提示`；每篇常见追问为 4 个；对应 visual 均为 6 个节点且无 `...`/`…` 截断标签。
+- `content/question-repair-progress.json` 已记录 `completedRepairBatches: [34, 35, 36]`，下一批为 Batch 37。
+- Batch 36 工程验证：`npm run lint` 通过；`npm run build` 通过，Next.js 成功生成 430 个页面。
+- 已完成第五轮 Batch 37 修复，范围为按文件路径排序第 361-370 题：`redis-zset-ranking`、`autowired-resource`、`spring-bean-scope`、`beanfactory-applicationcontext`、`beanpostprocessor`、`spring-circular-dependency`、`spring-conditional-annotation`、`spring-boot-configuration-priority`、`controller-restcontroller`、`factorybean`。
+- Batch 37 修复验证：10 篇 `详细讲解` 去空白长度均在 1000-2000 字符之间；`相关问题通常都不是孤立出现` 模板句清零；每篇只有 1 个 `## 详细讲解`、1 个 `## 常见追问`、1 个 `## 图解提示`；每篇常见追问为 4 个；对应 visual 均为 6 个节点且无 `...`/`…` 截断标签。
+- `content/question-repair-progress.json` 已记录 `completedRepairBatches: [34, 35, 36, 37]`，下一批为 Batch 38。
+- Batch 37 工程验证：`npm run lint` 通过；`npm run build` 通过，Next.js 成功生成 430 个页面。
+- 发现并修复第五轮脚本尾段污染：`scripts/repair-audit-batch.mjs` 原本给 Spring 条目追加 Redis 专用尾段，已改为按题目路径区分 Spring/Redis 扩展段落，并重跑 Batch 37。
+- Batch 37 复核验证：`node scripts/validate-repair-batch.mjs 37` 通过；Spring 目录 `Redis 方案|Redis 系统|Redis 命令` 搜索结果清零。
+- 已新增 `scripts/validate-repair-batch.mjs`，用于按排序批次校验 10 篇题目的 `详细讲解` 字数、重复标题、追问数量、visual 节点、截断标签和 Spring/Redis 尾段污染。
+- 已完成第五轮 Batch 38 修复，范围为按文件路径排序第 371-380 题：`filter-interceptor-aop`、`filter-interceptor-order`、`spring-boot-actuator`、`spring-aop`、`spring-application-event-transaction`、`spring-async`、`spring-bean-lifecycle`、`spring-boot-autoconfiguration`、`spring-boot-starter-custom`、`spring-boot-startup-flow`。
+- Batch 38 修复验证：`node scripts/validate-repair-batch.mjs 38` 通过；10 篇 `详细讲解` 去空白长度均在 1000-2000 字符之间；每篇常见追问为 4 个；对应 visual 均为 6 个节点且无截断标签。
+- `content/question-repair-progress.json` 已记录 `completedRepairBatches: [34, 35, 36, 37, 38]`，下一批为 Batch 39。
+- Batch 38 后工程验证：`npm run lint` 通过。
+- 已完成第五轮 Batch 39 修复，范围为按文件路径排序第 381-390 题：`spring-cache-annotation`、`spring-configuration-properties`、`spring-event`、`spring-import-selector`、`spring-mvc-argument-resolver`、`spring-mvc-flow`、`spring-mvc-message-converter`、`spring-profiles`、`spring-scheduled-pitfalls`、`spring-security-authentication-authorization`。
+- Batch 39 修复验证：`node scripts/validate-repair-batch.mjs 39` 通过；10 篇 `详细讲解` 去空白长度均在 1000-2000 字符之间；每篇常见追问为 4 个；对应 visual 均为 6 个节点且无截断标签。
+- 修正 `scripts/validate-repair-batch.mjs` 的 Spring/Redis 污染检测规则，避免 Spring Cache 正常提到 Redis 命令时误报，只检测旧 Redis 尾段特征句式。
+- `content/question-repair-progress.json` 已记录 `completedRepairBatches: [34, 35, 36, 37, 38, 39]`，下一批为 Batch 40。
+- 已完成第五轮 Batch 40 修复，范围为按文件路径排序第 391-400 题：`spring-security-jwt`、`spring-transaction-failure`、`spring-validation`、`spring-webclient`、`spring-boot-starter`、`spring-transaction-isolation`、`spring-transaction-propagation`、`spring-transaction-readonly`、`spring-transaction-rollback-rules`、`spring-mvc-webflux`。
+- Batch 40 修复验证：`node scripts/validate-repair-batch.mjs 40` 通过；10 篇 `详细讲解` 去空白长度均在 1000-2000 字符之间；每篇常见追问为 4 个；对应 visual 均为 6 个节点且无截断标签。
+- `content/question-repair-progress.json` 已记录 `completedRepairBatches: [34, 35, 36, 37, 38, 39, 40]`，`nextBatch: null`。
+- 第五轮最终复核：`node scripts/validate-repair-batch.mjs 34` 至 `40` 全部通过。
+- 第五轮最终工程验证：`npm run lint` 通过；`npm run build` 通过，Next.js 成功生成 430 个页面。

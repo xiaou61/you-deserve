@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
-import { SiteHeader } from "@/components/site-header";
-import { StudyProvider } from "@/components/study-provider";
+import { AppShell } from "@/components/app-shell";
 
 import "./globals.css";
 
@@ -18,10 +17,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body>
-        <StudyProvider>
-          <SiteHeader />
-          {children}
-        </StudyProvider>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

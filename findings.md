@@ -11,3 +11,76 @@
 - 题目平均长度约 1.7KB，需要追加更结构化的“回答框架、项目落地、追问、避坑、图解提示”。
 - 扩写后 400 道题平均长度约 6KB，全部增加了 `深挖理解 / 实战落地 / 追问准备 / 回答模板 / 图解提示`。
 - 重新生成 visual 后，400 道题全部有图解数据；节点数量 3 到 7 个，类型分布为结构图 184、流程图 37、时序图 32、对比图 62、场景图 85。
+
+## 2026-05-03
+- 当前 400 道题已经全部补齐 `详细讲解` 和图解数据，但 `## 常见追问` 仍普遍偏短，多数题目还是 2 个追问、每个追问只有 1 句回答。
+- 基础题和项目设计题的追问短板最明显：正文已经像完整文章，追问区却还不够支撑二面、三面的继续深挖。
+- 项目设计类样本（如 `payment-system-design`）已经具备正文骨架，但追问仍较泛，适合第三轮按“原理、场景、故障、对比”四类扩写。
+- 全站分类分布里，`项目设计` 47 篇、`MySQL` 45 篇、`Spring` 40 篇、`Redis` 36 篇、`分布式系统` 34 篇、`消息队列` 30 篇，是第三轮追问增强最值得优先治理的内容池。
+- 项目其实已经有一套本地学习数据模型：账号、点赞、收藏、掌握、笔记、评论都已经存在于 `study-store`，只是此前没有“个人中心”这种用户视角的聚合页面。
+- 现有题目页会在进入时调用 `incrementView(slug)`，原本只累计全站浏览量；这次扩展后，`QuestionActivity` 新增了 `viewedByUser`，可以同时记录某个用户看过某题几次、最后一次浏览时间。
+- 个人中心最自然的落点不是做社交档案，而是做学习工作台：继续学习入口、浏览记录、收藏/点赞/掌握、笔记、评论、专题偏好这些都能从现有本地数据推导出来。
+- 在个人中心第二轮增强里，又补了两个关键体验层：`复习队列` 和 `学习资产筛选`。前者按未掌握/已收藏/有笔记/反复浏览等信号自动排优先级，后者允许用户在个人中心里按“全部 / 收藏 / 笔记 / 掌握 / 浏览”快速筛自己的学习资产。
+- 第四轮题目质检 Batch 1（算法前 10 题）发现：基础答案整体可用，硬性事实错误不多，但自动扩写段落有明显模板污染，算法题被套入“流量、并发、灰度、监控、服务日志”等系统设计话术，影响理解焦点。
+- Batch 1 的优先 P1 修复点：`dynamic-programming` 缺少具体 DP 示例，`hash-collision` 的“再哈希”表述需要区分扩容 rehash/双重哈希/链地址法，`sliding-window` 需要明确负数场景普通滑窗会失效。
+- Batch 1 建议统一治理 `追问准备` 与 `图解提示`：追问应改成每题专项追问，图解节点要避免 `哈希`、`get 时`、`如果 fast` 这类截断短语。
+- 第四轮题目质检 Batch 2（排序第 11-20 题）发现：分布式题的主体答案大多可用，但自动扩写段落大量混入消息队列模板，`api-gateway`、`bulkhead-isolation`、`circuit-breaker`、`config-center`、`consistent-hash`、`distributed-cache-coherence`、`distributed-clock-skew` 都出现了不贴题的 Broker、死信、重放、消息乱序等话术。
+- Batch 2 的优先 P1 修复点：`union-find` 需要补路径压缩 + 按秩/按大小合并的复杂度和删除限制；`distributed-cache-coherence` 需要补本地缓存 + Redis 的失效通知、版本号和 TTL 兜底；`distributed-clock-skew` 需要区分 Redis 服务端 TTL 与客户端本地时钟影响。
+- Batch 2 建议把分布式题的 `实战落地` 按主题重写，不再复用 MQ 链路模板；同时清理重复 `图解提示` 和 `consistent-hash` 的 `hash(ke…` 截断节点。
+- 第四轮题目质检 Batch 3（排序第 21-30 题）发现：`distributed-id`、`distributed-session`、`dubbo-service-governance`、`etcd-watch-lease`、`fencing-token`、`gateway-rate-limiter`、`idempotency-token`、`leader-election` 的基础结论基本可用，但 `实战落地` 和 `回答模板` 继续复用 MQ 链路，导致高阶题的安全边界被稀释。
+- Batch 3 的优先 P1 修复点：`fencing-token` 要强调资源方保存最大 token 并拒绝旧 token；`leader-election` 要补租约/任期/脑裂/旧 leader 防护；`etcd-watch-lease` 要补 revision、compact、断线重拉；`idempotency-token` 要补 token 状态机和原结果返回。
+- Batch 3 还发现 5 篇存在重复 `图解提示`：`dubbo-service-governance`、`etcd-watch-lease`、`fencing-token`、`gateway-rate-limiter`、`idempotency-token`；其中 `etcd-watch-lease` 有明显节点截断。
+- 第四轮题目质检 Batch 4（排序第 31-40 题）发现：基础概念普遍可用，但 `nacos-config-center`、`nacos-service-discovery`、`raft-basic`、`rpc-serialization-protocol`、`saga-transaction`、`seata-at-transaction`、`sentinel-circuit-breaker` 都有重复 `图解提示`，且多个节点被截断。
+- Batch 4 的优先 P1 修复点：`raft-basic` 补选举、日志匹配和安全性；`seata-at-transaction` 补 TC/TM/RM、全局锁和脏回滚；`saga-transaction` 补补偿幂等和补偿失败；`sentinel-circuit-breaker` 补统计窗口、慢调用阈值、最小请求数和 fallback/blockHandler 边界。
+- Batch 4 建议分清相近题：`rate-limiter` 讲算法原理，`gateway-rate-limiter` 讲网关维度和分布式实现；`nacos-config-center` 讲 dataId/group/namespace/监听/快照，`nacos-service-discovery` 讲实例注册/订阅/心跳/保护阈值。
+- 第四轮题目质检 Batch 5（排序第 41-50 题）发现：`ci-cd`、`docker-basic` 和 `service-discovery` 的正文质量较好；`sentinel-flow-control`、`spring-cloud-gateway-route`、`tcc-transaction` 存在重复 `图解提示`，且分布式题继续有 MQ 模板污染。
+- Batch 5 的优先 P1 修复点：`tcc-transaction` 补空回滚、幂等和悬挂；`trace-id` 补 MDC、异步上下文、采样和 span 体系；`service-mesh` 补 data plane/control plane、Envoy/Istio、mTLS 和 sidecar 成本；`spring-cloud-gateway-route` 补 predicate/filter/GlobalFilter/order/路由排查。
+- Batch 5 发现 `blue-green-canary.md` 与 `blue-green-gray.md` 主题相邻，建议保留两题但明确分工，避免读者感觉重复。
+- 第四轮题目质检 Batch 6（排序第 51-60 题）发现：Docker、K8s、Linux 排障题主体质量整体较好，硬伤少；主要问题是 `追问准备` 仍是项目设计模板，未围绕 Docker/K8s/Linux 专项追问展开。
+- Batch 6 发现 6 篇重复 `图解提示`：`docker-multi-stage-build`、`k8s-configmap-secret`、`k8s-ingress`、`k8s-liveness-readiness-startup`、`linux-disk-full`、`linux-high-cpu`。
+- Batch 6 的优先修复点：`k8s-configmap-secret` 补 Secret 默认 base64、RBAC、etcd 加密和挂载更新差异；`health-check` 修复列表拼接痕迹；`linux-disk-full` 补 `lsof +L1`、`du -xhd1`；`linux-high-cpu` 补 `pidstat`、`jcmd`、GC 和容器 throttle。
+- 第四轮题目质检 Batch 7（排序第 61-70 题）发现：Linux、Nginx、可观测性题基础结论大多正确，但后半段继续被通用工程模板稀释，Java 题前半段质量较好但 `实战落地/追问准备/回答模板` 混入灰度、压测、JFR 等不贴题话术。
+- Batch 7 发现 4 篇重复 `图解提示`：`linux-high-memory`、`linux-network-troubleshooting`、`opentelemetry-three-pillars`、`prometheus-grafana-alerting`；`linux-high-memory`、`abstract-class-interface`、`aqs` 存在图解节点截断。
+- Batch 7 的优先修复点：`opentelemetry-three-pillars` 需要解决 slug/主题不一致，补 OTel SDK、Collector、Exporter、上下文传播和语义约定；Linux 网络和高内存题补具体命令链路；AQS 补 acquire/release、waitStatus、Condition 队列和公平/非公平细节。
+- 第四轮题目质检 Batch 8（排序第 71-80 题）发现：Java 集合、并发、异常、BigDecimal、CompletableFuture 的基础答案整体可用，但 10 篇都命中了通用模板，追问普遍需要从“工程化泛问”改成 Java 专项追问。
+- Batch 8 发现 3 篇重复 `图解提示`：`atomic-classes-cas`、`bigdecimal-precision`、`completablefuture-exception`；多篇图解节点使用省略号截断。
+- Batch 8 的优先修复点：`atomic-classes-cas` 补 VarHandle/LongAdder/volatile 语义，`bigdecimal-precision` 补不可变性和金额规范，`completablefuture-exception` 补 `get/join` 异常包装、`allOf` 失败行为、超时和取消，`concurrenthashmap` 补 `sizeCtl`、ForwardingNode、CounterCell 和复合操作边界。
+- 第四轮题目质检 Batch 9（排序第 81-90 题）发现：`countdownlatch-cyclicbarrier-semaphore`、`final-finally-finalize`、`hashmap-thread-unsafe` 正文相对扎实，但 Java 题后半段继续被工程化模板污染。
+- Batch 9 发现 `false-sharing` 存在重复 `图解提示`；`generic-erasure` 有泛型示例丢失成 `List 和 List`、图解 `List ->` 的问题；`hashmap-load-factor` 和 `hashmap-resize` 有代码块拼接进正文的痕迹。
+- Batch 9 的优先修复点：`generic-erasure` 需要保护 `List<String>` 等泛型示例并补 reifiable/non-reifiable；`false-sharing` 补 JMH、`@Contended` 参数和 MESI；HashMap 两题修复 threshold 代码块表达，并补容量预估和扩容拆链细节。
+- 第四轮题目质检 Batch 10（排序第 91-100 题）发现：Java 注解、SPI、record、sealed、lambda 等新特性题短答案方向正确，但 `常见追问` 多为占位式自动抽句，且 9 篇重复 `图解提示`。
+- Batch 10 的 P1 修复点：`java-time-api` 对 Date 的描述不严谨，应明确 Date 本身表示时间点，不保存格式和时区；问题更多来自旧 API 可变性、默认时区显示、Calendar/SimpleDateFormat 设计和线程安全。
+- Batch 10 建议重点补：注解默认 Retention/元注解、SPI classloader/多实现顺序、record compact constructor/浅不可变、sealed permits 限制、lambda 捕获和副作用、GC Roots 引用链排查。
+- 第四轮题目质检 Batch 11（排序第 101-110 题）发现：`lock-upgrade`、`reflection`、`serialization`、`spring-ioc` 正文相对扎实，但并发锁题普遍缺少使用边界，后半段仍套 Java 通用模板。
+- Batch 11 发现 `locksupport` 的 `详细讲解/深挖理解` 存在列表拼接，如“许可证模型： - park”；`reentrantreadwritelock` 和 `stampedlock` 存在重复 `图解提示`，多篇图解节点截断。
+- Batch 11 的优先修复点：LockSupport 补 blocker/中断/虚假返回，notifyAll 补 wait 释放锁和惊群，ReentrantReadWriteLock 补锁降级/升级风险，StampedLock 补 stamp 匹配释放、不可重入和 tryConvertToWriteLock。
+- 第四轮题目质检 Batch 12（排序第 111-120 题）发现：`thread-pool-core-parameters`、`synchronized-reentrantlock`、`string-equals-hashcode` 正文较好，但字符串和线程题后半段继续有模板化追问。
+- Batch 12 的 P1 修复点：`string-stringbuilder-stringbuffer` 正文出现“频繁用  拼接字符串”，缺失 `+` 符号；`string-intern` 有列表拼接；`thread-interrupt`、`thread-pool-rejection-policy`、`threadlocal-inheritable` 重复 `图解提示`。
+- Batch 12 建议补：Stream 惰性/终止操作，intern JDK 版本差异，中断标记 API 区别，线程池拒绝策略监控和自定义兜底，ThreadLocal 上下文透传替代方案。
+- 第四轮题目质检 Batch 13（排序第 121-130 题）发现：ThreadLocal、volatile、wait/sleep、类加载等基础内容总体可用，但 10 篇继续命中通用工程模板，Java/JVM 专项追问不够。
+- Batch 13 的 P1 修复点：`jvm/direct-memory` 图解节点截断为 `DirectByteB...`、`-XX`，丢失 DirectByteBuffer 和 MaxDirectMemorySize 语义；`jvm/g1-gc` 存在重复 `图解提示` 且 `Remembered Set...` 截断。
+- Batch 13 建议补：虚拟线程 JDK 21/carrier/pinning，类文件 `0xCAFEBABE`/Code/StackMapTable，类加载主动触发条件，直接内存 Cleaner/NMT/容器内存，逃逸分析 JIT 观察方式，G1 SATB/Humongous/Evacuation Failure/GC 日志字段。
+- 第四轮题目质检 Batch 14（排序第 131-140 题）发现：GC/JFR/JMM/JIT 等 JVM 排障题主体方向多数正确，但 10 篇继续命中通用模板，6 篇重复 `图解提示`。
+- Batch 14 的 P1 修复点：`gc-log-analysis`、`jfr`、`jvm-biased-locking`、`jvm-class-unloading`、`jvm-code-cache`、`jvm-jit-compiler` 重复图解；偏向锁、类卸载、Code Cache、JIT 的 `常见追问` 明显占位；Code Cache/类卸载/偏向锁图解节点截断。
+- Batch 14 建议补：GC 日志真实字段和 `-Xlog:gc*`，JFR `jcmd` 采集命令和 JMC 分析入口，jstack/jmap/jstat 具体命令链，JMM final/传递性规则，Code Cache/JIT 的 `jcmd Compiler.codecache`、分层编译、OSR、deoptimization。
+- 第四轮题目质检 Batch 15（排序第 141-150 题）发现：JVM 内存区域、OOM、引用类型正文相对扎实；NMT、String Deduplication、TLAB、ZGC/Shenandoah 的基础方向正确但追问和图解模板化。
+- Batch 15 的 P1 修复点：`jvm-native-memory-tracking`、`jvm-string-deduplication`、`jvm-tlab`、`jvm-zgc-shenandoah` 重复 `图解提示`；NMT/TLAB 图解关键节点截断；进阶题 `常见追问` 仍是“这个点在项目里怎么落地？”占位。
+- Batch 15 建议补：NMT `jcmd VM.native_memory baseline/diff`，String Dedup 去重队列和 Compact String 影响，TLAB refill/waste/slow allocation，ZGC/Shenandoah 屏障机制和版本支持，Safepoint 的 Time to safepoint/At safepoint 日志维度。
+- 第四轮题目质检 Batch 16（排序第 151-160 题）发现：MQ 背压、延迟消息、Consumer Group 等基础方向可用，但 Kafka 可靠性语义和高阶机制需要补细。
+- Batch 16 的 P1 修复点：`kafka-controller` 的常见追问占位、重复 `图解提示` 和图解节点截断；`consumer-backpressure`、`delayed-retry-wheel` 也重复图解。
+- Batch 16 建议补：Exactly once 的 Kafka EOS 范围与外部业务幂等边界，acks + ISR + `min.insync.replicas` 组合，幂等生产者 PID/epoch/sequence/in-flight 边界，Consumer Group 的 coordinator/heartbeat/rebalance 参数，延迟重试的 jitter 和重试风暴治理。
+- 第四轮题目质检 Batch 17（排序第 161-170 题）发现：`kafka-offset`、`message-backlog`、`mq-idempotent-consume` 正文较好；Kafka 底层机制题方向正确但缺少参数、日志和机制边界。
+- Batch 17 的 P1 修复点：`kafka-log-compaction`、`kafka-page-cache`、`kafka-partition-selection`、`kafka-transactions` 重复 `图解提示`，且 Page Cache、read_committed、partition、tombstone 等节点截断。
+- Batch 17 建议补：ISR 的 LEO/HW/ISR shrink、Log Compaction 的 tombstone/清理延迟/dirty ratio，Page Cache 与 heap/磁盘 IO/零拷贝边界，Kafka 事务的 `transactional.id`/fencing/transaction coordinator/`sendOffsetsToTransaction`，Rebalance 的 coordinator/heartbeat/max.poll/cooperative rebalance。
+- 第四轮题目质检 Batch 18（排序第 171-180 题）发现：MQ 收尾题整体方向可用，`mq-ordering`、`mq-reliable-message`、`outbox-pattern` 基础较稳，但 10 篇仍命中通用 MQ 模板，RocketMQ 题的产品细节不足。
+- Batch 18 的 P1 修复点：`mq-out-of-order-compensation`、`mq-poison-message`、`rocketmq-delay-level`、`rocketmq-tag-key` 重复 `图解提示`，且延迟等级、Tag/Key 图解节点截断；乱序补偿和毒丸消息的 `常见追问` 明显占位。
+- Batch 18 建议补：RocketMQ 传统延迟等级与新版定时消息差异、Tag 表达式/SQL92 属性过滤/Key 排查定位、事务消息半消息与回查、Outbox 字段和扫描闭环、重试策略的指数退避/jitter/重试风暴治理。
+- 第四轮题目质检 Batch 19（排序第 181-190 题）发现：MyBatis 基础题主体正确率较高，`cache`、`hash-dollar`、`mapper-proxy` 正文较扎实；但 10 篇仍命中 Java/MyBatis 通用模板。
+- Batch 19 的 P1 修复点：`mybatis-dynamic-table-name`、`mybatis-executor-types`、`mybatis-second-cache-pitfalls`、`mybatis-sqlsession-thread-safe` 重复 `图解提示`，且 PreparedStatement、flushStatements、SqlSession、Mapper namespace 等节点截断，追问占位明显。
+- Batch 19 建议补：Spring 下 SqlSession 生命周期、一级缓存 `localCacheScope`、二级缓存跨 namespace/多实例风险、`${}` 白名单映射、动态表名分片路由、ExecutorType.BATCH 的 `flushStatements` 和 JDBC driver 批处理行为、BoundSql/最终 SQL/参数绑定日志等 MyBatis 专项排查证据。
+- 第四轮题目质检 Batch 20（排序第 191-200 题）发现：`n-plus-one`、`resultmap-resulttype`、`clustered-secondary-index` 正文较好；MySQL 基础题方向基本正确，但后半段继续套数据库通用模板。
+- Batch 20 的 P1 修复点：`mybatis-typehandler`、`cold-hot-data-archive`、`connection-pool` 重复 `图解提示`；`plugin-interceptor` 的详细讲解把 Executor/StatementHandler 写成孤立词，机制深度不足。
+- Batch 20 建议补：TypeHandler 的 `setNonNullParameter/getNullableResult`、MyBatis 插件 `@Intercepts/@Signature/Plugin.wrap`、分页插件的 count 改写和深分页边界、binlog `row_image/GTID/mysqlbinlog`、归档 checksum/幂等/主从延迟、HikariCP 参数和 active/idle/pending 指标。
+- 第四轮题目质检 Batch 21（排序第 201-210 题）发现：覆盖索引、索引下推、B+ 树、Buffer Pool 的核心方向较稳；执行计划和 Join 算法类 hard 题仍需补真实字段、版本和算法细节。
+- Batch 21 的 P1 修复点：`count-optimization.md` 文件名与 `mysql-count-difference` slug/标题定位不一致；`invisible-index`、`mysql-adaptive-hash-index` 重复 `图解提示`；`join-algorithms` 缺少 Nested Loop、Index Nested-Loop、BNL/BKA/Hash Join 等算法展开。
+- Batch 21 建议补：EXPLAIN ANALYZE 的 actual time/rows/loops 和真实执行风险、filesort one-pass/two-pass 与 sort buffer、Invisible Index 的 visible/invisible DDL 和 `use_invisible_indexes`、AHI 的开关/竞争/观测指标、Buffer Pool 的 young/old LRU、flush list 和 checkpoint。

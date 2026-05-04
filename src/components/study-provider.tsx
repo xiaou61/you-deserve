@@ -15,10 +15,6 @@ import {
   getEmptyStudyStore,
   getQuestionActivity,
   hasUser,
-  loadStudyStore,
-  saveStudyStore,
-  toggleUser,
-  withQuestionActivity,
   type QuestionActivity,
   type StudyStoreData
 } from "@/lib/study-store";
@@ -32,47 +28,102 @@ type StudyContextValue = {
   data: StudyStoreData;
   ready: boolean;
   currentUser: string | null;
-  login: (username: string, password: string) => AuthResult;
-  register: (username: string, password: string) => AuthResult;
-  logout: () => void;
+  login: (username: string, password: string) => Promise<AuthResult>;
+  register: (username: string, password: string) => Promise<AuthResult>;
+  logout: () => Promise<void>;
   getActivity: (slug: string) => QuestionActivity;
   incrementView: (slug: string) => void;
-  toggleLike: (slug: string) => AuthResult;
-  toggleFavorite: (slug: string) => AuthResult;
-  toggleMastered: (slug: string) => AuthResult;
-  saveNote: (slug: string, note: string) => AuthResult;
-  addComment: (slug: string, content: string) => AuthResult;
+  toggleLike: (slug: string) => Promise<AuthResult>;
+  toggleFavorite: (slug: string) => Promise<AuthResult>;
+  toggleMastered: (slug: string) => Promise<AuthResult>;
+  saveNote: (slug: string, note: string) => Promise<AuthResult>;
+  addComment: (slug: string, content: string) => Promise<AuthResult>;
   getOverview: () => {
     totalLikes: number;
     totalFavorites: number;
     masteredCount: number;
     noteCount: number;
     totalViews: number;
+    commentCount: number;
   };
 };
 
+type ApiPayload = {
+  ok?: boolean;
+  message?: string;
+  data?: StudyStoreData;
+};
+
 const StudyContext = createContext<StudyContextValue | null>(null);
+
+async function readPayload(response: Response): Promise<ApiPayload> {
+  try {
+    return (await response.json()) as ApiPayload;
+  } catch {
+    return {};
+  }
+}
 
 export function StudyProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [data, setData] = useState<StudyStoreData>(getEmptyStudyStore());
 
-  useEffect(() => {
-    const initial = loadStudyStore();
-    const frame = window.requestAnimationFrame(() => {
-      setData(initial);
-      setReady(true);
-    });
-
-    return () => window.cancelAnimationFrame(frame);
+  const applyPayload = useCallback((payload: ApiPayload) => {
+    if (payload.data) {
+      setData(payload.data);
+    }
   }, []);
 
-  const updateStore = useCallback((updater: (previous: StudyStoreData) => StudyStoreData) => {
-    setData((previous) => {
-      const next = updater(previous);
-      saveStudyStore(next);
-      return next;
-    });
+  const requestData = useCallback(
+    async (url: string, init?: RequestInit, fallbackMessage = "操作失败，请稍后再试。"): Promise<AuthResult> => {
+      try {
+        const response = await fetch(url, {
+          ...init,
+          headers: {
+            "Content-Type": "application/json",
+            ...(init?.headers ?? {})
+          }
+        });
+        const payload = await readPayload(response);
+
+        applyPayload(payload);
+
+        return {
+          ok: response.ok && payload.ok !== false,
+          message: payload.message ?? (response.ok ? "操作已保存到数据库。" : fallbackMessage)
+        };
+      } catch {
+        return { ok: false, message: "数据库连接失败，请确认服务已启动。" };
+      }
+    },
+    [applyPayload]
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const response = await fetch("/api/study", { cache: "no-store" });
+        const payload = await readPayload(response);
+
+        if (!cancelled) {
+          setData(payload.data ?? getEmptyStudyStore());
+          setReady(true);
+        }
+      } catch {
+        if (!cancelled) {
+          setData(getEmptyStudyStore());
+          setReady(true);
+        }
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const requireUser = useCallback(
@@ -90,64 +141,34 @@ export function StudyProvider({ children }: { children: ReactNode }) {
   );
 
   const login = useCallback(
-    (username: string, password: string): AuthResult => {
-      const normalized = username.trim();
-      const matched = data.users.find((user) => user.username === normalized);
-
-      if (!matched || matched.password !== password) {
-        return { ok: false, message: "账号或密码不对，再看一眼。" };
-      }
-
-      updateStore((previous) => ({
-        ...previous,
-        currentUser: normalized
-      }));
-
-      return { ok: true, message: `欢迎回来，${normalized}` };
-    },
-    [data.users, updateStore]
+    async (username: string, password: string) =>
+      requestData(
+        "/api/auth/login",
+        {
+          method: "POST",
+          body: JSON.stringify({ username, password })
+        },
+        "账号或密码不对，再看一眼。"
+      ),
+    [requestData]
   );
 
   const register = useCallback(
-    (username: string, password: string): AuthResult => {
-      const normalized = username.trim();
-
-      if (normalized.length < 2) {
-        return { ok: false, message: "昵称至少 2 个字。" };
-      }
-
-      if (password.length < 4) {
-        return { ok: false, message: "密码至少 4 位，先别太随意。" };
-      }
-
-      if (data.users.some((user) => user.username === normalized)) {
-        return { ok: false, message: "这个昵称已经被用了，换一个。" };
-      }
-
-      updateStore((previous) => ({
-        ...previous,
-        users: [
-          ...previous.users,
-          {
-            username: normalized,
-            password,
-            createdAt: new Date().toISOString()
-          }
-        ],
-        currentUser: normalized
-      }));
-
-      return { ok: true, message: `注册成功，${normalized}` };
-    },
-    [data.users, updateStore]
+    async (username: string, password: string) =>
+      requestData(
+        "/api/auth/register",
+        {
+          method: "POST",
+          body: JSON.stringify({ username, password })
+        },
+        "注册失败，请换个账号名试试。"
+      ),
+    [requestData]
   );
 
-  const logout = useCallback(() => {
-    updateStore((previous) => ({
-      ...previous,
-      currentUser: null
-    }));
-  }, [updateStore]);
+  const logout = useCallback(async () => {
+    await requestData("/api/auth/logout", { method: "POST" });
+  }, [requestData]);
 
   const incrementView = useCallback(
     (slug: string) => {
@@ -155,131 +176,93 @@ export function StudyProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      updateStore((previous) =>
-        withQuestionActivity(previous, slug, (activity) => ({
-          ...activity,
-          views: activity.views + 1
-        }))
-      );
+      void requestData(`/api/study/questions/${encodeURIComponent(slug)}/view`, { method: "POST" });
     },
-    [ready, updateStore]
+    [ready, requestData]
   );
 
   const toggleLike = useCallback(
-    (slug: string): AuthResult => {
+    async (slug: string): Promise<AuthResult> => {
       const blocked = requireUser("点赞");
 
       if (blocked) {
         return blocked;
       }
 
-      updateStore((previous) =>
-        withQuestionActivity(previous, slug, (activity) => ({
-          ...activity,
-          likedBy: toggleUser(activity.likedBy, previous.currentUser)
-        }))
-      );
-
-      return { ok: true, message: "已更新点赞状态。" };
+      return requestData(`/api/study/questions/${encodeURIComponent(slug)}/toggle`, {
+        method: "POST",
+        body: JSON.stringify({ action: "like" })
+      });
     },
-    [requireUser, updateStore]
+    [requireUser, requestData]
   );
 
   const toggleFavorite = useCallback(
-    (slug: string): AuthResult => {
+    async (slug: string): Promise<AuthResult> => {
       const blocked = requireUser("收藏");
 
       if (blocked) {
         return blocked;
       }
 
-      updateStore((previous) =>
-        withQuestionActivity(previous, slug, (activity) => ({
-          ...activity,
-          favoritedBy: toggleUser(activity.favoritedBy, previous.currentUser)
-        }))
-      );
-
-      return { ok: true, message: "已更新收藏状态。" };
+      return requestData(`/api/study/questions/${encodeURIComponent(slug)}/toggle`, {
+        method: "POST",
+        body: JSON.stringify({ action: "favorite" })
+      });
     },
-    [requireUser, updateStore]
+    [requireUser, requestData]
   );
 
   const toggleMastered = useCallback(
-    (slug: string): AuthResult => {
+    async (slug: string): Promise<AuthResult> => {
       const blocked = requireUser("标记掌握");
 
       if (blocked) {
         return blocked;
       }
 
-      updateStore((previous) =>
-        withQuestionActivity(previous, slug, (activity) => ({
-          ...activity,
-          masteredBy: toggleUser(activity.masteredBy, previous.currentUser)
-        }))
-      );
-
-      return { ok: true, message: "掌握状态已更新。" };
+      return requestData(`/api/study/questions/${encodeURIComponent(slug)}/toggle`, {
+        method: "POST",
+        body: JSON.stringify({ action: "mastered" })
+      });
     },
-    [requireUser, updateStore]
+    [requireUser, requestData]
   );
 
   const saveNote = useCallback(
-    (slug: string, note: string): AuthResult => {
+    async (slug: string, note: string): Promise<AuthResult> => {
       const blocked = requireUser("保存笔记");
 
       if (blocked) {
         return blocked;
       }
 
-      updateStore((previous) =>
-        withQuestionActivity(previous, slug, (activity) => ({
-          ...activity,
-          notesByUser: {
-            ...activity.notesByUser,
-            [previous.currentUser as string]: note.trim()
-          }
-        }))
-      );
-
-      return { ok: true, message: "笔记已经记下来了。" };
+      return requestData(`/api/study/questions/${encodeURIComponent(slug)}/note`, {
+        method: "PUT",
+        body: JSON.stringify({ note })
+      });
     },
-    [requireUser, updateStore]
+    [requireUser, requestData]
   );
 
   const addComment = useCallback(
-    (slug: string, content: string): AuthResult => {
+    async (slug: string, content: string): Promise<AuthResult> => {
       const blocked = requireUser("发表评论");
 
       if (blocked) {
         return blocked;
       }
 
-      const normalized = content.trim();
-
-      if (normalized.length < 2) {
+      if (content.trim().length < 2) {
         return { ok: false, message: "评论太短了，至少写两三个字。" };
       }
 
-      updateStore((previous) =>
-        withQuestionActivity(previous, slug, (activity) => ({
-          ...activity,
-          comments: [
-            {
-              id: `${slug}-${Date.now()}`,
-              user: previous.currentUser as string,
-              content: normalized,
-              createdAt: new Date().toISOString()
-            },
-            ...activity.comments
-          ]
-        }))
-      );
-
-      return { ok: true, message: "评论发出去了。" };
+      return requestData(`/api/study/questions/${encodeURIComponent(slug)}/comments`, {
+        method: "POST",
+        body: JSON.stringify({ content })
+      });
     },
-    [requireUser, updateStore]
+    [requireUser, requestData]
   );
 
   const value = useMemo<StudyContextValue>(
@@ -302,18 +285,37 @@ export function StudyProvider({ children }: { children: ReactNode }) {
         const currentUser = data.currentUser;
 
         return {
-          totalLikes: activities.reduce((sum, item) => sum + item.likedBy.length, 0),
-          totalFavorites: activities.reduce((sum, item) => sum + item.favoritedBy.length, 0),
+          totalLikes: activities.reduce((sum, item) => sum + (hasUser(item.likedBy, currentUser) ? 1 : 0), 0),
+          totalFavorites: activities.reduce((sum, item) => sum + (hasUser(item.favoritedBy, currentUser) ? 1 : 0), 0),
           masteredCount: activities.reduce((sum, item) => sum + (hasUser(item.masteredBy, currentUser) ? 1 : 0), 0),
           noteCount: activities.reduce(
             (sum, item) => sum + (currentUser && item.notesByUser[currentUser]?.trim() ? 1 : 0),
             0
           ),
-          totalViews: activities.reduce((sum, item) => sum + item.views, 0)
+          totalViews: activities.reduce(
+            (sum, item) => sum + (currentUser ? (item.viewedByUser[currentUser]?.count ?? 0) : item.views),
+            0
+          ),
+          commentCount: activities.reduce(
+            (sum, item) => sum + item.comments.filter((comment) => comment.user === currentUser).length,
+            0
+          )
         };
       }
     }),
-    [addComment, data, incrementView, login, logout, ready, register, saveNote, toggleFavorite, toggleLike, toggleMastered]
+    [
+      addComment,
+      data,
+      incrementView,
+      login,
+      logout,
+      ready,
+      register,
+      saveNote,
+      toggleFavorite,
+      toggleLike,
+      toggleMastered
+    ]
   );
 
   return <StudyContext.Provider value={value}>{children}</StudyContext.Provider>;

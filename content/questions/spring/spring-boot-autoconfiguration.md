@@ -34,13 +34,21 @@ Spring Boot 自动配置通常可以这样理解：
 
 ## 常见追问
 
-### starter 和自动配置是什么关系？
+### Boot 3 自动配置入口是什么？
 
-starter 主要负责依赖聚合，自动配置负责根据条件创建 Bean。starter 不等于自动配置，但它们经常配合出现。
+主要是 AutoConfiguration.imports，位于 META-INF/spring 目录下，列出自动配置类全限定名。
 
-### 为什么我自己定义 Bean 后默认配置不生效？
+### @ConditionalOnMissingBean 有什么意义？
 
-很多自动配置用了 `@ConditionalOnMissingBean`，意思是容器里没有对应 Bean 时才创建默认 Bean。
+它让默认 Bean 在用户自定义 Bean 存在时退让，保证自动配置可覆盖。
+
+### 怎么排查自动配置没生效？
+
+看 --debug、ConditionEvaluationReport、Actuator conditions、依赖树和配置属性绑定错误。
+
+### starter 和 autoconfigure 有什么区别？
+
+starter 通常负责依赖聚合，autoconfigure 放自动配置逻辑，拆开更利于复用和版本管理。
 
 ## 易错点
 
@@ -50,17 +58,21 @@ starter 主要负责依赖聚合，自动配置负责根据条件创建 Bean。s
 
 ## 详细讲解
 
-Spring Boot 自动配置解决的是“约定大于配置”。传统 Spring 项目要手动配 DispatcherServlet、数据源、事务管理器、消息转换器、模板引擎等。Spring Boot 通过 starter 引入依赖，再根据类路径、配置项和已有 Bean 自动创建一批默认 Bean，让项目开箱即用。自动配置不是魔法，而是一组带条件判断的配置类。
+Spring Boot 自动配置的目标是让常见组件在引入依赖后自动拥有合理默认配置，同时保留业务覆盖能力。它不是扫描到什么就无条件创建什么，而是通过一批自动配置类、条件注解和属性绑定，在合适条件下注册默认 Bean。面试回答要把“导入自动配置类”和“条件决定是否生效”讲清楚。
 
-starter 的作用是把常用依赖组合好。比如 web starter 会带来 Spring MVC、嵌入式 Tomcat、Jackson 等依赖。引入依赖后，自动配置类才有生效的基础。启动时，Spring Boot 会通过自动配置导入机制加载候选配置类。新版本主要通过 AutoConfiguration.imports 文件列出候选，旧版本常见 spring.factories。候选类很多，但不是全部生效。
+Spring Boot 3 语境下，自动配置类主要通过 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 声明导入，旧版本常见的 spring.factories 仍是历史知识点，但不要一刀切说所有版本都只靠 spring.factories。自动配置类常用 `@AutoConfiguration`，内部定义 `@Bean` 方法和配置属性绑定。
 
-是否生效取决于条件注解。ConditionalOnClass 表示类路径里有某个类才配置；ConditionalOnMissingBean 表示容器里没有用户自定义 Bean 才创建默认 Bean；ConditionalOnProperty 表示某个配置项满足条件才生效；ConditionalOnWebApplication 表示 Web 环境才生效。通过这些条件，Boot 可以做到“你引了什么依赖、配了什么属性、自己有没有定义 Bean，我就按情况补默认配置”。
+条件注解是自动配置的灵魂。`@ConditionalOnClass` 表示类路径存在某个类时才启用，`@ConditionalOnMissingBean` 表示用户没有自定义 Bean 时才提供默认 Bean，`@ConditionalOnProperty` 表示配置开关满足时才创建。这样 starter 才能做到“引入即可用、用户可覆盖、配置可关闭”。
 
-自动配置遵循一个重要原则：用户自定义优先。比如你自己定义了 DataSource 或 ObjectMapper，很多默认配置会因为 ConditionalOnMissingBean 而退让。这就是为什么 Boot 既能开箱即用，又不会完全剥夺定制能力。你也可以通过配置属性调整默认 Bean，或者使用 exclude 排除某个自动配置类。
+排查自动配置没生效，要看 ConditionEvaluationReport。启动参数 `--debug`、Actuator 的 conditions 端点、启动日志和 IDE 依赖树都很有用。常见问题包括依赖没引入、类路径条件不满足、属性开关没开、用户已经定义了同类型 Bean、多个自动配置顺序冲突、配置属性绑定失败。
 
-排查自动配置问题时，可以打开 debug 或查看条件评估报告，看看某个自动配置为什么 matched 或 not matched。常见问题包括依赖没引入、配置项写错、自己定义的 Bean 导致默认 Bean 不再创建、多个 starter 带来冲突。面试里能说出“看 condition evaluation report”，会比只背 EnableAutoConfiguration 更实用。
+回答可以用数据源自动配置举例：引入 JDBC starter 后，类路径有 DataSource，配置里有连接属性，容器里没有用户自定义 DataSource，于是 Boot 创建默认 DataSource；如果用户自己声明 DataSource，则 OnMissingBean 让默认配置退让。这个例子能把 starter、imports、条件、默认 Bean 和覆盖关系全部串起来。
 
-图解可以画成漏斗：starter 带来依赖，自动配置候选类进入漏斗，ConditionalOnClass、ConditionalOnProperty、ConditionalOnMissingBean 层层筛选，最后注册默认 Bean。旁边画用户自定义 Bean 可以覆盖默认配置。最后落点：自动配置的本质是条件化配置类，不是隐藏逻辑；能用默认，也能通过配置、Bean 或 exclude 接管。
+如果把这道题讲成项目经历，可以从“引入 starter、导入自动配置、解析配置类”切入，先交代触发条件、请求或容器阶段，再展开关键机制。接着用“条件注解判断、注册默认 Bean、诊断和覆盖”说明处理动作、验证指标和失败兜底。这样面试官继续追问时，你可以沿着一条真实链路回答：请求从哪里进入，Spring 容器或代理对象做了什么，哪个上下文会变化，失败时怎样限制影响面。
+
+图解时不要只画名词列表，要把状态变化画出来：哪些节点代表入口，哪些节点代表容器扩展点，哪些节点代表代理、事务或线程上下文，哪些节点代表验证闭环。回答最后再补一句取舍：Spring 方案通常是在开发效率、扩展性、运行时代理边界和排障复杂度之间做平衡，不能只说“加注解”或“改配置”，必须说明生效时机、失效条件、灰度策略、告警阈值和回滚方式。
+
+落到线上时，还要主动补监控证据：启动日志、Bean 创建顺序、ConditionEvaluationReport、Actuator 端点、请求链路、线程池指标、事务日志、异常栈、接口 P95/P99 和安全审计等信号。能把这些信号讲出来，答案才从“知道 Spring 注解”升级为“能维护 Spring 应用”。如果面试官继续追问，还可以补一次故障演练：如何模拟代理失效、如何观察上下文、如何灰度恢复、如何持续复盘防止同类问题再次发生和扩大。
 
 ## 深挖理解
 
@@ -100,7 +112,7 @@ starter 的作用是把常用依赖组合好。比如 web starter 会带来 Spri
 
 ## 图解提示
 
-适合画一张结构图：Spring Boot 自动配置原理是什么。核心节点：starter 负责把一组相关依赖引… -> Spring Boot 启动时加载自… -> 自动配置类里通过 @Conditio… -> 如果条件满足 -> 如果用户自己定义了 Bean。画面重点突出“问题从哪里来、机制如何工作、风险在哪里、怎么落到实践”。补充一句背景：从 starter、条件注解和自动配置类理解 Spring Boot 为什么开箱即用。。
+适合画一张流程图：引入 starter -> 导入自动配置 -> 解析配置类 -> 条件注解判断 -> 注册默认 Bean -> 诊断和覆盖。画面重点突出：Boot 3 通过 AutoConfiguration.imports 导入自动配置类，再由条件注解决定默认 Bean 是否注册。
 
 ## 记忆钩子
 

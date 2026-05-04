@@ -1,9 +1,8 @@
-"use client";
-
 export type StudyUser = {
+  id: string;
   username: string;
-  password: string;
   createdAt: string;
+  disabled?: boolean;
 };
 
 export type StudyComment = {
@@ -13,11 +12,17 @@ export type StudyComment = {
   createdAt: string;
 };
 
+export type QuestionViewRecord = {
+  count: number;
+  lastViewedAt: string;
+};
+
 export type QuestionActivity = {
   views: number;
   likedBy: string[];
   favoritedBy: string[];
   masteredBy: string[];
+  viewedByUser: Record<string, QuestionViewRecord>;
   notesByUser: Record<string, string>;
   comments: StudyComment[];
 };
@@ -28,7 +33,6 @@ export type StudyStoreData = {
   questions: Record<string, QuestionActivity>;
 };
 
-const STORAGE_KEY = "you-deserve.study-store";
 const SESSION_VIEW_KEY = "you-deserve.session-views";
 
 function ensureQuestionActivity(activity?: Partial<QuestionActivity>): QuestionActivity {
@@ -37,6 +41,7 @@ function ensureQuestionActivity(activity?: Partial<QuestionActivity>): QuestionA
     likedBy: activity?.likedBy ?? [],
     favoritedBy: activity?.favoritedBy ?? [],
     masteredBy: activity?.masteredBy ?? [],
+    viewedByUser: activity?.viewedByUser ?? {},
     notesByUser: activity?.notesByUser ?? {},
     comments: activity?.comments ?? []
   };
@@ -51,37 +56,11 @@ export function getEmptyStudyStore(): StudyStoreData {
 }
 
 export function loadStudyStore(): StudyStoreData {
-  if (typeof window === "undefined") {
-    return getEmptyStudyStore();
-  }
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!raw) {
-      return getEmptyStudyStore();
-    }
-
-    const parsed = JSON.parse(raw) as Partial<StudyStoreData>;
-
-    return {
-      users: Array.isArray(parsed.users) ? parsed.users : [],
-      currentUser: typeof parsed.currentUser === "string" ? parsed.currentUser : null,
-      questions: Object.fromEntries(
-        Object.entries(parsed.questions ?? {}).map(([slug, activity]) => [slug, ensureQuestionActivity(activity)])
-      )
-    };
-  } catch {
-    return getEmptyStudyStore();
-  }
+  return getEmptyStudyStore();
 }
 
 export function saveStudyStore(data: StudyStoreData) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  void data;
 }
 
 export function getQuestionActivity(data: StudyStoreData, slug: string): QuestionActivity {
