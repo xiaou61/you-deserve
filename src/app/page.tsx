@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowUpRight, Flame, GraduationCap, Layers3 } from "lucide-react";
+import { Flame, Layers3 } from "lucide-react";
 
+import { HomeRoutePanel } from "@/components/home-route-panel";
 import { QuestionExplorer } from "@/components/question-explorer";
 import { StudyOverview } from "@/components/study-overview";
 import { getCategories, getQuestionMetas, getRoutes } from "@/lib/content";
@@ -11,7 +12,6 @@ export default function Home() {
   const categories = getCategories();
   const routes = getRoutes();
   const visualCount = getVisualCount();
-  const featured = questions.slice(0, 3);
 
   return (
     <main>
@@ -54,30 +54,7 @@ export default function Home() {
         </div>
 
         <aside className="grid gap-4">
-          <div className="rounded-[1.6rem] border border-ink/10 bg-ink p-6 text-white shadow-soft">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm font-bold text-mint">今日路线</p>
-                <h2 className="mt-3 text-3xl font-black">先拿下面试高频题</h2>
-              </div>
-              <GraduationCap className="h-9 w-9 text-amber" />
-            </div>
-            <div className="mt-8 grid gap-3">
-              {featured.map((question, index) => (
-                <Link
-                  className="group flex items-center justify-between rounded-2xl bg-white/8 px-4 py-3 transition hover:bg-white/14"
-                  href={`/questions/${question.slug}`}
-                  key={question.slug}
-                >
-                  <div>
-                    <p className="text-xs font-black text-white/45">0{index + 1}</p>
-                    <p className="mt-1 font-bold leading-snug">{question.title}</p>
-                  </div>
-                  <ArrowUpRight className="h-4 w-4 text-white/45 transition group-hover:text-amber" />
-                </Link>
-              ))}
-            </div>
-          </div>
+          <HomeRoutePanel questions={questions} />
 
           <StudyOverview totalQuestions={questions.length} />
 

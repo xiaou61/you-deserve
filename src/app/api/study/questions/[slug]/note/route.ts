@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { jsonError, readJson } from "@/lib/api-utils";
+import { hasQuestionSlug } from "@/lib/content";
 import { nowIso, query } from "@/lib/db";
 import { getCurrentUser } from "@/lib/server-auth";
 import { loadStudyData } from "@/lib/study-data";
@@ -12,13 +13,18 @@ type RouteContext = {
 };
 
 export async function PUT(request: Request, { params }: RouteContext) {
+  const { slug } = await params;
+
+  if (!hasQuestionSlug(slug)) {
+    return jsonError("题目不存在。", 404);
+  }
+
   const user = await getCurrentUser();
 
   if (!user) {
     return jsonError("先登录，再保存笔记。", 401);
   }
 
-  const { slug } = await params;
   const body = await readJson(request);
   const note = typeof body.note === "string" ? body.note.trim().slice(0, 5000) : "";
   const timestamp = nowIso();

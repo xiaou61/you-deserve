@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { jsonError } from "@/lib/api-utils";
+import { hasQuestionSlug } from "@/lib/content";
 import { nowIso, withTransaction } from "@/lib/db";
 import { getCurrentUser } from "@/lib/server-auth";
 import { loadStudyData } from "@/lib/study-data";
@@ -12,6 +14,11 @@ type RouteContext = {
 
 export async function POST(_request: Request, { params }: RouteContext) {
   const { slug } = await params;
+
+  if (!hasQuestionSlug(slug)) {
+    return jsonError("题目不存在。", 404);
+  }
+
   const user = await getCurrentUser();
   const timestamp = nowIso();
 

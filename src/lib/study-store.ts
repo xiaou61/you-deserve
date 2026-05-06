@@ -100,14 +100,29 @@ export function canIncrementView(slug: string) {
     return false;
   }
 
-  const viewed = new Set<string>(JSON.parse(window.sessionStorage.getItem(SESSION_VIEW_KEY) ?? "[]") as string[]);
+  let viewed = new Set<string>();
+
+  try {
+    const parsed = JSON.parse(window.sessionStorage.getItem(SESSION_VIEW_KEY) ?? "[]");
+
+    if (Array.isArray(parsed)) {
+      viewed = new Set(parsed.filter((item): item is string => typeof item === "string"));
+    }
+  } catch {
+    viewed = new Set<string>();
+  }
 
   if (viewed.has(slug)) {
     return false;
   }
 
   viewed.add(slug);
-  window.sessionStorage.setItem(SESSION_VIEW_KEY, JSON.stringify([...viewed]));
+
+  try {
+    window.sessionStorage.setItem(SESSION_VIEW_KEY, JSON.stringify([...viewed]));
+  } catch {
+    return true;
+  }
 
   return true;
 }

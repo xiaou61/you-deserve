@@ -18,6 +18,15 @@ async function activeAdminCount() {
   return Number(result.rows[0]?.count ?? 0);
 }
 
+async function getAdminTarget(id: string) {
+  const result = await query<{ id: string; disabled: boolean }>(
+    "SELECT id, disabled FROM admins WHERE id = $1 LIMIT 1",
+    [id]
+  );
+
+  return result.rows[0] ?? null;
+}
+
 export async function PATCH(request: Request, { params }: RouteContext) {
   const admin = await requireAdmin();
 
@@ -27,19 +36,36 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
   const { id } = await params;
   const body = await readJson(request);
-  const username = "username" in body ? normalizeName(body.username) : "";
-  const password = typeof body.password === "string" ? body.password : "";
-  const disabled = typeof body.disabled === "boolean" ? body.disabled : null;
+  const hasUsername = "username" in body;
+  const hasPassword = "password" in body;
+  const hasDisabled = "disabled" in body;
+  const username = hasUsername ? normalizeName(body.username) : "";
+  const password = hasPassword && typeof body.password === "string" ? body.password : "";
+  const disabled = hasDisabled && typeof body.disabled === "boolean" ? body.disabled : null;
 
-  if (disabled === true && id === admin.id) {
+  if (!hasUsername && !hasPassword && !hasDisabled) {
+    return jsonError("没有可更新的管理员字段。");
+  }
+
+  if (hasDisabled && disabled === null) {
+    return jsonError("管理员状态必须是布尔值。");
+  }
+
+  const target = await getAdminTarget(id);
+
+  if (!target) {
+    return jsonError("管理员不存在。", 404);
+  }
+
+  if (hasDisabled && disabled === true && id === admin.id) {
     return jsonError("不能禁用当前正在登录的管理员。");
   }
 
-  if (disabled === true && (await activeAdminCount()) <= 1) {
+  if (hasDisabled && disabled === true && !target.disabled && (await activeAdminCount()) <= 1) {
     return jsonError("至少要保留一个可用管理员。");
   }
 
-  if ("username" in body) {
+  if (hasUsername) {
     const nameError = validateUsername(username);
 
     if (nameError) {
@@ -57,7 +83,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     }
   }
 
-  if (password) {
+  if (hasPassword) {
     const passwordError = validatePassword(password);
 
     if (passwordError) {
@@ -86,15 +112,25 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
   const { id } = await params;
 
+  const target = await getAdminTarget(id);
+
+  if (!target) {
+    return jsonError("管理员不存在。", 404);
+  }
+
   if (id === admin.id) {
     return jsonError("不能删除当前正在登录的管理员。");
   }
 
-  if ((await activeAdminCount()) <= 1) {
+  if (!target.disabled && (await activeAdminCount()) <= 1) {
     return jsonError("至少要保留一个可用管理员。");
   }
 
-  await query("DELETE FROM admins WHERE id = $1", [id]);
+  const result = await query("DELETE FROM admins WHERE id = $1", [id]);
+
+  if (!result.rowCount) {
+    return jsonError("管理员不存在。", 404);
+  }
 
   const payload = await loadAdminDashboardData();
 

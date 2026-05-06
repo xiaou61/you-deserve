@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { jsonError } from "@/lib/api-utils";
 import { loadAdminDashboardData } from "@/lib/admin-data";
+import { hasQuestionSlug } from "@/lib/content";
 import { withTransaction } from "@/lib/db";
 import { requireAdmin } from "@/lib/server-auth";
 
@@ -19,6 +20,10 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
   }
 
   const { slug } = await params;
+
+  if (!hasQuestionSlug(slug)) {
+    return jsonError("题目不存在。", 404);
+  }
 
   await withTransaction(async (client) => {
     await client.query("DELETE FROM comments WHERE slug = $1", [slug]);

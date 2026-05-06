@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BookOpen, Clock3, Layers3, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Clock3, Layers3, Sparkles } from "lucide-react";
 
 import { QuestionCard } from "@/components/question-card";
 import { QuestionEngagement } from "@/components/question-engagement";
 import { QuestionVisual } from "@/components/question-visual";
-import { getQuestionBySlug, getQuestionMetas, getRelatedQuestions } from "@/lib/content";
+import { getQuestionBySlug, getQuestionMetas, getRelatedQuestions, getRouteQuestionNeighbors } from "@/lib/content";
 import { renderMarkdown } from "@/lib/markdown";
 import { getQuestionVisual } from "@/lib/visuals";
 
@@ -48,6 +48,7 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
 
   const html = await renderMarkdown(question.content);
   const related = getRelatedQuestions(question);
+  const routeNeighbors = getRouteQuestionNeighbors(question);
   const visual = getQuestionVisual(question.slug);
 
   return (
@@ -88,6 +89,32 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
               </span>
             ))}
           </div>
+
+          {routeNeighbors.previous || routeNeighbors.next ? (
+            <div className="mt-6 rounded-[1.3rem] bg-smoke p-4">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">同路线跳题</p>
+              <div className="mt-3 grid gap-2">
+                {routeNeighbors.previous ? (
+                  <Link className="route-jump-card" href={`/questions/${routeNeighbors.previous.slug}`}>
+                    <ArrowLeft className="h-4 w-4 text-teal" />
+                    <div className="min-w-0">
+                      <strong>上一题</strong>
+                      <p>{routeNeighbors.previous.title}</p>
+                    </div>
+                  </Link>
+                ) : null}
+                {routeNeighbors.next ? (
+                  <Link className="route-jump-card" href={`/questions/${routeNeighbors.next.slug}`}>
+                    <ArrowRight className="h-4 w-4 text-coral" />
+                    <div className="min-w-0">
+                      <strong>下一题</strong>
+                      <p>{routeNeighbors.next.title}</p>
+                    </div>
+                  </Link>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
         </div>
       </aside>
 
@@ -100,7 +127,12 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
           <div className="question-body" dangerouslySetInnerHTML={{ __html: html }} />
         </article>
 
-        <QuestionEngagement slug={question.slug} title={question.title} />
+        <QuestionEngagement
+          route={question.route}
+          slug={question.slug}
+          title={question.title}
+          totalQuestions={getQuestionMetas().length}
+        />
 
         {visual ? <QuestionVisual visual={visual} /> : null}
 

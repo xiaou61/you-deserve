@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Activity,
   BarChart3,
@@ -92,6 +92,8 @@ const adminTabs: Array<{ icon: LucideIcon; label: string; value: AdminTab }> = [
   { value: "data", icon: Database, label: "数据" }
 ];
 
+const adminDatabaseUnavailableMessage = "后台数据库连接失败，请确认 PostgreSQL 已启动。";
+
 function formatDate(iso: string | null) {
   if (!iso) {
     return "暂无";
@@ -166,7 +168,12 @@ export function AdminDashboard({ questions, categories, routes }: AdminDashboard
   const [difficulty, setDifficulty] = useState<"all" | Difficulty>("all");
   const [sort, setSort] = useState<QuestionSort>("signals");
 
-  const applyPayload = (payload: AdminPayload) => {
+  const showMessage = useCallback((copy: string) => {
+    setMessage(copy);
+    window.setTimeout(() => setMessage(""), 3200);
+  }, []);
+
+  const applyPayload = useCallback((payload: AdminPayload) => {
     if ("admin" in payload) {
       setAdmin(payload.admin ?? null);
     }
@@ -180,10 +187,9 @@ export function AdminDashboard({ questions, categories, routes }: AdminDashboard
     }
 
     if (payload.message) {
-      setMessage(payload.message);
-      window.setTimeout(() => setMessage(""), 3200);
+      showMessage(payload.message);
     }
-  };
+  }, [showMessage]);
 
   const adminRequest = async (url: string, init?: RequestInit) => {
     try {
@@ -202,13 +208,20 @@ export function AdminDashboard({ questions, categories, routes }: AdminDashboard
         setAdmin(null);
       }
 
+      const fallbackMessage = response.status >= 500 ? adminDatabaseUnavailableMessage : "操作失败。";
+      const message = payload.message ?? (response.ok ? "操作已完成。" : fallbackMessage);
+
+      if (!response.ok && !payload.message) {
+        showMessage(message);
+      }
+
       return {
         ok: response.ok && payload.ok !== false,
-        message: payload.message ?? (response.ok ? "操作已完成。" : "操作失败。")
+        message
       };
     } catch {
-      const offline = "后台数据库连接失败，请确认 PostgreSQL 已启动。";
-      setMessage(offline);
+      const offline = adminDatabaseUnavailableMessage;
+      showMessage(offline);
       return { ok: false, message: offline };
     }
   };
@@ -227,7 +240,7 @@ export function AdminDashboard({ questions, categories, routes }: AdminDashboard
         }
       } catch {
         if (!cancelled) {
-          setMessage("后台数据库连接失败，请确认 PostgreSQL 已启动。");
+          setMessage(adminDatabaseUnavailableMessage);
           setReady(true);
         }
       }
@@ -238,7 +251,7 @@ export function AdminDashboard({ questions, categories, routes }: AdminDashboard
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [applyPayload]);
 
   const allQuestionRows = useMemo<QuestionRow[]>(
     () =>
@@ -1143,8 +1156,7 @@ export function AdminDashboard({ questions, categories, routes }: AdminDashboard
                 className="primary-action"
                 onClick={() =>
                   void adminRequest("/api/admin/system/repair", {
-                    method: "POST",
-                    body: JSON.stringify({ validSlugs: questions.map((question) => question.slug) })
+                    method: "POST"
                   })
                 }
                 type="button"

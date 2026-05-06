@@ -20,7 +20,11 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
   const { id } = await params;
 
-  await query("DELETE FROM comments WHERE id = $1", [id]);
+  const result = await query("DELETE FROM comments WHERE id = $1", [id]);
+
+  if (!result.rowCount) {
+    return jsonError("评论不存在。", 404);
+  }
 
   const payload = await loadAdminDashboardData();
 

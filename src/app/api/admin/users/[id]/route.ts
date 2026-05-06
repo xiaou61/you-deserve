@@ -12,6 +12,12 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+async function userExists(id: string) {
+  const result = await query<{ id: string }>("SELECT id FROM users WHERE id = $1 LIMIT 1", [id]);
+
+  return Boolean(result.rowCount);
+}
+
 export async function PATCH(request: Request, { params }: RouteContext) {
   const admin = await requireAdmin();
 
@@ -21,11 +27,26 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
   const { id } = await params;
   const body = await readJson(request);
-  const username = "username" in body ? normalizeName(body.username) : "";
-  const password = typeof body.password === "string" ? body.password : "";
-  const disabled = typeof body.disabled === "boolean" ? body.disabled : null;
+  const hasUsername = "username" in body;
+  const hasPassword = "password" in body;
+  const hasDisabled = "disabled" in body;
+  const username = hasUsername ? normalizeName(body.username) : "";
+  const password = hasPassword && typeof body.password === "string" ? body.password : "";
+  const disabled = hasDisabled && typeof body.disabled === "boolean" ? body.disabled : null;
 
-  if ("username" in body) {
+  if (!hasUsername && !hasPassword && !hasDisabled) {
+    return jsonError("没有可更新的用户字段。");
+  }
+
+  if (hasDisabled && disabled === null) {
+    return jsonError("用户状态必须是布尔值。");
+  }
+
+  if (!(await userExists(id))) {
+    return jsonError("用户不存在。", 404);
+  }
+
+  if (hasUsername) {
     const nameError = validateUsername(username);
 
     if (nameError) {
@@ -43,7 +64,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     }
   }
 
-  if (password) {
+  if (hasPassword) {
     const passwordError = validatePassword(password);
 
     if (passwordError) {
@@ -72,7 +93,11 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
   const { id } = await params;
 
-  await query("DELETE FROM users WHERE id = $1", [id]);
+  const result = await query("DELETE FROM users WHERE id = $1", [id]);
+
+  if (!result.rowCount) {
+    return jsonError("用户不存在。", 404);
+  }
 
   const payload = await loadAdminDashboardData();
 

@@ -54,6 +54,8 @@ type ApiPayload = {
   data?: StudyStoreData;
 };
 
+const databaseUnavailableMessage = "数据库连接失败，请确认服务已启动。";
+
 const StudyContext = createContext<StudyContextValue | null>(null);
 
 async function readPayload(response: Response): Promise<ApiPayload> {
@@ -90,10 +92,16 @@ export function StudyProvider({ children }: { children: ReactNode }) {
 
         return {
           ok: response.ok && payload.ok !== false,
-          message: payload.message ?? (response.ok ? "操作已保存到数据库。" : fallbackMessage)
+          message:
+            payload.message ??
+            (response.ok
+              ? "操作已保存到数据库。"
+              : response.status >= 500
+                ? databaseUnavailableMessage
+                : fallbackMessage)
         };
       } catch {
-        return { ok: false, message: "数据库连接失败，请确认服务已启动。" };
+        return { ok: false, message: databaseUnavailableMessage };
       }
     },
     [applyPayload]

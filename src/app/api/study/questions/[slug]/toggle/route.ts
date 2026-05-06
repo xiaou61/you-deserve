@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { jsonError, normalizeName, readJson } from "@/lib/api-utils";
+import { hasQuestionSlug } from "@/lib/content";
 import { nowIso, withTransaction } from "@/lib/db";
 import { getCurrentUser } from "@/lib/server-auth";
 import { loadStudyData } from "@/lib/study-data";
@@ -18,13 +19,18 @@ const columns = {
 } as const;
 
 export async function POST(request: Request, { params }: RouteContext) {
+  const { slug } = await params;
+
+  if (!hasQuestionSlug(slug)) {
+    return jsonError("题目不存在。", 404);
+  }
+
   const user = await getCurrentUser();
 
   if (!user) {
     return jsonError("先登录，再操作。", 401);
   }
 
-  const { slug } = await params;
   const body = await readJson(request);
   const action = normalizeName(body.action) as keyof typeof columns;
   const column = columns[action];

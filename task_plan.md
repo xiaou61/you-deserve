@@ -10,9 +10,10 @@
 - [complete] 4. 改造题目页视觉组件，隐藏“生图提示词”，展示真正图解
 - [complete] 5. 跑 lint/build，访问页面验证效果
 - [complete] 6. 按 10 道一批增加 1000-2000 字 `详细讲解`，并保存批处理进度
-- [in_progress] 7. 规划第三轮内容增强：把 `常见追问` 按 10 道一批补成更能接面试追问的版本
+- [complete] 7. 规划第三轮内容增强：把 `常见追问` 按 10 道一批补成更能接面试追问的版本
 - [complete] 8. 第四轮题目质检：按排序每 10 道一批精查事实准确性、理解难度、表达深度和可改进点，只先记录问题与建议
 - [complete] 9. 第五轮内容修复：按审计 P1 优先级每 10 道一批修正文、常见追问、图解提示和 visual 节点
+- [complete] 10. 后台/API 收尾加固：修复管理端假成功、客户端上报 slug、无效对象删除等边界
 
 ## Detail Batch Progress
 - Batch size: 10
@@ -82,6 +83,18 @@
 - 第五轮 Batch 39 修复已完成，范围为 Spring Cache、MVC 扩展与 Security 第 381-390 题；已重写 10 篇 `详细讲解`、`常见追问`、`图解提示` 和 visual 节点，重点补 Cache key/TTL/事务后失效、配置绑定、事件边界、Import 三路径、MVC 参数解析、消息转换、Profile、Scheduled 和 Security 过滤器链。
 - 第五轮 Batch 40 修复已完成，范围为 Spring Security、事务与 WebFlux 第 391-400 题；已重写 10 篇 `详细讲解`、`常见追问`、`图解提示` 和 visual 节点，重点补 JWT 过滤器链、事务失效/隔离/传播/readOnly/回滚边界、Validation 分组嵌套、WebClient 响应式边界、Starter 分工和 WebFlux 选型。
 - 第五轮 Batch 34-40 已全部复核通过：`node scripts/validate-repair-batch.mjs 34` 至 `40` 均通过；`npm run lint` 通过；`npm run build` 通过，Next.js 成功生成 430 个页面。
+- 2026-05-05 已补齐第五轮剩余 Batch 1-33：新增 `scripts/repair-remaining-batches.mjs` 批量清理前 330 题的通用模板污染、重复 `## 图解提示`、追问不足和 visual 截断标签。
+- 新增 `scripts/validate-all-repairs.mjs` 和 `npm run validate:content`，用于一次性验证 40 个修复批次。
+- 第五轮 Batch 1-40 已全部通过内容校验：每篇 `详细讲解` 1000-2000 字符、每篇 4 个 `常见追问`、每篇 1 个 `## 图解提示`、每题 6 个 visual 节点且无截断标签。
+- 最终收尾验证已完成：`npm run validate:content`、`npm run lint`、`npm run build` 均通过；lint warning 已清零，Next.js 成功生成 430 个页面。
+- 运行时加固已完成：`ensureDb()` 初始化失败后允许后续重试；学习行为 API 已拒绝不存在题目的 slug，避免前台写入脏互动数据。加固后 `validate:content/lint/build` 均通过。
+- 依赖安全加固已完成：通过 npm overrides 将 Next 内部 PostCSS 从 vulnerable `8.4.31` 提升到 `8.5.10`；官方 registry `npm audit --omit=dev` 已为 0 vulnerabilities，构建验证通过。
+- 数据库诊断命令已补齐：新增 `npm run check:db`，用于检查 PostgreSQL 连接和核心表初始化状态；当前环境明确失败在 55432 端口未监听。
+- 后台管理 API 已补齐存在性校验：用户、管理员、评论、笔记、用户行为、题目行为的无效目标不再返回假成功；PATCH 空字段和非法状态类型会提前拒绝。
+- 数据巡检修复接口改为服务端读取 `getQuestionMetas()` 生成有效 slug 列表，不再信任前端传入的 `validSlugs`；前端一键修复按钮也不再提交题库 slug。
+- Markdown 页面继续使用 `dangerouslySetInnerHTML` 承接 unified 输出，但输出前必须经过 `rehype-sanitize`；标题锚点和代码高亮放在 sanitize 之后由本地可信插件生成。
 
 ## Errors Encountered
 - `Get-Content src\app\questions\[slug]\page.tsx` 被 PowerShell 当作通配符路径解析，改用 `-LiteralPath`。
+- `docker compose up -d postgres` 无法连接 Docker Desktop Linux Engine；后续确认是 Docker Desktop daemon 无法启动，`com.docker.service` 又受 Windows 权限限制无法启动。
+- 本机 PostgreSQL 17 可监听 5432，但 `you_deserve` 和 `postgres` 两个账号都不能用示例密码连接，导致数据库烟测无法在当前凭据下完成。

@@ -149,7 +149,12 @@ export async function ensureDb() {
     dbGlobal.ydInitPromise = initDatabase();
   }
 
-  await dbGlobal.ydInitPromise;
+  try {
+    await dbGlobal.ydInitPromise;
+  } catch (error) {
+    dbGlobal.ydInitPromise = undefined;
+    throw error;
+  }
 }
 
 export async function query<T extends QueryResultRow = QueryResultRow>(

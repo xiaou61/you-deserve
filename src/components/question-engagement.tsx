@@ -1,13 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   BookHeart,
   Bookmark,
   Eye,
+  GraduationCap,
   Heart,
+  LayoutDashboard,
   MessageSquare,
   NotebookPen,
+  Route,
   Save,
   Sparkles
 } from "lucide-react";
@@ -18,6 +22,8 @@ import type { QuestionActivity } from "@/lib/study-store";
 type QuestionEngagementProps = {
   slug: string;
   title: string;
+  route: string;
+  totalQuestions: number;
 };
 
 function formatDate(iso: string) {
@@ -29,10 +35,11 @@ function formatDate(iso: string) {
   }).format(new Date(iso));
 }
 
-export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
+export function QuestionEngagement({ slug, title, route, totalQuestions }: QuestionEngagementProps) {
   const {
     currentUser,
     getActivity,
+    getOverview,
     incrementView,
     ready,
     saveNote,
@@ -51,6 +58,16 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
     comments: []
   };
   const activity = ready ? getActivity(slug) : fallbackActivity;
+  const overview = ready
+    ? getOverview()
+    : {
+        totalLikes: 0,
+        totalFavorites: 0,
+        masteredCount: 0,
+        noteCount: 0,
+        totalViews: 0,
+        commentCount: 0
+      };
   const [draftNotes, setDraftNotes] = useState<Record<string, string>>({});
   const [comment, setComment] = useState("");
   const [message, setMessage] = useState("");
@@ -151,6 +168,67 @@ export function QuestionEngagement({ slug, title }: QuestionEngagementProps) {
             {message}
           </div>
         ) : null}
+      </div>
+
+      <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-coral">Next Step</p>
+            <h2 className="mt-2 text-2xl font-black text-ink">学完这一题，别断在这里</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-ink/60">
+              这题属于 <span className="font-black text-ink">{route}</span> 路线。
+              {status.mastered
+                ? " 既然你已经标成掌握，更适合回个人中心看整体推进。"
+                : status.favorited
+                  ? " 你已经收藏了它，下一步可以直接回复习模式把这一条线继续刷下去。"
+                  : " 如果觉得值得回看，先收藏；然后回复习模式继续把同类题串起来。"}
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Link className="profile-summary-card block" href="/me">
+              <div className="flex items-center gap-3">
+                <div className="profile-milestone-icon">
+                  <LayoutDashboard className="h-5 w-5" />
+                </div>
+                <div>
+                  <strong>回个人中心</strong>
+                  <p>看掌握进度、目标和最近学习节奏。</p>
+                </div>
+              </div>
+            </Link>
+            <Link className="profile-summary-card block" href="/review">
+              <div className="flex items-center gap-3">
+                <div className="profile-milestone-icon">
+                  <GraduationCap className="h-5 w-5" />
+                </div>
+                <div>
+                  <strong>继续刷题</strong>
+                  <p>当前还有 {Math.max(0, totalQuestions - overview.masteredCount)} 道待补，直接回连续复习流。</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full bg-smoke px-4 py-2 text-sm font-bold text-ink/68">
+            <Route className="h-4 w-4 text-teal" />
+            当前路线：{route}
+          </div>
+          {status.mastered ? (
+            <div className="inline-flex items-center gap-2 rounded-full bg-smoke px-4 py-2 text-sm font-bold text-ink/68">
+              <BookHeart className="h-4 w-4 text-teal" />
+              这题已经进入你的掌握清单
+            </div>
+          ) : null}
+          {status.favorited ? (
+            <div className="inline-flex items-center gap-2 rounded-full bg-smoke px-4 py-2 text-sm font-bold text-ink/68">
+              <Bookmark className="h-4 w-4 text-amber-strong" />
+              已放进你的回刷清单
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">

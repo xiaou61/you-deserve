@@ -382,3 +382,61 @@
 - `content/question-repair-progress.json` 已记录 `completedRepairBatches: [34, 35, 36, 37, 38, 39, 40]`，`nextBatch: null`。
 - 第五轮最终复核：`node scripts/validate-repair-batch.mjs 34` 至 `40` 全部通过。
 - 第五轮最终工程验证：`npm run lint` 通过；`npm run build` 通过，Next.js 成功生成 430 个页面。
+- 2026-05-05：继续补齐第五轮剩余 Batch 1-33，新增 `scripts/repair-remaining-batches.mjs`，按文件路径排序批量重写前 330 题的 `详细讲解`、`常见追问`、`图解提示`，同步更新 `content/visuals/question-visuals.json`。
+- Batch 1 修复后先做最小闭环，发现两篇算法题字数低于 1000 字符，已调整脚本补充段落策略并重跑，Batch 1 通过。
+- 已完成 Batch 2-33 批量修复，共覆盖 320 篇；随后执行 1-40 全量校验，全部通过。
+- 新增 `scripts/validate-all-repairs.mjs` 和 `npm run validate:content`，用于一键执行 40 个批次校验。
+- README 已补充 PostgreSQL/Docker 启动、默认管理员环境变量和内容校验命令。
+- 2026-05-05 收尾验证：移除 `scripts/repair-remaining-batches.mjs` 中遗留的未使用变量后，`npm run validate:content`、`npm run lint`、`npm run build` 全部通过；Next.js 构建成功生成 430 个页面。
+- Docker/PostgreSQL 烟测尝试：`docker compose config` 通过，Docker CLI 存在，但 Docker Desktop daemon 返回 `Docker Desktop is unable to start`，`com.docker.service` 启动被 Windows 权限拒绝。本机 PostgreSQL 17 在 5432 运行，但项目默认 `you_deserve` 用户和 `postgres` 用户均无法用示例密码登录，因此数据库运行链路仍需在 Docker Desktop 可启动或提供本机 PostgreSQL 凭据后继续验证。
+- 2026-05-05 继续运行时加固：修复 `ensureDb()` 首次初始化失败后缓存 rejected promise、数据库恢复后仍无法重试的问题；为学习行为接口 `view/toggle/note/comments` 增加题目 slug 白名单校验，阻止不存在题目写入互动表。
+- 运行时加固验证：`npm run validate:content`、`npm run lint`、`npm run build` 全部通过；Next.js 仍成功生成 430 个页面。
+- 依赖安全审计：`npm audit --omit=dev` 在 npmmirror 镜像不可用，切到官方 npm registry 后发现 Next 内部 `postcss@8.4.31` 命中中危 XSS advisory；已通过 npm `overrides` 将 `next > postcss` 固定到 `8.5.10`，`npm audit --omit=dev --registry=https://registry.npmjs.org` 变为 0 vulnerabilities，`npm run lint`、`npm run validate:content`、`npm run build` 均通过。
+- 生产 server smoke：临时用 `next start -p 3010` 启动后，`/` 返回 200，`/questions/java-hashmap-thread-unsafe` 返回 200，`POST /api/study/questions/not-a-real-question/view` 返回 404 且 body 为 `{"ok":false,"message":"题目不存在。"}`；测试后端口 3010 已关闭。
+- 新增数据库诊断命令：`npm run check:db` 会读取项目 PostgreSQL URL、测试连接并检查 7 张核心表。当前环境输出 `ECONNREFUSED 127.0.0.1:55432` 和 `ECONNREFUSED ::1:55432`，能明确定位为 Docker PostgreSQL 未启动；新增后 `npm run lint`、`npm run build`、官方 registry `npm audit --omit=dev` 均通过。
+- 前端健壮性修复：`canIncrementView()` 现在会容错解析和写入 `sessionStorage`，避免浏览器里残留坏 JSON 或存储受限时题目页客户端报错；修复后 `npm run lint` 和 `npm run build` 通过。
+- 后台边界加固：用户/管理员 PATCH 现在会拒绝空更新、非法状态类型和不存在目标；删除用户、管理员、评论、笔记、用户行为、题目行为时会对无效目标返回 404，避免后台操作“看起来成功但什么也没发生”。
+- 数据巡检修复加固：`/api/admin/system/repair` 改为服务端通过 `getQuestionMetas()` 读取题库 slug，并把旧 slug、空活动、孤立 activity 清理放进同一个事务；后台一键修复按钮不再提交 `validSlugs`。
+- 本轮验证：后台边界加固后 `npm run lint` 通过；`npm run build` 通过，Next.js 成功生成 430 个页面。
+- 前端错误提示加固：前台 `StudyProvider` 和后台 `AdminDashboard` 现在会把无 JSON body 的 HTTP 500 识别成数据库/服务不可用提示，避免数据库未启动时误报账号密码错误或后台按钮静默失败；修复后 `npm run lint` 和 `npm run build` 继续通过。
+- Markdown 安全加固：新增 `rehype-sanitize`，`renderMarkdown()` 会在 `rehypeSlug`、标题锚点和代码高亮前清理不安全协议；最小样例确认 `[bad](javascript:alert(1))` 的 `href` 会被移除。新增依赖后 `npm run lint`、`npm run build` 和官方 registry `npm audit --omit=dev` 均通过。
+- 2026-05-06：开始补用户学习体验层，新增基于本地学习数据的个人中心 `/me` 与复习模式 `/review`。
+- 个人中心已落地为“学习工作台”而不是社交资料页：聚合账号状态、继续学习入口、专题热度、浏览记录、收藏/点赞/掌握、笔记、评论、学习资产筛选和复习队列预览。
+- 学习数据模型已扩展为按用户记录浏览痕迹：`QuestionActivity` 新增 `viewedByUser`，可记录当前用户对某题的浏览次数和最近浏览时间；题目页的浏览上报继续保留会话内去重。
+- 已新增共享推导层 `src/lib/personal-insights.ts`，统一生成 history / favorites / likes / mastered / notes / comments / hottestCategories / reviewQueue，避免个人中心与复习模式各写一套派生逻辑。
+- 站点导航已补齐 `/me`、`/review` 入口；登录用户名也可直接跳转个人中心。
+- `/review` 已完成独立连续刷题流：支持 `智能队列 / 未掌握 / 收藏回刷 / 笔记回刷 / 最近浏览` 五种筛选，左侧展示当前主刷题，右侧展示连续刷题列表。
+- 复习队列优先级目前按本地信号排序：未掌握 +5、收藏 +4、留过笔记 +3、反复浏览 +2、点赞 +1，并按最近浏览时间做次级排序。
+- 本轮收尾修复了 `src/components/review-mode.tsx` 的 React hooks lint 问题：移除 effect 中的同步 `setState`，改为用 `selectedSlug` + 派生 `activeSlug` 计算当前选中题。
+- 2026-05-06 本轮验证：`npm run lint` 通过；`npm run build` 通过，Next.js 继续成功生成 430 个页面，静态路由中已包含 `/me` 与 `/review`。
+- 2026-05-06 第二轮体验打磨：扩展 `src/lib/personal-insights.ts`，新增 `activeDays`、`currentStreak`、`bestStreak`、`thisWeekViews`、`recentActivity`、`pendingCount` 等派生字段，为个人中心的学习节奏分析提供统一数据源。
+- 个人中心已新增“最近 7 天学习节奏”与“现在最值得做的三件事”模块：展示近 7 天浏览热度柱条、连续学习天数、历史最佳 streak、本周浏览量，以及基于当前收藏/笔记/复习队列的行动建议。
+- 复习模式已补齐页内快捷动作：当前题可直接点赞、收藏、标记掌握，不必每次跳回题目页才能操作。
+- 复习模式已增加“本轮完成”机制：支持把题目从当前 session 队列中划走、恢复本轮队列，以及勾选“标记掌握后自动推进下一题”，连续刷题体验更顺。
+- 空队列反馈已细化：如果是本轮被刷空，不再显示泛化空状态，而会提示“这一轮已经完成”，避免完成感被吞掉。
+- 运行验证补齐：已后台启动 `npm run dev -- --port 3001`，日志确认 `http://localhost:3001` 就绪，`GET /me` 返回 200，`GET /review` 返回 200。
+- 2026-05-06 第三轮体验打磨：继续扩展 `src/lib/personal-insights.ts`，新增 `activityCalendar`（28 天学习日历热度）和 `routeProgress`（学习路线推进度）两类派生数据。
+- 个人中心新增“最近 28 天学习日历”模块，用热度格展示过去 4 周的学习密度；同时新增“推进最快的路线”，按 route 维度展示已掌握/已浏览/待补和掌握进度。
+- 复习模式新增“本轮复习完成情况”和“本轮已经刷过的题”两块收尾信息，用户做完一轮时能看到完成数、剩余数和最近划掉的题，完成感更完整。
+- 第三轮打磨后再次验证：`npm run lint` 通过；`npm run build` 通过；本地 dev server 下 `GET /me` 和 `GET /review` 继续返回 200。
+- 2026-05-06 第四轮体验打磨：个人中心新增“今日 / 本周目标”和“阶段里程碑”模块，开始把学习工作台从轨迹展示推进到目标驱动。
+- 个人中心的目标模块当前覆盖三类轻量目标：今天至少打开一题、本周累计浏览 8 次、把待复习队列压到 12 道以内；里程碑模块当前按连续学习、掌握数量、笔记数量、累计活跃天数四条线解锁。
+- 题目页互动区已新增 “Next Step” 区块，支持从单题页快捷回到 `/me` 和 `/review`，同时结合当前题目的收藏/掌握状态给出下一步动作提示，避免学完一题后断链。
+- `QuestionEngagement` 已改为接收 `route` 和 `totalQuestions`，可以在题目页展示当前路线信息和真实待补数量，不再写死题目总量。
+- 第四轮打磨后再次验证：`npm run lint` 通过；`npm run build` 通过；本地 dev server 下 `GET /questions/java-hashmap-thread-unsafe` 和 `GET /me` 返回 200。
+- 2026-05-06 第五轮体验打磨：继续补“最容易忘的题”、首页题卡个人状态和复习完成反馈。
+- 共享数据层新增 `hardestToRevisit`，从复习队列中筛出“未掌握 + 反复浏览/留过笔记/已收藏”的题，作为个人中心里的明显短板清单。
+- 个人中心新增“最近最容易忘的题”模块，与普通复习队列区分开，让用户能单独看到那些明显卡过的题。
+- 首页/题库卡片新增更明确的个人状态：如果当前用户对某题已经形成回刷信号，会展示 `待回刷` 标签；浏览数在个人视角下优先显示为“我看过 X 次”。
+- 复习模式新增“本轮复习已完成”总结卡：当本轮队列被刷空时，会给出完成反馈并提供回个人中心/再来一轮的入口，而不是只落回空状态。
+- 第五轮打磨后再次验证：`npm run lint` 通过；`npm run build` 通过；本地 dev server 下 `GET /` 和 `GET /review` 返回 200。
+- 2026-05-06 第六轮体验打磨：首页“今日路线”已改成跟当前用户学习状态联动，不再固定展示前三题。
+- 新增 `src/components/home-route-panel.tsx`，会优先根据当前用户推进最快的 route 给出今日路线、推荐题和解释文案；未登录或暂无轨迹时自动退回默认推荐。
+- 题目页已新增同路线前后跳题入口：`src/lib/content.ts` 增加 `getRouteQuestionNeighbors()`，题目详情页侧栏可直接跳上一题 / 下一题，不必退回列表再找。
+- 个人中心新增“掌握清单重点回看”模块，用已掌握题里的最近浏览痕迹和笔记痕迹做巩固入口；同时新增“这个阶段的推进感”摘要块，强化用户对当前阶段位置的感知。
+- 第六轮打磨后再次验证：`npm run lint` 通过；`npm run build` 通过；本地 dev server 下 `GET /` 和 `GET /questions/java-hashmap-thread-unsafe` 返回 200。
+- 2026-05-06 第七轮体验打磨：个人中心继续从“归档页”往“决策页”推进，新增分类短板雷达和下一轮动作建议。
+- `src/lib/personal-insights.ts` 新增 `categoryFocus` 派生数据，按分类汇总总题数、已看、已掌握、待回刷、收藏数和差距分，避免个人中心只能看 route 而不能看知识面短板。
+- `/me` 已新增“现在哪些分类最值得补”和“下一轮怎么刷更划算”两个模块，开始直接告诉用户下一轮该从哪条分类线补，而不是只展示状态。
+- `/review` 已补“稍后再看”机制：当前题可以先挪到后面，连续刷题时先保持节奏；同时新增稍后列表和恢复入口，避免卡题时只能硬刷或直接退出。
+- 第七轮打磨后再次验证：`npm run lint` 通过；`npm run build` 通过；本地 dev server 下 `GET /me`、`GET /review`、`GET /questions/java-hashmap-thread-unsafe` 均返回 200。

@@ -86,10 +86,33 @@
 
 ```bash
 npm install
+docker compose up -d
 npm run dev
 ```
 
-默认是一个 Next.js 项目。
+默认是一个 Next.js 项目，学习行为、登录、个人中心和后台都写入 PostgreSQL。
+
+本地数据库默认配置在 `.env.example` 里：
+
+```bash
+YD_DATABASE_URL=postgresql://you_deserve:you_deserve_dev@localhost:55432/you_deserve
+YD_ADMIN_USERNAME=admin
+YD_ADMIN_PASSWORD=change-this-password
+```
+
+第一次启动 API 时会自动建表，并按 `YD_ADMIN_USERNAME / YD_ADMIN_PASSWORD` 创建默认管理员。后台入口是 `/admin`。如果不想用 Docker，也可以把 `YD_DATABASE_URL` 指向你自己的 PostgreSQL。
+
+## 内容校验
+
+```bash
+npm run check:db
+npm run validate:content
+npm run lint
+npm run build
+```
+
+`check:db` 会读取 `.env.local` / `.env.example` 的 `YD_DATABASE_URL`，检查 PostgreSQL 是否能连接，以及核心表是否已初始化。
+`validate:content` 会检查 40 个内容修复批次，覆盖 `详细讲解` 字数、重复标题、常见追问数量、图解节点数量和截断标签。
 
 ## 项目结构
 

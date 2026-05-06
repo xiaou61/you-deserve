@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { jsonError, normalizeName, readJson } from "@/lib/api-utils";
 import { loadAdminDashboardData } from "@/lib/admin-data";
+import { hasQuestionSlug } from "@/lib/content";
 import { nowIso, query } from "@/lib/db";
 import { requireAdmin } from "@/lib/server-auth";
 
@@ -22,13 +23,22 @@ export async function DELETE(request: Request) {
     return jsonError("缺少笔记定位信息。");
   }
 
-  await query(
+  if (!hasQuestionSlug(slug)) {
+    return jsonError("题目不存在。", 404);
+  }
+
+  const result = await query(
     `UPDATE question_user_activity
      SET note = '', updated_at = $3
      WHERE slug = $1
+       AND btrim(note) <> ''
        AND user_id = (SELECT id FROM users WHERE lower(username) = lower($2) LIMIT 1)`,
     [slug, username, nowIso()]
   );
+
+  if (!result.rowCount) {
+    return jsonError("笔记不存在或已被删除。", 404);
+  }
 
   const payload = await loadAdminDashboardData();
 

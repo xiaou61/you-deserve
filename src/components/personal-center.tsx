@@ -4,17 +4,23 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   ArrowRight,
+  Award,
   Bookmark,
   BookMarked,
+  CalendarDays,
   Clock3,
   Eye,
+  Flame,
+  Gauge,
   GraduationCap,
   Heart,
+  Layers3,
   MessageSquare,
   NotebookPen,
   Search,
   Sparkles,
   Star,
+  Target,
   UserRound
 } from "lucide-react";
 
@@ -48,6 +54,26 @@ function formatDateOnly(iso: string) {
 function excerpt(text: string, max = 90) {
   const normalized = text.replace(/\s+/g, " ").trim();
   return normalized.length > max ? `${normalized.slice(0, max)}...` : normalized;
+}
+
+function getRhythmLabel(streak: number) {
+  if (streak >= 7) {
+    return "已经形成稳定节奏";
+  }
+
+  if (streak >= 3) {
+    return "这几天状态是连着的";
+  }
+
+  if (streak >= 1) {
+    return "刚开始起势";
+  }
+
+  return "还没进入连续学习状态";
+}
+
+function getGoalTone(done: boolean) {
+  return done ? "is-complete" : "";
 }
 
 export function PersonalCenter({ questions }: PersonalCenterProps) {
@@ -158,6 +184,75 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
   }
 
   const progress = questions.length > 0 ? Math.round((overview.masteredCount / questions.length) * 100) : 0;
+  const maxRecentViews = Math.max(...personal.recentActivity.map((day) => day.views), 1);
+  const suggestions = [
+    personal.reviewQueue[0]
+      ? {
+          title: "先清最该回刷的题",
+          description: `优先把「${personal.reviewQueue[0].question.title}」过一遍，它现在排在你的复习队列最前面。`
+        }
+      : null,
+    overview.noteCount < Math.max(2, overview.totalFavorites)
+      ? {
+          title: "收藏不少，笔记还偏少",
+          description: "下一轮不要只收藏，至少给最容易忘的两道题各写一句自己的话。"
+        }
+      : {
+          title: "笔记沉淀已经开始起作用",
+          description: "你已经不只是点收藏了，接下来适合把有笔记但未掌握的题重点回刷。"
+        },
+    personal.currentStreak >= 3
+      ? {
+          title: "别断掉这波连学",
+          description: `你已经连续学了 ${personal.currentStreak} 天，今天哪怕只过一题，也比断档值钱。`
+        }
+      : {
+          title: "把节奏先连起来",
+          description: "连续 3 天哪怕每天只看 1 题，个人中心的数据就会开始明显变得有判断力。"
+        }
+  ].filter((item): item is { title: string; description: string } => !!item);
+  const goals = [
+    {
+      title: "今日目标",
+      detail: personal.recentActivity[6]?.views > 0 ? "今天已经打开过题目了" : "今天至少打开 1 道题",
+      progressText: personal.recentActivity[6]?.views > 0 ? `${personal.recentActivity[6]?.views} 次浏览` : "0 / 1",
+      done: (personal.recentActivity[6]?.views ?? 0) > 0
+    },
+    {
+      title: "本周目标",
+      detail: "本周累计至少浏览 8 次，别让节奏断掉",
+      progressText: `${Math.min(personal.thisWeekViews, 8)} / 8`,
+      done: personal.thisWeekViews >= 8
+    },
+    {
+      title: "复习目标",
+      detail: "先把待复习队列压到 12 道以内",
+      progressText: personal.reviewQueue.length <= 12 ? `${personal.reviewQueue.length} 道` : `${personal.reviewQueue.length} / 12`,
+      done: personal.reviewQueue.length <= 12
+    }
+  ];
+  const milestones = [
+    {
+      title: "连续学习",
+      unlocked: personal.currentStreak >= 3,
+      description: personal.currentStreak >= 3 ? `已连续学习 ${personal.currentStreak} 天` : "连续学习满 3 天解锁"
+    },
+    {
+      title: "掌握起步",
+      unlocked: overview.masteredCount >= 10,
+      description: overview.masteredCount >= 10 ? `已掌握 ${overview.masteredCount} 道题` : "掌握 10 道题解锁"
+    },
+    {
+      title: "笔记习惯",
+      unlocked: overview.noteCount >= 5,
+      description: overview.noteCount >= 5 ? `已留下 ${overview.noteCount} 条笔记` : "留下 5 条笔记解锁"
+    },
+    {
+      title: "长期跟踪",
+      unlocked: personal.activeDays >= 7,
+      description: personal.activeDays >= 7 ? `累计活跃 ${personal.activeDays} 天` : "累计活跃 7 天解锁"
+    }
+  ];
 
   return (
     <div className="space-y-6">
@@ -212,7 +307,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="profile-stat-card">
           <Eye className="h-5 w-5 text-teal" />
           <strong>{personal.history.length}</strong>
@@ -242,6 +337,21 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
           <MessageSquare className="h-5 w-5 text-ink" />
           <strong>{overview.commentCount}</strong>
           <span>我的评论</span>
+        </div>
+        <div className="profile-stat-card">
+          <Flame className="h-5 w-5 text-coral" />
+          <strong>{personal.currentStreak}</strong>
+          <span>连续学习天数</span>
+        </div>
+        <div className="profile-stat-card">
+          <CalendarDays className="h-5 w-5 text-teal" />
+          <strong>{personal.activeDays}</strong>
+          <span>累计活跃天数</span>
+        </div>
+        <div className="profile-stat-card">
+          <Gauge className="h-5 w-5 text-amber-strong" />
+          <strong>{personal.reviewQueue.length}</strong>
+          <span>当前待复习题</span>
         </div>
       </section>
 
@@ -333,6 +443,450 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                 等你刷过几道题，这里会自动长出你的专题偏好。
               </div>
             )}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[0.96fr_1.04fr]">
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Gap Radar</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">现在哪些分类最值得补</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              按卡点强度排序
+            </span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {personal.categoryFocus.length > 0 ? (
+              personal.categoryFocus.map((item) => (
+                <div className="profile-focus-card" key={item.category}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <strong>{item.category}</strong>
+                      <p>
+                        已看 {item.viewed} / {item.total}，已掌握 {item.mastered}，其中 {item.reviewNeeded} 道已经形成明显回刷信号。
+                      </p>
+                    </div>
+                    <span>{item.progress}%</span>
+                  </div>
+                  <div className="profile-progress-track">
+                    <div className="profile-progress-fill" style={{ width: `${Math.max(item.progress, 6)}%` }} />
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs font-black text-ink/56">
+                    {item.reviewNeeded > 0 ? (
+                      <span className="mini-metric">
+                        <Target className="h-3.5 w-3.5" />
+                        待回刷 {item.reviewNeeded}
+                      </span>
+                    ) : null}
+                    {item.favoriteCount > 0 ? (
+                      <span className="mini-metric">
+                        <Bookmark className="h-3.5 w-3.5" />
+                        收藏 {item.favoriteCount}
+                      </span>
+                    ) : null}
+                    <span className="mini-metric">
+                      <Layers3 className="h-3.5 w-3.5" />
+                      差距分 {item.gapScore}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
+                你刚开始用这个账号，分类短板还没长出来。等你多看几题，这里会明显告诉你哪条线只是“扫过”，还没真正补稳。
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Next Moves</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">下一轮怎么刷更划算</h2>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3">
+            {personal.categoryFocus.slice(0, 3).map((item, index) => (
+              <div className="profile-summary-card" key={item.category}>
+                <strong>动作 {index + 1} · {item.category}</strong>
+                <p>
+                  {item.reviewNeeded > 0
+                    ? `这一类已经有 ${item.reviewNeeded} 道题出现回刷信号，适合先去复习模式把这条线往前推。`
+                    : `这一类你已经看过 ${item.viewed} 道，但掌握只有 ${item.mastered} 道，最适合拿来做下一轮补缺。`}
+                </p>
+              </div>
+            ))}
+            <div className="profile-summary-card">
+              <strong>动作 4 · 收敛收藏而不是继续堆</strong>
+              <p>
+                {personal.favorites.length > personal.notes.length
+                  ? "你当前收藏比笔记多，下一轮更适合优先处理旧收藏，把其中最重要的题补一句自己的话。"
+                  : "你已经开始用笔记沉淀，不要只继续加题，优先把有笔记但未掌握的题刷成稳定掌握。"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1.06fr_0.94fr]">
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Rhythm</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">最近 7 天学习节奏</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              本周浏览 {personal.thisWeekViews} 次
+            </span>
+          </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-[0.88fr_1.12fr]">
+            <div className="profile-rhythm-summary">
+              <div className="profile-rhythm-badge">
+                <Flame className="h-5 w-5 text-coral" />
+                连学 {personal.currentStreak} 天
+              </div>
+              <p className="mt-4 text-3xl font-black leading-tight text-ink">{getRhythmLabel(personal.currentStreak)}</p>
+              <p className="mt-3 text-sm leading-7 text-ink/62">
+                最长连续学习 {personal.bestStreak} 天，累计活跃 {personal.activeDays} 天。只要不断档，个人中心就会越来越懂你下一步该学什么。
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-7">
+              {personal.recentActivity.map((day) => (
+                <div className="profile-day-card" key={day.dateKey}>
+                  <span className="profile-day-label">{day.shortLabel}</span>
+                  <div className="profile-day-track">
+                    <div
+                      className="profile-day-fill"
+                      style={{ height: `${Math.max(8, Math.round((day.views / maxRecentViews) * 100))}%` }}
+                    />
+                  </div>
+                  <strong>{day.views}</strong>
+                  <p>{day.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Coach</p>
+            <h2 className="mt-2 text-2xl font-black text-ink">现在最值得做的三件事</h2>
+          </div>
+
+          <div className="mt-5 grid gap-3">
+            {suggestions.map((item) => (
+              <div className="profile-summary-card" key={item.title}>
+                <strong>{item.title}</strong>
+                <p>{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Calendar</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">最近 28 天学习日历</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              活跃 {personal.activeDays} 天
+            </span>
+          </div>
+
+          <div className="mt-5">
+            <div className="profile-calendar-grid">
+              {personal.activityCalendar.map((day) => (
+                <div className="profile-calendar-cell-wrap" key={day.dateKey}>
+                  <div className={`profile-calendar-cell level-${day.level}`}>
+                    <span className="sr-only">{`${day.label} 浏览 ${day.views} 次`}</span>
+                  </div>
+                  <p>{day.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-xs font-bold text-ink/52">
+              <span>低</span>
+              <div className="profile-calendar-legend">
+                {[0, 1, 2, 3, 4].map((level) => (
+                  <span className={`profile-calendar-cell level-${level as 0 | 1 | 2 | 3 | 4}`} key={level} />
+                ))}
+              </div>
+              <span>高</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Routes</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">推进最快的路线</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              已进入 {personal.routeProgress.length} 条
+            </span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {personal.routeProgress.length > 0 ? (
+              personal.routeProgress.map((route) => (
+                <div className="profile-route-row" key={route.route}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="inline-flex items-center gap-2 text-sm font-black text-ink">
+                        <Layers3 className="h-4 w-4 text-teal" />
+                        {route.route}
+                      </div>
+                      <p className="mt-2 text-xs font-bold text-ink/52">
+                        已掌握 {route.mastered} / {route.total} · 看过 {route.viewed} 题 · 待补 {route.pending} 题
+                      </p>
+                    </div>
+                    <strong className="text-lg font-black text-coral">{route.progress}%</strong>
+                  </div>
+                  <div className="profile-progress-track">
+                    <div className="profile-progress-fill" style={{ width: `${Math.max(8, route.progress)}%` }} />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
+                你还没形成明显的路线推进。等你在某个路线里连续看几道题，这里就会开始出现层次。
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Weak Spots</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">最近最容易忘的题</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              优先补短板
+            </span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {personal.hardestToRevisit.length > 0 ? (
+              personal.hardestToRevisit.map((entry) => (
+                <Link className="profile-queue-card" href={`/questions/${entry.question.slug}`} key={entry.question.slug}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap gap-2">
+                        <span className="status-chip">{entry.question.category}</span>
+                        {(entry.view?.count ?? 0) >= 2 ? <span className="status-chip">反复看过</span> : null}
+                        {entry.activity.notesByUser[currentUser]?.trim() ? <span className="status-chip">留过笔记</span> : null}
+                      </div>
+                      <h3 className="mt-3 text-lg font-black leading-snug text-ink">{entry.question.title}</h3>
+                      <p className="mt-2 text-sm leading-7 text-ink/60">
+                        {entry.question.summary}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-smoke px-3 py-2 text-right">
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-ink/45">看过</p>
+                      <p className="mt-1 text-2xl font-black text-coral">{entry.view?.count ?? 0}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
+                目前还没出现明显的反复卡壳题。等你在几道题上反复浏览或留笔记，这里会更像你的错点清单。
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Milestones</p>
+            <h2 className="mt-2 text-2xl font-black text-ink">这一阶段你已经到哪了</h2>
+          </div>
+
+          <div className="mt-5 grid gap-3">
+            <div className="profile-summary-card">
+              <strong>掌握进度</strong>
+              <p>
+                目前已经掌握 {overview.masteredCount} / {questions.length} 道题，整体推进到 {progress}%。
+              </p>
+            </div>
+            <div className="profile-summary-card">
+              <strong>复习压力</strong>
+              <p>
+                当前还有 {personal.reviewQueue.length} 道题进入了待回刷队列，其中真正明显卡过的题有 {personal.hardestToRevisit.length} 道。
+              </p>
+            </div>
+            <div className="profile-summary-card">
+              <strong>路线推进</strong>
+              <p>
+                {personal.routeProgress[0]
+                  ? `现在推进最快的是「${personal.routeProgress[0].route}」，已经掌握 ${personal.routeProgress[0].mastered} / ${personal.routeProgress[0].total}。`
+                  : "等你在一条路线里连续看过几道题，这里会开始出现明显的路线推进感。"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Mastered</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">掌握清单重点回看</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              已掌握 {personal.mastered.length} 道
+            </span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {personal.mastered.length > 0 ? (
+              personal.mastered
+                .slice()
+                .sort((left, right) => {
+                  const leftAt = left.activity.viewedByUser[currentUser]?.lastViewedAt ?? "1970-01-01";
+                  const rightAt = right.activity.viewedByUser[currentUser]?.lastViewedAt ?? "1970-01-01";
+                  return Date.parse(rightAt) - Date.parse(leftAt);
+                })
+                .slice(0, 6)
+                .map((entry) => (
+                  <Link className="profile-list-card" href={`/questions/${entry.question.slug}`} key={entry.question.slug}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="status-chip is-mastered">已掌握</span>
+                          <span className="status-chip">{entry.question.category}</span>
+                        </div>
+                        <h3 className="mt-3 text-lg font-black leading-snug text-ink">{entry.question.title}</h3>
+                        <p className="mt-2 text-sm leading-7 text-ink/58">{entry.question.summary}</p>
+                      </div>
+                      <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-ink/36" />
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-ink/56">
+                      {entry.activity.viewedByUser[currentUser] ? (
+                        <span className="mini-metric">
+                          <Eye className="h-3.5 w-3.5" />
+                          最近看于 {formatDate(entry.activity.viewedByUser[currentUser].lastViewedAt)}
+                        </span>
+                      ) : null}
+                      {entry.activity.notesByUser[currentUser]?.trim() ? (
+                        <span className="mini-metric">
+                          <NotebookPen className="h-3.5 w-3.5" />
+                          有巩固笔记
+                        </span>
+                      ) : null}
+                    </div>
+                  </Link>
+                ))
+            ) : (
+              <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
+                你还没有形成掌握清单。先把最熟的一道题标成掌握，后面这里就会开始变成你的巩固区。
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Momentum</p>
+            <h2 className="mt-2 text-2xl font-black text-ink">这个阶段的推进感</h2>
+          </div>
+
+          <div className="mt-5 grid gap-3">
+            <div className="profile-summary-card">
+              <strong>节奏稳定性</strong>
+              <p>
+                {personal.currentStreak >= 3
+                  ? `你已经连续学习 ${personal.currentStreak} 天了，说明现在不是“偶尔刷”，而是在形成稳定节奏。`
+                  : "现在还处在节奏刚起势的阶段，最关键的是把连续学习天数先拉起来。"}
+              </p>
+            </div>
+            <div className="profile-summary-card">
+              <strong>掌握和回刷的平衡</strong>
+              <p>
+                已掌握 {overview.masteredCount} 道，待回刷 {personal.reviewQueue.length} 道。最好的状态不是只会看新题，而是掌握清单和回刷清单都在一起往前走。
+              </p>
+            </div>
+            <div className="profile-summary-card">
+              <strong>下一步最划算的动作</strong>
+              <p>
+                {personal.hardestToRevisit[0]
+                  ? `先补「${personal.hardestToRevisit[0].question.title}」这种明显卡过的题，再回头稳住你已经掌握的那几道。`
+                  : "先把最近看过的一题真正标成掌握，再开始建立复习队列，会比只收藏更有效。"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Goals</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">今日 / 本周目标</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              完成 {goals.filter((item) => item.done).length} / {goals.length}
+            </span>
+          </div>
+
+          <div className="mt-5 grid gap-3">
+            {goals.map((goal) => (
+              <div className={`profile-goal-card ${getGoalTone(goal.done)}`} key={goal.title}>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <strong>{goal.title}</strong>
+                    <p>{goal.detail}</p>
+                  </div>
+                  <span>{goal.progressText}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Milestones</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">阶段里程碑</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              已解锁 {milestones.filter((item) => item.unlocked).length} 枚
+            </span>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {milestones.map((item) => (
+              <div className={`profile-milestone-card ${item.unlocked ? "is-unlocked" : ""}`} key={item.title}>
+                <div className="flex items-center gap-3">
+                  <div className="profile-milestone-icon">
+                    {item.unlocked ? <Award className="h-5 w-5" /> : <Target className="h-5 w-5" />}
+                  </div>
+                  <div>
+                    <strong>{item.title}</strong>
+                    <p>{item.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

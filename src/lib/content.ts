@@ -24,6 +24,7 @@ export type Question = QuestionMeta & {
 };
 
 const contentRoot = path.join(process.cwd(), "content", "questions");
+const knownQuestionSlugs = new Set(getAllQuestions().map((question) => question.slug));
 
 function getMarkdownFiles(dir: string): string[] {
   if (!fs.existsSync(dir)) {
@@ -117,6 +118,10 @@ export function getQuestionBySlug(slug: string): Question | undefined {
   return getAllQuestions().find((question) => question.slug === slug);
 }
 
+export function hasQuestionSlug(slug: string): boolean {
+  return knownQuestionSlugs.has(slug);
+}
+
 export function getQuestionMetas(): QuestionMeta[] {
   return getAllQuestions().map(toQuestionMeta);
 }
@@ -145,4 +150,24 @@ export function getRelatedQuestions(question: Question, limit = 3): QuestionMeta
     .sort((a, b) => b.score - a.score || a.item.order - b.item.order)
     .slice(0, limit)
     .map(({ item }) => toQuestionMeta(item));
+}
+
+export function getRouteQuestionNeighbors(question: Question): {
+  previous: QuestionMeta | null;
+  next: QuestionMeta | null;
+} {
+  const routeQuestions = getAllQuestions().filter((item) => item.route === question.route);
+  const currentIndex = routeQuestions.findIndex((item) => item.slug === question.slug);
+
+  if (currentIndex < 0) {
+    return {
+      previous: null,
+      next: null
+    };
+  }
+
+  return {
+    previous: currentIndex > 0 ? toQuestionMeta(routeQuestions[currentIndex - 1]) : null,
+    next: currentIndex < routeQuestions.length - 1 ? toQuestionMeta(routeQuestions[currentIndex + 1]) : null
+  };
 }

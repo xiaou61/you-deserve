@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { jsonError } from "@/lib/api-utils";
 import { loadAdminDashboardData } from "@/lib/admin-data";
-import { withTransaction } from "@/lib/db";
+import { query, withTransaction } from "@/lib/db";
 import { requireAdmin } from "@/lib/server-auth";
 
 export const runtime = "nodejs";
@@ -19,6 +19,11 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
   }
 
   const { id } = await params;
+  const user = await query<{ id: string }>("SELECT id FROM users WHERE id = $1 LIMIT 1", [id]);
+
+  if (!user.rowCount) {
+    return jsonError("用户不存在。", 404);
+  }
 
   await withTransaction(async (client) => {
     await client.query("DELETE FROM question_user_activity WHERE user_id = $1", [id]);

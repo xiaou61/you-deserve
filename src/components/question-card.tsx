@@ -33,6 +33,8 @@ export function QuestionCard({ question, compact = false }: QuestionCardProps) {
   const isMastered = ready && !!currentUser && activity.masteredBy.includes(currentUser);
   const hasNote = ready && !!currentUser && !!activity.notesByUser[currentUser]?.trim();
   const isFavorited = ready && !!currentUser && activity.favoritedBy.includes(currentUser);
+  const personalViews = ready && currentUser ? (activity.viewedByUser[currentUser]?.count ?? 0) : 0;
+  const needsReview = ready && !!currentUser && !isMastered && (isFavorited || hasNote || personalViews >= 2);
 
   return (
     <Link className="question-card group" href={`/questions/${question.slug}`}>
@@ -47,6 +49,7 @@ export function QuestionCard({ question, compact = false }: QuestionCardProps) {
             </span>
             {isMastered ? <span className="status-chip is-mastered">已掌握</span> : null}
             {isFavorited ? <span className="status-chip is-favorited">已收藏</span> : null}
+            {needsReview ? <span className="status-chip is-review">待回刷</span> : null}
           </div>
           <h3 className="mt-4 text-xl font-black leading-snug text-ink group-hover:text-coral">
             {question.title}
@@ -70,7 +73,7 @@ export function QuestionCard({ question, compact = false }: QuestionCardProps) {
       <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-ink/58">
         <span className="mini-metric">
           <Eye className="h-3.5 w-3.5" />
-          {activity.views}
+          {personalViews > 0 ? `我看过 ${personalViews}` : activity.views}
         </span>
         <span className="mini-metric">
           <Heart className="h-3.5 w-3.5" />
