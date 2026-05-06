@@ -17,6 +17,7 @@ import {
   Layers3,
   MessageSquare,
   NotebookPen,
+  RotateCcw,
   Search,
   Sparkles,
   Star,
@@ -26,6 +27,7 @@ import {
 
 import { useStudy } from "@/components/study-provider";
 import type { QuestionMeta } from "@/lib/content";
+import type { ReviewSessionSummary } from "@/lib/study-store";
 import { derivePersonalInsights } from "@/lib/personal-insights";
 
 type PersonalCenterProps = {
@@ -76,8 +78,74 @@ function getGoalTone(done: boolean) {
   return done ? "is-complete" : "";
 }
 
+function getReviewSessionHref(session: ReviewSessionSummary) {
+  const params = new URLSearchParams();
+
+  params.set("filter", session.filter);
+
+  if (session.bundleName) {
+    params.set("bundle", session.bundleName);
+  }
+
+  if (session.category) {
+    params.set("category", session.category);
+  }
+
+  if (session.route) {
+    params.set("route", session.route);
+  }
+
+  return `/review?${params.toString()}`;
+}
+
+function getReviewSessionLaterHref(session: ReviewSessionSummary) {
+  if (session.laterSlugs.length === 0) {
+    return "/review";
+  }
+
+  return getSlugScopedReviewHref(session.laterSlugs);
+}
+
+function getSlugScopedReviewHref(slugs: string[], filter: ReviewSessionSummary["filter"] = "smart") {
+  if (slugs.length === 0) {
+    return "/review";
+  }
+
+  const params = new URLSearchParams();
+  params.set("filter", filter);
+  params.set("slugs", slugs.join(","));
+
+  return `/review?${params.toString()}`;
+}
+
+function getNamedSlugScopedReviewHref(
+  slugs: string[],
+  bundleName: string,
+  filter: ReviewSessionSummary["filter"] = "smart",
+  fromBundleName?: string | null
+) {
+  if (slugs.length === 0) {
+    return "/review";
+  }
+
+  const params = new URLSearchParams();
+  params.set("filter", filter);
+  params.set("slugs", slugs.join(","));
+  params.set("bundle", bundleName);
+  if (fromBundleName) {
+    params.set("fromBundle", fromBundleName);
+  }
+
+  return `/review?${params.toString()}`;
+}
+
+function sumReadingTime(entries: Array<{ question: QuestionMeta }>) {
+  return entries.reduce((total, entry) => total + entry.question.readingTime, 0);
+}
+
 export function PersonalCenter({ questions }: PersonalCenterProps) {
-  const { currentUser, data, getOverview, ready } = useStudy();
+  const { currentUser, data, getOverview, getReviewSessions, ready } = useStudy();
+  const activeUser = currentUser ?? "";
   const [assetFilter, setAssetFilter] = useState<AssetFilter>("all");
   const [keyword, setKeyword] = useState("");
   const overview = ready
@@ -138,6 +206,415 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
         .includes(normalizedKeyword);
     });
   }, [assetFilter, normalizedKeyword, personal]);
+  const reviewSessions = ready ? getReviewSessions() : [];
+  const latestReviewSession = reviewSessions[0] ?? null;
+  const latestLaterEntries =
+    latestReviewSession?.laterSlugs.length && personal
+      ? personal.entries
+          .filter((entry) => latestReviewSession.laterSlugs.includes(entry.question.slug))
+          .sort(
+            (left, right) =>
+              latestReviewSession.laterSlugs.indexOf(left.question.slug) -
+              latestReviewSession.laterSlugs.indexOf(right.question.slug)
+          )
+      : [];
+  const latestHardLaterEntries = latestLaterEntries.filter((entry) => {
+    const viewCount = entry.activity.viewedByUser[activeUser]?.count ?? 0;
+
+    return (
+      viewCount >= 2 ||
+      !!entry.activity.notesByUser[activeUser]?.trim() ||
+      entry.activity.favoritedBy.includes(activeUser) ||
+      !entry.activity.masteredBy.includes(activeUser)
+    );
+  });
+  const latestSoftLaterEntries = latestLaterEntries.filter(
+    (entry) => !latestHardLaterEntries.some((item) => item.question.slug === entry.question.slug)
+  );
+  const latestHardLaterWithNotes = latestHardLaterEntries.filter((entry) =>
+    Boolean(entry.activity.notesByUser[activeUser]?.trim())
+  );
+  const latestHardLaterRepeatViewed = [...latestHardLaterEntries]
+    .filter((entry) => (entry.activity.viewedByUser[activeUser]?.count ?? 0) >= 2)
+    .sort(
+      (left, right) =>
+        (right.activity.viewedByUser[activeUser]?.count ?? 0) - (left.activity.viewedByUser[activeUser]?.count ?? 0)
+    );
+  const latestHardLaterUnmastered = latestHardLaterEntries.filter(
+    (entry) => !entry.activity.masteredBy.includes(activeUser)
+  );
+  const latestHardLaterFavorite = latestHardLaterEntries.filter((entry) => entry.activity.favoritedBy.includes(activeUser));
+  const cramBundle = personal
+    ? personal.reviewQueue
+        .filter((entry) => !entry.activity.masteredBy.includes(activeUser))
+        .slice(0, 6)
+    : [];
+  const notesRecoveryBundle = personal
+    ? personal.notes
+        .filter((entry) => !entry.activity.masteredBy.includes(activeUser))
+        .sort((left, right) => {
+          const leftViews = left.activity.viewedByUser[activeUser]?.count ?? 0;
+          const rightViews = right.activity.viewedByUser[activeUser]?.count ?? 0;
+          return rightViews - leftViews;
+        })
+        .slice(0, 6)
+    : [];
+  const favoriteCleanupBundle = personal
+    ? personal.favorites
+        .filter((entry) => !entry.activity.masteredBy.includes(activeUser))
+        .sort((left, right) => {
+          const leftAt = left.activity.viewedByUser[activeUser]?.lastViewedAt ?? "1970-01-01";
+          const rightAt = right.activity.viewedByUser[activeUser]?.lastViewedAt ?? "1970-01-01";
+          return Date.parse(leftAt) - Date.parse(rightAt);
+        })
+        .slice(0, 6)
+    : [];
+  const recentRecoveryBundle = personal
+    ? personal.history
+        .filter((entry) => !entry.activity.masteredBy.includes(activeUser))
+        .slice(0, 6)
+    : [];
+  const reheatingBundle = personal
+    ? personal.mastered
+        .filter((entry) => !!entry.activity.notesByUser[activeUser]?.trim() || (entry.activity.viewedByUser[activeUser]?.count ?? 0) >= 2)
+        .sort((left, right) => {
+          const leftAt = left.activity.viewedByUser[activeUser]?.lastViewedAt ?? "1970-01-01";
+          const rightAt = right.activity.viewedByUser[activeUser]?.lastViewedAt ?? "1970-01-01";
+          return Date.parse(rightAt) - Date.parse(leftAt);
+        })
+        .slice(0, 6)
+    : [];
+  const quickSprintBundle = personal
+    ? personal.reviewQueue
+        .filter((entry) => !entry.activity.masteredBy.includes(activeUser))
+        .slice()
+        .sort((left, right) => left.question.readingTime - right.question.readingTime)
+        .slice(0, 4)
+    : [];
+  const weeklyFocusBundle = personal
+    ? [...personal.categoryFocus]
+        .sort((left, right) => right.gapScore - left.gapScore)
+        .slice(0, 2)
+        .flatMap((focus) =>
+          personal.reviewQueue.filter((entry) => entry.question.category === focus.category).slice(0, 3)
+        )
+        .filter((entry, index, list) => list.findIndex((item) => item.question.slug === entry.question.slug) === index)
+        .slice(0, 6)
+    : [];
+  const routeRecoveryBundle = personal
+    ? personal.routeProgress[0]
+      ? personal.reviewQueue.filter((entry) => entry.question.route === personal.routeProgress[0].route).slice(0, 5)
+      : []
+    : [];
+  const assetBundles = [
+    {
+      title: "临考冲刺包",
+      subtitle: "优先把最该回刷的题拎出来",
+      description: "按当前复习队列最强信号直接组合，适合下一轮快速热手。",
+      entries: cramBundle,
+      href: getNamedSlugScopedReviewHref(cramBundle.map((entry) => entry.question.slug), "临考冲刺包"),
+      icon: <Sparkles className="h-4 w-4" />,
+      empty: "还没长出足够强的回刷信号，先去刷几题或留几条笔记。",
+      meta: `约 ${sumReadingTime(cramBundle)} 分钟`
+    },
+    {
+      title: "笔记回捞包",
+      subtitle: "先处理你自己写过东西的题",
+      description: "有笔记却还没掌握，通常就是最值得优先复盘的内容。",
+      entries: notesRecoveryBundle,
+      href: getNamedSlugScopedReviewHref(notesRecoveryBundle.map((entry) => entry.question.slug), "笔记回捞包"),
+      icon: <NotebookPen className="h-4 w-4" />,
+      empty: "还没有形成“有笔记但未吃透”的题包。",
+      meta: `约 ${sumReadingTime(notesRecoveryBundle)} 分钟`
+    },
+    {
+      title: "旧收藏清仓包",
+      subtitle: "把收藏夹里堆久了的题收掉",
+      description: "优先清掉收藏过但一直没彻底拿下的旧题，减少积压感。",
+      entries: favoriteCleanupBundle,
+      href: getNamedSlugScopedReviewHref(favoriteCleanupBundle.map((entry) => entry.question.slug), "旧收藏清仓包"),
+      icon: <Bookmark className="h-4 w-4" />,
+      empty: "现在没有需要优先清仓的旧收藏。",
+      meta: `约 ${sumReadingTime(favoriteCleanupBundle)} 分钟`
+    },
+    {
+      title: "最近回看包",
+      subtitle: "从你刚碰过的题继续往下推",
+      description: "适合在时间不长的时候直接续上最近浏览的那一批。",
+      entries: recentRecoveryBundle,
+      href: getNamedSlugScopedReviewHref(recentRecoveryBundle.map((entry) => entry.question.slug), "最近回看包"),
+      icon: <Clock3 className="h-4 w-4" />,
+      empty: "最近浏览里还没有形成未掌握的小题包。",
+      meta: `约 ${sumReadingTime(recentRecoveryBundle)} 分钟`
+    },
+    {
+      title: "回温巩固包",
+      subtitle: "给已经掌握的题做一轮轻复盘",
+      description: "有笔记或看过不止一次的掌握题，最适合偶尔回温，防止状态发虚。",
+      entries: reheatingBundle,
+      href: getNamedSlugScopedReviewHref(reheatingBundle.map((entry) => entry.question.slug), "回温巩固包"),
+      icon: <BookMarked className="h-4 w-4" />,
+      empty: "掌握题还不多，等你再沉淀几道，这里会更有价值。",
+      meta: `约 ${sumReadingTime(reheatingBundle)} 分钟`
+    },
+    {
+      title: "30 分钟快刷包",
+      subtitle: "时间不多也能推进一轮",
+      description: "优先挑阅读时间更短、但仍值得刷的题，适合碎片时间保持不断档。",
+      entries: quickSprintBundle,
+      href: getNamedSlugScopedReviewHref(quickSprintBundle.map((entry) => entry.question.slug), "30 分钟快刷包"),
+      icon: <Clock3 className="h-4 w-4" />,
+      empty: "当前还没有适合快刷的小题包。",
+      meta: `约 ${sumReadingTime(quickSprintBundle)} 分钟`
+    },
+    {
+      title: "本周重点包",
+      subtitle: "先救最容易拖垮进度的分类",
+      description: "从差距分最高的两类里抽出最值得回刷的题，适合拿来做本周止损。",
+      entries: weeklyFocusBundle,
+      href: getNamedSlugScopedReviewHref(weeklyFocusBundle.map((entry) => entry.question.slug), "本周重点包"),
+      icon: <Target className="h-4 w-4" />,
+      empty: "分类差距还不够明显，暂时不需要单开重点包。",
+      meta: `约 ${sumReadingTime(weeklyFocusBundle)} 分钟`
+    },
+    {
+      title: "路线止损包",
+      subtitle: "别让主线推进只停在看过",
+      description: "围绕你当前推进最快的路线，把还没真正吃透的题再拎一遍，避免路线虚高。",
+      entries: routeRecoveryBundle,
+      href: getNamedSlugScopedReviewHref(routeRecoveryBundle.map((entry) => entry.question.slug), "路线止损包"),
+      icon: <Layers3 className="h-4 w-4" />,
+      empty: "还没有形成明显的路线推进，不需要专门止损。",
+      meta: `约 ${sumReadingTime(routeRecoveryBundle)} 分钟`
+    }
+  ];
+  const latestBundleSession = reviewSessions.find((session) => !!session.bundleName) ?? null;
+  const seenBundleNames = new Set(reviewSessions.map((session) => session.bundleName).filter(Boolean));
+  const bundleNextMap: Record<string, string[]> = {
+    临考冲刺包: ["本周重点包", "30 分钟快刷包", "回温巩固包"],
+    笔记回捞包: ["临考冲刺包", "本周重点包", "回温巩固包"],
+    旧收藏清仓包: ["笔记回捞包", "临考冲刺包", "路线止损包"],
+    最近回看包: ["30 分钟快刷包", "临考冲刺包", "本周重点包"],
+    回温巩固包: ["本周重点包", "路线止损包", "30 分钟快刷包"],
+    "30 分钟快刷包": ["临考冲刺包", "本周重点包", "最近回看包"],
+    本周重点包: ["临考冲刺包", "路线止损包", "回温巩固包"],
+    路线止损包: ["本周重点包", "临考冲刺包", "回温巩固包"]
+  };
+  const rankedAssetBundles = assetBundles
+    .map((bundle) => {
+      const isLatestCompleted = bundle.title === latestBundleSession?.bundleName;
+      const hasLaterCarry = isLatestCompleted && (latestBundleSession?.laterCount ?? 0) > 0;
+      const isNewlySurfaced = bundle.entries.length > 0 && !seenBundleNames.has(bundle.title);
+      const baseScore = bundle.entries.length * 10;
+      const bonus =
+        bundle.title === "本周重点包"
+          ? 8
+          : bundle.title === "临考冲刺包"
+            ? 7
+            : bundle.title === "路线止损包"
+              ? 6
+              : bundle.title === "30 分钟快刷包"
+                ? 5
+              : 0;
+      const recencyPenalty = isLatestCompleted ? (hasLaterCarry ? 8 : 18) : 0;
+      const lifecycle = hasLaterCarry
+        ? {
+            label: "还有尾巴",
+            tone: "text-coral",
+            summary: "这包刚刷完，但还有稍后题没真正收干净。",
+            rank: 4
+          }
+        : isLatestCompleted
+          ? {
+              label: "刚完成",
+              tone: "text-teal",
+              summary: "刚推进过一轮，现在可以暂时往后放一点。",
+              rank: 2
+            }
+          : isNewlySurfaced
+            ? {
+                label: "新出现",
+                tone: "text-amber-strong",
+                summary: "这是最近刚长出来、值得立刻看一眼的新任务包。",
+                rank: 5
+              }
+            : bundle.entries.length > 0
+              ? {
+                  label: "值得接手",
+                  tone: "text-ink",
+                  summary: "已经形成稳定任务感，适合接到下一轮里处理。",
+                  rank: 3
+                }
+              : {
+                  label: "暂时空闲",
+                  tone: "text-ink/45",
+                  summary: "当前还没长出足够内容，先不用专门开这一包。",
+                  rank: 1
+                };
+
+      return {
+        ...bundle,
+        isLatestCompleted,
+        hasLaterCarry,
+        isNewlySurfaced,
+        lifecycle,
+        score: baseScore + bonus - recencyPenalty,
+        freshnessLabel: isLatestCompleted ? (hasLaterCarry ? "刚刷完 · 还留了稍后题" : "刚刷完 · 可先降优先级") : null
+      };
+    })
+    .sort((left, right) => {
+      if ((right.entries.length > 0 ? 1 : 0) !== (left.entries.length > 0 ? 1 : 0)) {
+        return (right.entries.length > 0 ? 1 : 0) - (left.entries.length > 0 ? 1 : 0);
+      }
+
+      if (right.score !== left.score) {
+        return right.score - left.score;
+      }
+
+      return left.title.localeCompare(right.title, "zh-CN");
+    });
+  const bundleLookup = new Map(rankedAssetBundles.map((bundle) => [bundle.title, bundle]));
+  const bundlesWithTransitions = rankedAssetBundles.map((bundle) => {
+    const recommendedNextTitles = bundleNextMap[bundle.title] ?? [];
+    const recommendedNext = recommendedNextTitles
+      .map((title) => bundleLookup.get(title))
+      .filter((item): item is (typeof rankedAssetBundles)[number] => item !== undefined && item.entries.length > 0);
+
+    return {
+      ...bundle,
+      recommendedNext,
+      nextHint:
+        recommendedNext[0]?.title
+          ? `通常下一步会接「${recommendedNext[0].title}」`
+          : bundle.entries.length > 0
+            ? "这包刷完后再回全量队列看新的优先级。"
+            : "等这包重新长出内容，再决定下一步。"
+    };
+  });
+  const latestBundlePath =
+    latestBundleSession?.bundleName && latestBundleSession?.fromBundleName
+      ? `${latestBundleSession.fromBundleName} -> ${latestBundleSession.bundleName}`
+      : null;
+  const recentBundleTransitions = reviewSessions
+    .filter((session) => session.bundleName && session.fromBundleName)
+    .slice(0, 4)
+    .map((session) => ({
+      id: session.id,
+      path: `${session.fromBundleName} -> ${session.bundleName}`,
+      finishedAt: session.finishedAt,
+      completedCount: session.completedCount
+    }));
+  const bundleTransitionCounts = reviewSessions
+    .filter((session) => session.bundleName && session.fromBundleName)
+    .reduce<Record<string, number>>((map, session) => {
+      const key = `${session.fromBundleName} -> ${session.bundleName}`;
+      map[key] = (map[key] ?? 0) + 1;
+      return map;
+    }, {});
+  const mostCommonBundlePath = Object.entries(bundleTransitionCounts).sort((left, right) => right[1] - left[1])[0] ?? null;
+  const bundleStartCounts = reviewSessions
+    .filter((session) => session.bundleName)
+    .reduce<Record<string, number>>((map, session) => {
+      const key = session.bundleName as string;
+      map[key] = (map[key] ?? 0) + 1;
+      return map;
+    }, {});
+  const mostUsedBundle = Object.entries(bundleStartCounts).sort((left, right) => right[1] - left[1])[0] ?? null;
+  const heavyBundleNames = new Set(["本周重点包", "路线止损包", "临考冲刺包", "笔记回捞包"]);
+  const lightBundleNames = new Set(["30 分钟快刷包", "最近回看包", "回温巩固包"]);
+  const heavyBundleStarts = Object.entries(bundleStartCounts)
+    .filter(([name]) => heavyBundleNames.has(name))
+    .reduce((sum, [, count]) => sum + count, 0);
+  const lightBundleStarts = Object.entries(bundleStartCounts)
+    .filter(([name]) => lightBundleNames.has(name))
+    .reduce((sum, [, count]) => sum + count, 0);
+  const bundleLifecycleOverview = {
+    active: bundlesWithTransitions.filter((bundle) => bundle.lifecycle.label === "值得接手").length,
+    fresh: bundlesWithTransitions.filter((bundle) => bundle.lifecycle.label === "新出现").length,
+    trailing: bundlesWithTransitions.filter((bundle) => bundle.lifecycle.label === "还有尾巴").length
+  };
+  const nextBundleSuggestions = bundlesWithTransitions.filter(
+    (bundle) => bundle.entries.length > 0 && bundle.title !== latestBundleSession?.bundleName
+  );
+  const correctionNudges = [
+    lightBundleStarts >= Math.max(2, heavyBundleStarts + 1) && nextBundleSuggestions.some((bundle) => heavyBundleNames.has(bundle.title))
+      ? {
+          title: "你最近有点偏轻量包",
+          description: "快刷和最近回看很适合续节奏，但如果连续几轮都停在轻量包，真正该补的硬卡点会一直往后拖。",
+          action: nextBundleSuggestions.find((bundle) => heavyBundleNames.has(bundle.title)) ?? null
+        }
+      : null,
+    mostUsedBundle?.[0] === "30 分钟快刷包" && nextBundleSuggestions.some((bundle) => bundle.title === "本周重点包")
+      ? {
+          title: "别一直停在 30 分钟快刷",
+          description: "你已经很会靠短包维持连续感了，下一步更值钱的是把本周重点真正吃进去一轮。",
+          action: nextBundleSuggestions.find((bundle) => bundle.title === "本周重点包") ?? null
+        }
+      : null,
+    mostUsedBundle?.[0] === "回温巩固包" && nextBundleSuggestions.some((bundle) => bundle.title === "临考冲刺包")
+      ? {
+          title: "巩固够了，可以开始上强度",
+          description: "如果总在回温包里打转，会有一种在学的感觉，但真正的推进会变慢。",
+          action: nextBundleSuggestions.find((bundle) => bundle.title === "临考冲刺包") ?? null
+        }
+      : null,
+    bundleLifecycleOverview.trailing > 0 && nextBundleSuggestions.some((bundle) => bundle.title === "本轮稍后题回收" || bundle.title === "笔记回捞包")
+      ? {
+          title: "你现在最该做的是收尾，不是开新坑",
+          description: "既然已经有包留下了尾巴，这一轮更适合先把稍后题和笔记卡点收回来。",
+          action:
+            nextBundleSuggestions.find((bundle) => bundle.title === "本轮稍后题回收") ??
+            nextBundleSuggestions.find((bundle) => bundle.title === "笔记回捞包") ??
+            null
+        }
+      : null
+  ].filter(
+    (
+      item
+    ): item is { title: string; description: string; action: (typeof nextBundleSuggestions)[number] | null } => Boolean(item)
+  );
+  const intensityRecommendation =
+    bundleLifecycleOverview.trailing > 0
+      ? {
+          level: "先降一点强度",
+          tone: "text-coral",
+          description: "现在最值钱的不是继续加题，而是先把尾巴收掉，别让稍后题越滚越多。",
+          action:
+            nextBundleSuggestions.find((bundle) => bundle.title === "笔记回捞包") ??
+            nextBundleSuggestions.find((bundle) => bundle.title === "本轮稍后题回收") ??
+            nextBundleSuggestions[0] ??
+            null
+        }
+      : personal.currentStreak >= 3 &&
+          personal.thisWeekViews >= 8 &&
+          heavyBundleStarts <= lightBundleStarts &&
+          nextBundleSuggestions.some((bundle) => heavyBundleNames.has(bundle.title))
+        ? {
+            level: "可以提一点强度",
+            tone: "text-teal",
+            description: "你的连续性已经起来了，说明现在有余力把轻量包往更硬的题包推进一格。",
+            action: nextBundleSuggestions.find((bundle) => heavyBundleNames.has(bundle.title)) ?? null
+          }
+        : personal.currentStreak >= 2 || personal.thisWeekViews >= 5
+          ? {
+              level: "先稳住当前强度",
+              tone: "text-ink",
+              description: "节奏正在形成，现在最重要的是别断。继续接一包能稳定推进的题，比突然上强度更划算。",
+              action:
+                nextBundleSuggestions.find((bundle) => bundle.title === "30 分钟快刷包") ??
+                nextBundleSuggestions[0] ??
+                null
+            }
+          : {
+              level: "先把强度降到能连续",
+              tone: "text-amber-strong",
+              description: "当前更需要的是把学习频率拉起来，不需要一上来就啃最重的包，先把连续几天做出来。",
+              action:
+                nextBundleSuggestions.find((bundle) => bundle.title === "30 分钟快刷包") ??
+                nextBundleSuggestions.find((bundle) => bundle.title === "最近回看包") ??
+                nextBundleSuggestions[0] ??
+                null
+            };
 
   if (!ready) {
     return (
@@ -493,6 +970,22 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                       差距分 {item.gapScore}
                     </span>
                   </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Link
+                      className="ghost-action"
+                      href={`/review?filter=smart&category=${encodeURIComponent(item.category)}`}
+                    >
+                      <GraduationCap className="h-4 w-4" />
+                      只刷这类
+                    </Link>
+                    <Link
+                      className="ghost-action"
+                      href={`/review?filter=pending&category=${encodeURIComponent(item.category)}`}
+                    >
+                      <Target className="h-4 w-4" />
+                      先清未掌握
+                    </Link>
+                  </div>
                 </div>
               ))
             ) : (
@@ -520,6 +1013,15 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                     ? `这一类已经有 ${item.reviewNeeded} 道题出现回刷信号，适合先去复习模式把这条线往前推。`
                     : `这一类你已经看过 ${item.viewed} 道，但掌握只有 ${item.mastered} 道，最适合拿来做下一轮补缺。`}
                 </p>
+                <div className="mt-3">
+                  <Link
+                    className="ghost-action"
+                    href={`/review?filter=smart&category=${encodeURIComponent(item.category)}`}
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                    直接按这类开刷
+                  </Link>
+                </div>
               </div>
             ))}
             <div className="profile-summary-card">
@@ -658,6 +1160,22 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                   <div className="profile-progress-track">
                     <div className="profile-progress-fill" style={{ width: `${Math.max(8, route.progress)}%` }} />
                   </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Link
+                      className="ghost-action"
+                      href={`/review?filter=smart&route=${encodeURIComponent(route.route)}`}
+                    >
+                      <GraduationCap className="h-4 w-4" />
+                      顺着这条路线刷
+                    </Link>
+                    <Link
+                      className="ghost-action"
+                      href={`/review?filter=pending&route=${encodeURIComponent(route.route)}`}
+                    >
+                      <Target className="h-4 w-4" />
+                      只看未掌握
+                    </Link>
+                  </div>
                 </div>
               ))
             ) : (
@@ -744,6 +1262,150 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Later Pickup</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">上轮稍后题清单</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              {latestLaterEntries.length} 道
+            </span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {latestLaterEntries.length > 0 && latestReviewSession ? (
+              <>
+                <div className="grid gap-3 lg:grid-cols-2">
+                  <div className="profile-later-group is-hard">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <strong>先处理这批明显卡壳题</strong>
+                        <p>反复看过、留过笔记、收藏过或还没掌握的题，优先收。</p>
+                      </div>
+                      <span>{latestHardLaterEntries.length} 道</span>
+                    </div>
+                    <div className="mt-3 space-y-3">
+                      {latestHardLaterEntries.slice(0, 3).map((entry) => (
+                        <Link className="profile-later-pick-card" href={`/questions/${entry.question.slug}`} key={entry.question.slug}>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap gap-2">
+                                <span className="status-chip">{entry.question.category}</span>
+                                {(entry.activity.viewedByUser[currentUser]?.count ?? 0) >= 2 ? (
+                                  <span className="status-chip">反复看过</span>
+                                ) : null}
+                                {entry.activity.notesByUser[currentUser]?.trim() ? (
+                                  <span className="status-chip">留过笔记</span>
+                                ) : null}
+                                {!entry.activity.masteredBy.includes(currentUser) ? (
+                                  <span className="status-chip">还没掌握</span>
+                                ) : null}
+                              </div>
+                              <h3 className="mt-3 text-lg font-black leading-snug text-ink">{entry.question.title}</h3>
+                              <p className="mt-2 text-sm leading-7 text-ink/60">{entry.question.summary}</p>
+                            </div>
+                            <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-ink/36" />
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="profile-later-group">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <strong>这一批更像暂时放一放</strong>
+                        <p>不是明显卡壳，只是上一轮当时先略过了。</p>
+                      </div>
+                      <span>{latestSoftLaterEntries.length} 道</span>
+                    </div>
+                    <div className="mt-3 space-y-3">
+                      {latestSoftLaterEntries.length > 0 ? (
+                        latestSoftLaterEntries.slice(0, 3).map((entry) => (
+                          <Link className="profile-later-pick-card" href={`/questions/${entry.question.slug}`} key={entry.question.slug}>
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap gap-2">
+                                  <span className="status-chip">{entry.question.category}</span>
+                                  <span className="status-chip">暂缓处理</span>
+                                </div>
+                                <h3 className="mt-3 text-lg font-black leading-snug text-ink">{entry.question.title}</h3>
+                                <p className="mt-2 text-sm leading-7 text-ink/60">{entry.question.summary}</p>
+                              </div>
+                              <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-ink/36" />
+                            </div>
+                          </Link>
+                        ))
+                      ) : (
+                        <div className="rounded-[1.2rem] bg-white px-4 py-5 text-sm font-bold leading-7 text-ink/55">
+                          这一轮稍后题里，几乎都已经属于需要优先收掉的卡点。
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {latestHardLaterEntries.length > 0 ? (
+                    <Link className="primary-action" href={getSlugScopedReviewHref(latestHardLaterEntries.map((entry) => entry.question.slug))}>
+                      <Sparkles className="h-4 w-4" />
+                      只收明显卡壳题
+                    </Link>
+                  ) : null}
+                  {latestHardLaterWithNotes.length > 0 ? (
+                    <Link
+                      className="ghost-action"
+                      href={getSlugScopedReviewHref(latestHardLaterWithNotes.map((entry) => entry.question.slug))}
+                    >
+                      <NotebookPen className="h-4 w-4" />
+                      先收有笔记卡点
+                    </Link>
+                  ) : null}
+                  {latestHardLaterRepeatViewed.length > 0 ? (
+                    <Link
+                      className="ghost-action"
+                      href={getSlugScopedReviewHref(latestHardLaterRepeatViewed.map((entry) => entry.question.slug))}
+                    >
+                      <Eye className="h-4 w-4" />
+                      按反复浏览优先
+                    </Link>
+                  ) : null}
+                  {latestHardLaterUnmastered.length > 0 ? (
+                    <Link
+                      className="ghost-action"
+                      href={getSlugScopedReviewHref(latestHardLaterUnmastered.map((entry) => entry.question.slug))}
+                    >
+                      <BookMarked className="h-4 w-4" />
+                      先收还没掌握的
+                    </Link>
+                  ) : null}
+                  {latestHardLaterFavorite.length > 0 ? (
+                    <Link
+                      className="ghost-action"
+                      href={getSlugScopedReviewHref(latestHardLaterFavorite.map((entry) => entry.question.slug))}
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      先收你收藏过的
+                    </Link>
+                  ) : null}
+                  <Link className="primary-action" href={getReviewSessionLaterHref(latestReviewSession)}>
+                    <Clock3 className="h-4 w-4" />
+                    优先收整批稍后题
+                  </Link>
+                  <Link className="ghost-action" href={getReviewSessionHref(latestReviewSession)}>
+                    <GraduationCap className="h-4 w-4" />
+                    再开同范围一轮
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
+                你最近还没有把题主动挪到“稍后再看”。等下一轮遇到想先跳过的卡点，这里就会自动长成你的专项回收入口。
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -836,6 +1498,67 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
+        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Review Recap</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">最近完成的复习轮次</h2>
+            </div>
+            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              最近 {Math.min(reviewSessions.length, 3)} 轮
+            </span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {reviewSessions.length > 0 ? (
+              reviewSessions.slice(0, 3).map((session) => (
+                <div className="profile-review-session-card" key={session.id}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <strong>{session.category ?? session.route ?? "全局复习"}</strong>
+                      <p>
+                        完成 {session.completedCount} 题，其中掌握 {session.masteredCount} 题，另有 {session.laterCount} 题留到稍后。
+                      </p>
+                    </div>
+                    <span>{formatDate(session.finishedAt)}</span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="status-chip">模式：{session.filter}</span>
+                    {session.fromBundleName ? <span className="status-chip">来自：{session.fromBundleName}</span> : null}
+                    {session.bundleName ? <span className="status-chip">题包：{session.bundleName}</span> : null}
+                    {session.laterSlugs.length > 0 ? <span className="status-chip">稍后 {session.laterSlugs.length} 题</span> : null}
+                    {session.categories.map((item) => (
+                      <span className="status-chip" key={item}>
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link className="ghost-action" href={getReviewSessionHref(session)}>
+                      <GraduationCap className="h-4 w-4" />
+                      再开同范围一轮
+                    </Link>
+                    {session.laterSlugs.length > 0 ? (
+                      <Link className="ghost-action" href={getReviewSessionLaterHref(session)}>
+                        <Clock3 className="h-4 w-4" />
+                        优先收上轮稍后题
+                      </Link>
+                    ) : null}
+                    <Link className="ghost-action" href="/review">
+                      <ArrowRight className="h-4 w-4" />
+                      回全量复习模式
+                    </Link>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
+                你还没有完整收住一轮复习。等你在复习模式里刷空一轮，这里会自动记下你当时推进了哪条线。
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -1082,6 +1805,273 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Bundles</p>
+            <h2 className="mt-2 text-2xl font-black text-ink">帮你整理好的复习题包</h2>
+            <p className="mt-2 text-sm leading-7 text-ink/58">
+              不用自己从浏览、收藏、笔记里再手动挑。这里直接把不同学习意图编成题包，点进去就是一轮。
+            </p>
+          </div>
+          <Link className="ghost-action" href="/review">
+            <GraduationCap className="h-4 w-4" />
+            回全量复习模式
+          </Link>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold">
+          <span className="status-chip">新出现 {bundleLifecycleOverview.fresh}</span>
+          <span className="status-chip">值得接手 {bundleLifecycleOverview.active}</span>
+          <span className="status-chip">还有尾巴 {bundleLifecycleOverview.trailing}</span>
+        </div>
+
+        {latestBundleSession ? (
+          <div className="mt-5 rounded-[1.4rem] border border-ink/10 bg-smoke/55 p-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">Latest Bundle</p>
+                <h3 className="mt-2 text-xl font-black text-ink">你刚清掉了「{latestBundleSession.bundleName}」</h3>
+                <p className="mt-2 text-sm leading-7 text-ink/60">
+                  最近一轮一共推进了 {latestBundleSession.completedCount} 道题，
+                  {latestBundleSession.laterCount > 0
+                    ? `还有 ${latestBundleSession.laterCount} 道先放到了稍后。`
+                    : "这轮没有留下稍后题，收得很干净。"}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link className="ghost-action" href={getReviewSessionHref(latestBundleSession)}>
+                  <RotateCcw className="h-4 w-4" />
+                  再开这一包
+                </Link>
+                {latestBundleSession.laterSlugs.length > 0 ? (
+                  <Link className="ghost-action" href={getReviewSessionLaterHref(latestBundleSession)}>
+                    <Clock3 className="h-4 w-4" />
+                    先收稍后题
+                  </Link>
+                ) : null}
+              </div>
+            </div>
+
+            {nextBundleSuggestions.length > 0 ? (
+              <div className="mt-4 grid gap-3 lg:grid-cols-3">
+                {nextBundleSuggestions.slice(0, 3).map((bundle) => (
+                  <div className="review-completed-card" key={`next-${bundle.title}`}>
+                    <strong className="text-base font-black text-ink">{bundle.title}</strong>
+                    <p className="mt-2 text-sm leading-7 text-ink/60">{bundle.description}</p>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <span className="text-xs font-black text-ink/45">{bundle.meta}</span>
+                      <Link
+                        className="ghost-action"
+                        href={getNamedSlugScopedReviewHref(
+                          bundle.entries.map((entry) => entry.question.slug),
+                          bundle.title,
+                          "smart",
+                          latestBundleSession.bundleName ?? null
+                        )}
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        接这一包
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        {latestBundlePath ? (
+          <div className="mt-4 rounded-[1.1rem] bg-smoke px-4 py-4 text-sm font-bold text-ink/62">
+            最近一次任务衔接：{latestBundlePath}
+          </div>
+        ) : null}
+
+        {recentBundleTransitions.length > 0 ? (
+          <div className="mt-4 rounded-[1.4rem] border border-ink/10 bg-white p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">Path Replay</p>
+                <h3 className="mt-2 text-lg font-black text-ink">最近几次你是怎么接包的</h3>
+              </div>
+              <span className="rounded-full bg-smoke px-3 py-1 text-xs font-black text-ink/55">
+                最近 {recentBundleTransitions.length} 次
+              </span>
+            </div>
+
+            {(mostCommonBundlePath || mostUsedBundle) ? (
+              <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                {mostCommonBundlePath ? (
+                  <div className="review-completed-card">
+                    <strong className="text-base font-black text-ink">你最常见的接法</strong>
+                    <p className="mt-2 text-sm leading-7 text-ink/60">
+                      目前最常出现的是「{mostCommonBundlePath[0]}」，已经发生了 {mostCommonBundlePath[1]} 次。
+                    </p>
+                  </div>
+                ) : null}
+                {mostUsedBundle ? (
+                  <div className="review-completed-card">
+                    <strong className="text-base font-black text-ink">你最常开的题包</strong>
+                    <p className="mt-2 text-sm leading-7 text-ink/60">
+                      目前你最常从「{mostUsedBundle[0]}」起手，一共开过 {mostUsedBundle[1]} 次。
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              {recentBundleTransitions.map((item) => (
+                <div className="review-completed-card" key={item.id}>
+                  <strong className="text-base font-black text-ink">{item.path}</strong>
+                  <p className="mt-2 text-sm leading-7 text-ink/60">
+                    当时这一跳一共推进了 {item.completedCount} 道题，完成于 {formatDate(item.finishedAt)}。
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {correctionNudges.length > 0 ? (
+          <div className="mt-4 rounded-[1.4rem] border border-ink/10 bg-white p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">Course Correction</p>
+                <h3 className="mt-2 text-lg font-black text-ink">系统觉得你现在该稍微纠偏一下</h3>
+              </div>
+              <span className="rounded-full bg-smoke px-3 py-1 text-xs font-black text-ink/55">
+                {correctionNudges.length} 条提醒
+              </span>
+            </div>
+
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              {correctionNudges.map((item) => (
+                <div className="review-completed-card" key={item.title}>
+                  <strong className="text-base font-black text-ink">{item.title}</strong>
+                  <p className="mt-2 text-sm leading-7 text-ink/60">{item.description}</p>
+                  {item.action ? (
+                    <div className="mt-4">
+                      <Link className="ghost-action" href={item.action.href}>
+                        <Target className="h-4 w-4" />
+                        去刷 {item.action.title}
+                      </Link>
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="mt-4 rounded-[1.4rem] border border-ink/10 bg-white p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">Intensity</p>
+              <h3 className="mt-2 text-lg font-black text-ink">系统觉得你现在该怎么控强度</h3>
+            </div>
+            <span className={`rounded-full bg-smoke px-3 py-1 text-xs font-black ${intensityRecommendation.tone}`}>
+              {intensityRecommendation.level}
+            </span>
+          </div>
+
+          <p className="mt-4 text-sm leading-7 text-ink/60">{intensityRecommendation.description}</p>
+
+          {intensityRecommendation.action ? (
+            <div className="mt-4">
+              <Link className="ghost-action" href={intensityRecommendation.action.href}>
+                <Sparkles className="h-4 w-4" />
+                按这个强度去刷 {intensityRecommendation.action.title}
+              </Link>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="mt-5 grid gap-4 xl:grid-cols-2">
+          {bundlesWithTransitions.map((bundle) => (
+            <div className="rounded-[1.4rem] border border-ink/10 bg-smoke/45 p-4" key={bundle.title}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-black text-ink/72">
+                    {bundle.icon}
+                    {bundle.subtitle}
+                  </div>
+                  <h3 className="mt-3 text-xl font-black text-ink">{bundle.title}</h3>
+                  <p className="mt-2 text-sm leading-7 text-ink/58">{bundle.description}</p>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <span className="rounded-full bg-white px-3 py-1 text-sm font-black text-ink/55">{bundle.entries.length} 题</span>
+                  {bundle.entries.length > 0 ? (
+                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-ink/45">{bundle.meta}</span>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <div className={`inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-black ${bundle.lifecycle.tone}`}>
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {bundle.lifecycle.label}
+                </div>
+                {bundle.freshnessLabel ? (
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-black text-coral">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    {bundle.freshnessLabel}
+                  </div>
+                ) : null}
+              </div>
+              <p className="mt-3 text-sm leading-7 text-ink/56">{bundle.lifecycle.summary}</p>
+              <p className="mt-2 text-sm font-bold text-ink/48">{bundle.nextHint}</p>
+
+              {bundle.recommendedNext.length > 0 ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {bundle.recommendedNext.slice(0, 2).map((nextBundle) => (
+                    <Link
+                      className="ghost-action"
+                      href={getNamedSlugScopedReviewHref(
+                        nextBundle.entries.map((entry) => entry.question.slug),
+                        nextBundle.title,
+                        "smart",
+                        bundle.title
+                      )}
+                      key={`${bundle.title}-to-${nextBundle.title}`}
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                      接 {nextBundle.title}
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
+
+              {bundle.entries.length > 0 ? (
+                <>
+                  <div className="mt-4 space-y-2">
+                    {bundle.entries.slice(0, 3).map((entry) => (
+                      <Link className="profile-mini-link" href={`/questions/${entry.question.slug}`} key={`${bundle.title}-${entry.question.slug}`}>
+                        {entry.question.title}
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link className="primary-action" href={bundle.href}>
+                      <ArrowRight className="h-4 w-4" />
+                      直接开这一包
+                    </Link>
+                    <Link className="ghost-action" href={`/questions/${bundle.entries[0].question.slug}`}>
+                      <Eye className="h-4 w-4" />
+                      先看第一题
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className="mt-4 rounded-[1.1rem] bg-white px-4 py-5 text-sm font-bold leading-7 text-ink/55">
+                  {bundle.empty}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </section>
 

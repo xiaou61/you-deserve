@@ -34,6 +34,24 @@ export type StudyStoreData = {
 };
 
 const SESSION_VIEW_KEY = "you-deserve.session-views";
+const REVIEW_SESSION_KEY = "you-deserve.review-sessions";
+
+export type ReviewSessionSummary = {
+  id: string;
+  user: string;
+  finishedAt: string;
+  filter: "smart" | "pending" | "favorites" | "notes" | "recent";
+  bundleName?: string | null;
+  fromBundleName?: string | null;
+  category: string | null;
+  route: string | null;
+  completedCount: number;
+  laterCount: number;
+  masteredCount: number;
+  completedSlugs: string[];
+  laterSlugs: string[];
+  categories: string[];
+};
 
 function ensureQuestionActivity(activity?: Partial<QuestionActivity>): QuestionActivity {
   return {
@@ -125,4 +143,39 @@ export function canIncrementView(slug: string) {
   }
 
   return true;
+}
+
+export function loadReviewSessions(): ReviewSessionSummary[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(REVIEW_SESSION_KEY) ?? "[]");
+
+    return Array.isArray(parsed)
+      ? parsed.filter(
+          (item): item is ReviewSessionSummary =>
+            !!item &&
+            typeof item === "object" &&
+            typeof item.id === "string" &&
+            typeof item.user === "string" &&
+            typeof item.finishedAt === "string"
+        )
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveReviewSessions(sessions: ReviewSessionSummary[]) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(REVIEW_SESSION_KEY, JSON.stringify(sessions));
+  } catch {
+    // Ignore storage errors and keep the rest of the learning flow usable.
+  }
 }

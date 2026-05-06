@@ -730,7 +730,9 @@ textarea {
 }
 
 .profile-focus-card,
-.review-later-card {
+.review-later-card,
+.profile-review-session-card,
+.profile-later-pick-card {
   padding: 1rem 1.05rem;
 }
 
@@ -754,6 +756,93 @@ textarea {
   display: block;
   color: var(--ink);
   font-size: 1rem;
+  font-weight: 900;
+}
+
+.profile-review-session-card {
+  border: 1px solid rgb(23 23 20 / 0.09);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.92)),
+    linear-gradient(135deg, rgb(19 137 125 / 0.04), rgb(232 76 61 / 0.04));
+}
+
+.profile-later-pick-card {
+  display: block;
+  border: 1px solid rgb(23 23 20 / 0.09);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.92)),
+    linear-gradient(135deg, rgb(232 76 61 / 0.05), rgb(246 198 68 / 0.05));
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.profile-later-pick-card:hover {
+  transform: translateY(-2px);
+  border-color: rgb(23 23 20 / 0.15);
+  box-shadow: 0 20px 52px rgb(23 23 20 / 0.1);
+}
+
+.profile-later-group {
+  border: 1px solid rgb(23 23 20 / 0.09);
+  border-radius: 1.3rem;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.92)),
+    linear-gradient(135deg, rgb(19 137 125 / 0.03), rgb(246 198 68 / 0.04));
+  padding: 1rem;
+}
+
+.profile-later-group.is-hard {
+  border-color: rgb(232 76 61 / 0.18);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.92)),
+    linear-gradient(135deg, rgb(232 76 61 / 0.08), rgb(246 198 68 / 0.06));
+}
+
+.profile-later-group strong {
+  display: block;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.profile-later-group p {
+  margin-top: 0.4rem;
+  color: rgb(23 23 20 / 0.6);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+.profile-later-group span {
+  flex-shrink: 0;
+  color: var(--coral);
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.profile-review-session-card strong {
+  display: block;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.profile-review-session-card p {
+  margin-top: 0.45rem;
+  color: rgb(23 23 20 / 0.62);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.75;
+}
+
+.profile-review-session-card span {
+  flex-shrink: 0;
+  color: rgb(23 23 20 / 0.48);
+  font-size: 0.82rem;
   font-weight: 900;
 }
 

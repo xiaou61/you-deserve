@@ -15,7 +15,10 @@ import {
   getEmptyStudyStore,
   getQuestionActivity,
   hasUser,
+  loadReviewSessions,
+  saveReviewSessions,
   type QuestionActivity,
+  type ReviewSessionSummary,
   type StudyStoreData
 } from "@/lib/study-store";
 
@@ -38,6 +41,8 @@ type StudyContextValue = {
   toggleMastered: (slug: string) => Promise<AuthResult>;
   saveNote: (slug: string, note: string) => Promise<AuthResult>;
   addComment: (slug: string, content: string) => Promise<AuthResult>;
+  getReviewSessions: () => ReviewSessionSummary[];
+  saveReviewSession: (session: ReviewSessionSummary) => void;
   getOverview: () => {
     totalLikes: number;
     totalFavorites: number;
@@ -69,6 +74,7 @@ async function readPayload(response: Response): Promise<ApiPayload> {
 export function StudyProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [data, setData] = useState<StudyStoreData>(getEmptyStudyStore());
+  const [reviewSessions, setReviewSessions] = useState<ReviewSessionSummary[]>([]);
 
   const applyPayload = useCallback((payload: ApiPayload) => {
     if (payload.data) {
@@ -117,11 +123,13 @@ export function StudyProvider({ children }: { children: ReactNode }) {
 
         if (!cancelled) {
           setData(payload.data ?? getEmptyStudyStore());
+          setReviewSessions(loadReviewSessions());
           setReady(true);
         }
       } catch {
         if (!cancelled) {
           setData(getEmptyStudyStore());
+          setReviewSessions(loadReviewSessions());
           setReady(true);
         }
       }
@@ -273,6 +281,14 @@ export function StudyProvider({ children }: { children: ReactNode }) {
     [requireUser, requestData]
   );
 
+  const saveReviewSession = useCallback((session: ReviewSessionSummary) => {
+    setReviewSessions((previous) => {
+      const next = [session, ...previous.filter((item) => item.id !== session.id)].slice(0, 8);
+      saveReviewSessions(next);
+      return next;
+    });
+  }, []);
+
   const value = useMemo<StudyContextValue>(
     () => ({
       data,
@@ -288,6 +304,8 @@ export function StudyProvider({ children }: { children: ReactNode }) {
       toggleMastered,
       saveNote,
       addComment,
+      getReviewSessions: () => reviewSessions.filter((session) => session.user === data.currentUser),
+      saveReviewSession,
       getOverview: () => {
         const activities = Object.values(data.questions);
         const currentUser = data.currentUser;
@@ -318,8 +336,10 @@ export function StudyProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       ready,
+      reviewSessions,
       register,
       saveNote,
+      saveReviewSession,
       toggleFavorite,
       toggleLike,
       toggleMastered
