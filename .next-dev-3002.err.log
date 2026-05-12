@@ -175,3 +175,155 @@
     }
   ]
 }
+⨯ AggregateError: 
+    at async initDatabase (src\lib\db.ts:72:3)
+  70 |   const pool = getPool();
+  71 |
+> 72 |   await pool.query(`
+     |   ^
+  73 |     CREATE TABLE IF NOT EXISTS users (
+  74 |       id TEXT PRIMARY KEY,
+  75 |       username TEXT NOT NULL UNIQUE, {
+  code: 'ECONNREFUSED',
+  [errors]: [
+    Error: connect ECONNREFUSED 127.0.0.1:55432
+        at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 55432
+    },
+    Error: connect ECONNREFUSED ::1:55432
+        at <unknown> (Error: connect ECONNREFUSED ::1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '::1',
+      port: 55432
+    }
+  ]
+}
+⨯ AggregateError: 
+    at async initDatabase (src\lib\db.ts:72:3)
+    at async ensureDb (src\lib\db.ts:153:5)
+    at async query (src\lib\db.ts:164:3)
+    at async POST (src\app\api\auth\register\route.ts:29:5)
+  70 |   const pool = getPool();
+  71 |
+> 72 |   await pool.query(`
+     |   ^
+  73 |     CREATE TABLE IF NOT EXISTS users (
+  74 |       id TEXT PRIMARY KEY,
+  75 |       username TEXT NOT NULL UNIQUE, {
+  code: 'ECONNREFUSED',
+  [errors]: [
+    Error: connect ECONNREFUSED 127.0.0.1:55432
+        at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 55432
+    },
+    Error: connect ECONNREFUSED ::1:55432
+        at <unknown> (Error: connect ECONNREFUSED ::1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '::1',
+      port: 55432
+    }
+  ]
+}
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+⨯ AggregateError: 
+    at async initDatabase (src\lib\db.ts:72:3)
+  70 |   const pool = getPool();
+  71 |
+> 72 |   await pool.query(`
+     |   ^
+  73 |     CREATE TABLE IF NOT EXISTS users (
+  74 |       id TEXT PRIMARY KEY,
+  75 |       username TEXT NOT NULL UNIQUE, {
+  code: 'ECONNREFUSED',
+  [errors]: [
+    Error: connect ECONNREFUSED 127.0.0.1:55432
+        at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 55432
+    },
+    Error: connect ECONNREFUSED ::1:55432
+        at <unknown> (Error: connect ECONNREFUSED ::1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '::1',
+      port: 55432
+    }
+  ]
+}
+⨯ AggregateError: 
+    at async initDatabase (src\lib\db.ts:72:3)
+  70 |   const pool = getPool();
+  71 |
+> 72 |   await pool.query(`
+     |   ^
+  73 |     CREATE TABLE IF NOT EXISTS users (
+  74 |       id TEXT PRIMARY KEY,
+  75 |       username TEXT NOT NULL UNIQUE, {
+  code: 'ECONNREFUSED',
+  [errors]: [
+    Error: connect ECONNREFUSED 127.0.0.1:55432
+        at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 55432
+    },
+    Error: connect ECONNREFUSED ::1:55432
+        at <unknown> (Error: connect ECONNREFUSED ::1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '::1',
+      port: 55432
+    }
+  ]
+}
+⨯ AggregateError: 
+    at async initDatabase (src\lib\db.ts:72:3)
+    at async ensureDb (src\lib\db.ts:153:5)
+    at async withTransaction (src\lib\db.ts:169:3)
+    at async POST (src\app\api\study\questions\[slug]\view\route.ts:25:3)
+  70 |   const pool = getPool();
+  71 |
+> 72 |   await pool.query(`
+     |   ^
+  73 |     CREATE TABLE IF NOT EXISTS users (
+  74 |       id TEXT PRIMARY KEY,
+  75 |       username TEXT NOT NULL UNIQUE, {
+  code: 'ECONNREFUSED',
+  [errors]: [
+    Error: connect ECONNREFUSED 127.0.0.1:55432
+        at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 55432
+    },
+    Error: connect ECONNREFUSED ::1:55432
+        at <unknown> (Error: connect ECONNREFUSED ::1:55432) {
+      errno: -4078,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '::1',
+      port: 55432
+    }
+  ]
+}
