@@ -20,34 +20,36 @@ export default function RoutesPage() {
       <section className="hero-panel overflow-hidden rounded-[2rem] p-6 sm:p-8 lg:p-10">
         <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:items-end">
           <div>
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/70 px-3 py-1 text-sm font-bold text-ink">
-              <Compass className="h-4 w-4 text-coral" />
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/68 px-3 py-1 text-sm font-semibold text-ink backdrop-blur-xl">
+              <Compass className="h-4 w-4 text-teal" />
               Java 后端 · 双非上岸优先级
             </div>
-            <p className="mb-4 text-sm font-black uppercase tracking-[0.28em] text-teal">
-              Roadmap
-            </p>
-            <h1 className="display-title max-w-4xl text-5xl font-black leading-[1.05] text-ink sm:text-6xl lg:text-7xl">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.28em] text-teal">上岸路线</p>
+            <h1 className="display-title max-w-4xl text-5xl font-semibold leading-[1.05] tracking-[-0.05em] text-ink sm:text-6xl lg:text-7xl">
               先补能涨分的，再补能拉开差距的。
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-ink/72">
               这条路线按后端面试常见追问组织：基础题保证不丢分，框架和中间件负责撑二面，工程化负责让项目经历更像真实上线。
             </p>
+            <p className="mt-4 max-w-3xl text-sm font-medium leading-7 text-ink/58">
+              如果你现在还没有完整节奏，就别自己硬排优先级，直接按阶段往下刷，会比东补一点西补一点更容易出效果。
+            </p>
           </div>
 
-          <div className="rounded-[1.5rem] border border-ink/10 bg-white/78 p-5 shadow-soft">
-            <p className="text-sm font-black text-ink/55">当前路线规模</p>
+          <div className="rounded-[1.5rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl">
+            <p className="text-sm font-medium text-ink/55">当前路线规模</p>
+            <p className="mt-2 text-sm leading-7 text-ink/58">先看阶段，再挑对应题目，适合拿来做整周复习计划。</p>
             <div className="mt-5 grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-coral">{roadmapStages.length}</p>
+              <div className="rounded-[1.15rem] border border-white/70 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-teal">{roadmapStages.length}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">阶段</p>
               </div>
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-teal">{questions.length}</p>
+              <div className="rounded-[1.15rem] border border-white/70 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-[#3478f6]">{questions.length}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">题目</p>
               </div>
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-amber-strong">{totalTopics}</p>
+              <div className="rounded-[1.15rem] border border-white/70 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-ink">{totalTopics}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">抓手</p>
               </div>
             </div>
@@ -64,23 +66,23 @@ export default function RoutesPage() {
 
           return (
             <article
-              className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6 lg:grid lg:grid-cols-[280px_1fr] lg:gap-6"
+              className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6 lg:grid lg:grid-cols-[280px_1fr] lg:gap-6"
               id={stage.id}
               key={stage.id}
             >
-              <aside className="rounded-[1.4rem] bg-ink p-5 text-white">
+              <aside className="rounded-[1.4rem] border border-white/75 bg-white/74 p-5 text-ink backdrop-blur-xl">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-black text-mint">阶段 {index + 1}</p>
-                    <h2 className="mt-3 text-2xl font-black leading-tight">{stage.title}</h2>
+                    <p className="text-sm font-semibold text-teal">阶段 {index + 1}</p>
+                    <h2 className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.03em]">{stage.title}</h2>
                   </div>
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/10 text-amber">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[1.15rem] border border-white/80 bg-white/82 text-teal shadow-[0_10px_28px_rgba(15,23,40,0.08)]">
                     <Icon className="h-5 w-5" />
                   </span>
                 </div>
-                <p className="mt-4 text-sm font-bold leading-7 text-white/65">{stage.subtitle}</p>
+                <p className="mt-4 text-sm font-medium leading-7 text-ink/58">{stage.subtitle}</p>
                 <a
-                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-sm font-black text-white transition hover:bg-white hover:text-ink"
+                  className="ghost-action mt-6 px-3 py-2 text-sm font-semibold"
                   href={stage.sourceUrl}
                   rel="noreferrer"
                   target="_blank"
@@ -92,23 +94,26 @@ export default function RoutesPage() {
 
               <div className="mt-5 min-w-0 lg:mt-0">
                 <p className="leading-8 text-ink/68">{stage.description}</p>
+                <p className="mt-3 text-sm font-bold leading-7 text-ink/56">
+                  这一阶段更适合先把抓手打稳，再去刷对应题目，不然容易看得多、留下来的少。
+                </p>
 
                 <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
-                  <div className="rounded-[1.3rem] bg-smoke p-4">
+                  <div className="rounded-[1.3rem] border border-white/75 bg-white/72 p-4">
                     <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
-                      <Target className="h-4 w-4 text-coral" />
+                      <Target className="h-4 w-4 text-teal" />
                       必须拿下
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {stage.mustKnow.map((item) => (
-                        <span className="rounded-full bg-white px-3 py-1.5 text-sm font-bold text-ink/68" key={item}>
+                        <span className="rounded-full border border-white/70 bg-[#f3f7ff] px-3 py-1.5 text-sm font-medium text-ink/68" key={item}>
                           {item}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="rounded-[1.3rem] bg-mint/65 p-4">
+                  <div className="rounded-[1.3rem] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.74),rgba(255,255,255,0.62))] p-4">
                     <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
                       <CheckCircle2 className="h-4 w-4 text-teal" />
                       阶段产出
@@ -120,9 +125,9 @@ export default function RoutesPage() {
                 {stageQuestions.length > 0 ? (
                   <div className="mt-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <p className="text-sm font-black text-ink/55">对应题目</p>
+                      <p className="text-sm font-medium text-ink/55">对应题目</p>
                       <Link
-                        className="inline-flex items-center gap-1 text-sm font-black text-coral"
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-teal"
                         href={`/routes/${stage.id}`}
                       >
                         刷本阶段

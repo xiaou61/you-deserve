@@ -34,28 +34,32 @@ export function HomeRoutePanel({ questions }: HomeRoutePanelProps) {
     : "先从高频题起手，让轨迹快点长出来。";
 
   return (
-    <div className="rounded-[1.6rem] border border-ink/10 bg-ink p-6 text-white shadow-soft">
+    <div className="rounded-[1.6rem] border border-white/70 bg-white/68 p-6 text-ink shadow-soft backdrop-blur-2xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-bold text-mint">{topRoute ? "你的今日路线" : "今日路线"}</p>
-          <h2 className="mt-3 text-3xl font-black">{heading}</h2>
-          <p className="mt-3 text-sm leading-7 text-white/68">{caption}</p>
+          <p className="text-sm font-semibold text-teal">{topRoute ? "你的今日路线" : "今日路线"}</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-ink">{heading}</h2>
+          <p className="mt-3 text-sm leading-7 text-ink/58">{caption}</p>
         </div>
-        <GraduationCap className="h-9 w-9 text-amber" />
+        <span className="grid h-11 w-11 place-items-center rounded-[1.2rem] border border-white/80 bg-white/75 text-teal shadow-[0_10px_28px_rgba(15,23,40,0.08)]">
+          <GraduationCap className="h-5 w-5" />
+        </span>
       </div>
       <div className="mt-8 grid gap-3">
         {featured.map((question, index) => (
           <Link
-            className="group flex items-center justify-between rounded-2xl bg-white/8 px-4 py-3 transition hover:bg-white/14"
+            className="group flex items-center justify-between rounded-[1.15rem] border border-white/75 bg-white/72 px-4 py-3 backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-white/90"
             href={`/questions/${question.slug}`}
             key={question.slug}
           >
             <div>
-              <p className="text-xs font-black text-white/45">0{index + 1}</p>
-              <p className="mt-1 font-bold leading-snug">{question.title}</p>
-              <p className="mt-1 text-xs font-bold text-white/45">{question.route}</p>
+              <p className="text-xs font-semibold text-ink/42">0{index + 1}</p>
+              <p className="mt-1 font-semibold leading-snug text-ink">{question.title}</p>
+              <p className="mt-1 text-xs font-medium text-ink/42">{question.route}</p>
             </div>
-            <ArrowUpRight className="h-4 w-4 text-white/45 transition group-hover:text-amber" />
+            <span className="grid h-9 w-9 place-items-center rounded-full border border-white/80 bg-white/80 text-teal transition group-hover:bg-[#0a84ff] group-hover:text-white">
+              <ArrowUpRight className="h-4 w-4" />
+            </span>
           </Link>
         ))}
       </div>

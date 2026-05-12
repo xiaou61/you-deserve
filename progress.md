@@ -481,3 +481,13 @@
 - `src/components/personal-center.tsx` 已新增“上轮稍后题清单”模块，会把最近一轮里被主动挪到后面的题直接列出来，并提供“先收这批稍后题 / 再开同范围一轮”两个动作。
 - `src/app/globals.css` 已补 `profile-later-pick-card` 样式，让这批题在视觉上和普通收藏/历史清单区分开，更像一个待专项回收的卡点列表。
 - 第十二轮打磨后再次验证：`npm run lint` 通过；`npm run build` 通过；本地 dev server 下 `GET /me` 返回 200。
+# 2026-05-11
+
+- 读取现有计划、审计记录、修复进度与样稿，确认 400 篇题库已完成前五轮增强与全量校验。
+- 统计专题分布并判断当前阶段重点：从“补齐内容”切换到“第六轮定向提质”更合适。
+- 新增第六轮规划入口到 `task_plan.md`，并整理独立执行方案到 `docs/plans/2026-05-11-content-optimization-round6-plan.md`。
+- 新增批处理脚本 `scripts/optimize-round6-batch1.py`，针对第六轮 Batch 1 批量替换 20 篇 Java 高频题的 `一句话结论`、`面试回答`、`常见追问`、`图解提示`。
+- 执行 Batch 1 完成，涉及 20 篇：HashMap/ConcurrentHashMap、ArrayList/LinkedList、CAS/Atomic、AQS、线程池、ThreadLocal、CompletableFuture、BlockingQueue、volatile 等高频题。
+- 抽查 `thread-pool-core-parameters`、`concurrenthashmap`、`threadlocal`、`hashmap-thread-unsafe`、`aqs`，确认开场回答、追问方向和图解提示已去掉通用模板感。
+- 运行 `npm run validate:content` 通过。
+- 运行 `npm run build` 失败，定位到既有类型错误 `src/components/personal-center.tsx:588`：`personal` 可能为 `null`；与本次内容改动无关，已记录。

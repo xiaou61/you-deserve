@@ -1,13 +1,17 @@
 ---
-title: "Cookie、Session、Token 有什么区别？"
-slug: "cookie-session-token"
-category: "计算机网络"
-tags: ["HTTP", "Cookie", "Session", "Token"]
-difficulty: "easy"
-route: "Java 后端上岸路线"
-scene: "一面高频"
+title: Cookie、Session、Token 有什么区别？
+slug: cookie-session-token
+category: 计算机网络
+tags:
+  - HTTP
+  - Cookie
+  - Session
+  - Token
+difficulty: easy
+route: Java 后端上岸路线
+scene: 一面高频
 order: 1730
-summary: "Cookie 是浏览器存储机制，Session 是服务端会话，Token 是客户端携带的访问凭证。"
+summary: Cookie 是浏览器存储机制，Session 是服务端会话，Token 是客户端携带的访问凭证。
 ---
 
 ## 一句话结论
@@ -30,21 +34,21 @@ Cookie 像你口袋里的小纸条，Session 像店里会员系统的记录，To
 
 ## 常见追问
 
-### 这题最容易被追问的边界是什么？
+### 网络题最容易和哪些层混掉？
 
-重点说清缓存过期、跨域、TLS 握手、队头阻塞、连接复用、TIME_WAIT 和代理转发。不要只给结论，要说明哪些条件下结论成立，哪些条件下会退化或需要换方案。
+最常见的是把 DNS、TCP、TLS、HTTP、代理和 CDN 混成一团。像「Cookie、Session、Token 有什么区别」这种题，最好主动说清楚它发生在第几层，前后各依赖什么。
 
-### 怎么证明自己不是在背模板？
+### 真排障时第一步抓什么？
 
-用状态码、请求头、响应头、tcpdump、Wireshark、DNS 记录、证书和连接状态做验证。能说出具体信号、反例或排查入口，答案就从概念层进入实战层。
+先确定失败卡在解析、建连、握手、传输还是应用层，再选 dig、curl、tcpdump、Wireshark、请求头和连接状态去看。顺序比工具名更重要。
 
-### 和相近方案怎么区分？
+### 为什么同样是“慢”，可能完全不是一个问题？
 
-可以拿HTTP 缓存、CDN、反向代理、HTTP/2、HTTP/3、gRPC、WebSocket 或 TCP 参数对比，从协议语义、延迟、兼容性、安全性和排查成本几个维度选择。
+因为慢可能来自 DNS 缓存失效、TCP 重传、TLS 握手、代理转发、服务端排队，甚至浏览器并发限制。答题时把这层拆开，内容立刻就厚了。
 
-### 面试官继续深挖时怎么展开？
+### 怎么把它讲成真实链路？
 
-先围绕“Cookie：存储在浏览器，每次请求可自动携带，常用来保存 sessionId。”讲清主链路，再补“补 HttpOnly、Secure、SameSite、Path/Domain、过期时间、Session 固定攻击、CSRF/XSS 风险、JWT 与 opaque token、Refresh Token、撤销和轮换策略，以及 Token 放 Header 还是 Cookie 的权衡”。如果能把边界条件、异常分支和验证闭环连起来，就能接住二面、三面的追问。
+可以把 Cookie、Session、Token 有什么区别 放到一次完整请求里，从浏览器或客户端出发，讲到服务端返回，中间哪一跳出问题会看到什么现象。这样用户也更容易记住。
 
 ## 易错点
 
@@ -54,7 +58,7 @@ Cookie 像你口袋里的小纸条，Session 像店里会员系统的记录，To
 
 ## 详细讲解
 
-Cookie、Session、Token 有什么区别？ 这道题现在要从“能背出来”修到“能接住追问”。核心结论是：Cookie 是浏览器存储机制，Session 是服务端会话，Token 是客户端携带的访问凭证。回答时先把它放回网络协议语境，说明它解决什么矛盾，再围绕协议字段、连接状态、缓存策略、抓包排查和安全边界展开。这样能避免泛泛而谈，也能让面试官听出你知道这题的真实边界。
+Cookie、Session、Token 有什么区别？ 核心结论是：Cookie 是浏览器存储机制，Session 是服务端会话，Token 是客户端携带的访问凭证。回答时先把它放回网络协议语境，说明它解决什么矛盾，再围绕协议字段、连接状态、缓存策略、抓包排查和安全边界展开。
 
 第一步是拆清问题背景。Cookie 像你口袋里的小纸条，Session 像店里会员系统的记录，Token 像一张带签名的临时通行证。在网络协议题里，背景不能写成空泛的工程套话，而要落到按客户端、DNS、连接建立、请求头、服务端响应和连接关闭的时序说明。如果只说“看场景”或“加组件”，读者很难知道下一步该检查什么；如果能把输入、状态、依赖和输出说清，答案就有了主线。
 
@@ -68,7 +72,7 @@ Cookie、Session、Token 有什么区别？ 这道题现在要从“能背出来
 
 ## 图解提示
 
-适合画一张时序图：识别协议层次 -> Cookie -> Session -> 处理缓存安全 -> 抓包验证链路 -> 区分相近协议。画面重点突出：Cookie、Session、Token 有什么区别？ 不是孤立概念，要把核心机制、边界风险、异常处理和验证证据放在同一张图里。
+适合画一张请求链路图：客户端发起 -> 中间解析或建连 -> 协议层关键动作 -> 服务端处理 -> 补上 Cookie 不是身份本身，它只是存储和携带数据的机制 -> 最后放抓包或日志验证。网络题的图最好能看出问题卡在第几层。
 
 ## 记忆钩子
 

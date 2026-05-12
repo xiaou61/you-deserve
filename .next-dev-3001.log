@@ -2,23 +2,14 @@
 > you-deserve@0.1.0 dev
 > next dev --port 3001
 
-▲ Next.js 16.2.4 (Turbopack)
-- Local:         http://localhost:3001
-- Network:       http://168.2.1.177:3001
-- Environments: .env.local
-✓ Ready in 530ms
-Creating turbopack project { dir: 'F:\\you-deserve', testMode: true }
-
- GET /me 200 in 560ms (next.js: 146ms, application-code: 414ms)
- GET /review 200 in 1089ms (next.js: 866ms, application-code: 224ms)
- GET /review 200 in 1054ms (next.js: 102ms, application-code: 952ms)
- GET /me 200 in 514ms (next.js: 92ms, application-code: 422ms)
- GET /me 200 in 322ms (next.js: 48ms, application-code: 274ms)
- GET /questions/java-hashmap-thread-unsafe 200 in 2.2s (next.js: 900ms, generate-params: 758ms, application-code: 1295ms)
- GET /review 200 in 1513ms (next.js: 55ms, application-code: 1458ms)
- GET / 200 in 1524ms (next.js: 336ms, application-code: 1188ms)
-✓ Compiled in 116ms
-✓ Compiled in 377ms
-✓ Compiled in 199ms
- GET / 200 in 2.5s (next.js: 249ms, application-code: 2.3s)
- GET /questions/java-hashmap-thread-unsafe 200 in 2.6s (next.js: 339ms, generate-params: 98ms, application-code: 2.2s)
+猕?Failed to start server
+Error: listen EADDRINUSE: address already in use :::3001
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3001)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 3001
+}
+[?25h

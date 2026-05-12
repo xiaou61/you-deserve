@@ -213,6 +213,18 @@ export function ReviewMode({
     () => scopedQueue.filter((entry) => sessionLater.includes(entry.question.slug) && !sessionDone.includes(entry.question.slug)),
     [scopedQueue, sessionDone, sessionLater]
   );
+  const queueTotal = scopedQueue.length;
+  const completionPercent = queueTotal > 0 ? Math.round((sessionCompleted / queueTotal) * 100) : 0;
+  const remainingMinutes = useMemo(
+    () => visibleQueue.reduce((total, entry) => total + entry.question.readingTime, 0),
+    [visibleQueue]
+  );
+  const completedMinutes = useMemo(
+    () => completedEntries.reduce((total, entry) => total + entry.question.readingTime, 0),
+    [completedEntries]
+  );
+  const nextEntry = activeIndex < visibleQueue.length - 1 ? visibleQueue[activeIndex + 1] : null;
+  const quickWinCount = visibleQueue.filter((entry) => entry.question.readingTime <= 5).length;
   const scopeLabel =
     initialSlugScope.length > 0
       ? initialBundleName
@@ -384,8 +396,8 @@ export function ReviewMode({
 
   if (!ready) {
     return (
-      <section className="rounded-[2rem] border border-ink/10 bg-white p-8 shadow-soft">
-        <p className="text-lg font-black text-ink">正在为你生成复习队列...</p>
+      <section className="rounded-[2rem] border border-white/75 bg-white/68 p-8 shadow-soft backdrop-blur-2xl">
+        <p className="text-lg font-semibold text-ink">正在为你生成复习队列...</p>
       </section>
     );
   }
@@ -394,11 +406,11 @@ export function ReviewMode({
     return (
       <section className="profile-hero rounded-[2rem] border border-ink/10 p-6 shadow-soft sm:p-8 lg:p-10">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-[1.6rem] bg-ink text-mint shadow-soft">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-[1.6rem] border border-white/80 bg-white/82 text-teal shadow-soft">
             <UserRound className="h-7 w-7" />
           </div>
-          <p className="mt-6 text-sm font-black uppercase tracking-[0.24em] text-coral">Review Mode</p>
-          <h1 className="mt-3 text-4xl font-black text-ink sm:text-5xl">先登录，再让复习有顺序。</h1>
+          <p className="mt-6 text-sm font-semibold uppercase tracking-[0.24em] text-teal">复习模式</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">先登录，再让复习有顺序。</h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-ink/64 sm:text-lg">
             复习模式会根据你的浏览、收藏、掌握、笔记和评论自动排优先级。登录之后，它就不再是泛泛刷题，而是按你的学习轨迹接着推。
           </p>
@@ -414,47 +426,47 @@ export function ReviewMode({
       <section className="profile-hero rounded-[2rem] border border-ink/10 p-6 shadow-soft sm:p-8 lg:p-10">
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/75 px-3 py-1 text-sm font-black text-ink">
-              <GraduationCap className="h-4 w-4 text-coral" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/68 px-3 py-1 text-sm font-semibold text-ink backdrop-blur-xl">
+              <GraduationCap className="h-4 w-4 text-teal" />
               复习模式 · 连续刷题流
             </div>
-            <h1 className="mt-5 text-4xl font-black text-ink sm:text-5xl">别再自己想下一道刷什么了。</h1>
+            <h1 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">别再自己想下一道刷什么了。</h1>
             <p className="mt-4 max-w-3xl text-base leading-8 text-ink/66 sm:text-lg">
               这里会按你的真实学习痕迹自动排队。不是简单按题目顺序，而是优先把“你碰过、收藏过、留过笔记、但还没掌握”的题推到前面。
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <Link className="ghost-action" href="/me">
                 <ArrowLeft className="h-4 w-4" />
-                返回个人中心
+                回到个人中心
               </Link>
               <Link className="primary-action" href={active ? `/questions/${active.question.slug}` : "/#questions"}>
                 <Sparkles className="h-4 w-4" />
-                {active ? "打开当前题目" : "先去题库看看"}
+                {active ? "开始当前题目" : "先去题库选题"}
               </Link>
             </div>
           </div>
 
-          <div className="rounded-[1.6rem] border border-ink/10 bg-white/78 p-5 shadow-soft">
-            <p className="text-sm font-black text-ink/55">这轮复习概况</p>
+          <div className="rounded-[1.6rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl">
+            <p className="text-sm font-medium text-ink/55">这轮复习概况</p>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-coral">{visibleQueue.length}</p>
+              <div className="rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-teal">{visibleQueue.length}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">当前队列</p>
               </div>
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-teal">{Math.max(questions.length - overview.masteredCount, 0)}</p>
+              <div className="rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-[#3478f6]">{Math.max(questions.length - overview.masteredCount, 0)}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">待掌握</p>
               </div>
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-amber-strong">{overview.noteCount}</p>
+              <div className="rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-ink">{overview.noteCount}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">有笔记题</p>
               </div>
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-ink">{progress}%</p>
+              <div className="rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-ink">{progress}%</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">总进度</p>
               </div>
             </div>
-            <div className="mt-4 rounded-2xl bg-smoke p-4">
+            <div className="mt-4 rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-black text-ink">本轮已完成 {sessionCompleted} 题</p>
@@ -496,7 +508,7 @@ export function ReviewMode({
         </div>
       </section>
 
-      <section className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+      <section className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
         <div className="flex flex-wrap gap-2">
           {[
             ["smart", "智能队列"],
@@ -527,8 +539,8 @@ export function ReviewMode({
               标记掌握后自动推进下一题
             </label>
             {scopeLabel ? (
-              <div className="inline-flex items-center gap-2 rounded-full bg-smoke px-3 py-1.5 text-sm font-bold text-ink/68">
-                <Target className="h-4 w-4 text-coral" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/76 px-3 py-1.5 text-sm font-medium text-ink/68">
+                <Target className="h-4 w-4 text-teal" />
                 当前范围：{scopeLabel}
                 <Link className="text-teal underline-offset-4 hover:underline" href="/review">
                   清掉范围
@@ -537,14 +549,14 @@ export function ReviewMode({
             ) : null}
           </div>
           {message ? (
-            <div className="inline-flex items-center gap-2 rounded-full bg-smoke px-4 py-2 text-sm font-bold text-ink/68">
-              <Sparkles className="h-4 w-4 text-coral" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/76 px-4 py-2 text-sm font-medium text-ink/68">
+              <Sparkles className="h-4 w-4 text-teal" />
               {message}
             </div>
           ) : null}
         </div>
         {initialSlugScope.length > 0 ? (
-          <div className="mt-4 rounded-[1.3rem] bg-smoke px-4 py-4">
+          <div className="mt-4 rounded-[1.3rem] border border-white/75 bg-white/76 px-4 py-4">
             <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink/65">
               <span className="status-chip">来源：{initialBundleName ?? "自定义题单"}</span>
               {initialFromBundleName ? <span className="status-chip">衔接自：{initialFromBundleName}</span> : null}
@@ -565,13 +577,13 @@ export function ReviewMode({
       </section>
 
       {latestSession ? (
-        <section className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <section className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Last Round</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">上一轮复习刚推进了什么</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Last Round</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">上一轮复习刚推进了什么</h2>
             </div>
-            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+            <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
               {formatDate(latestSession.finishedAt)}
             </span>
           </div>
@@ -613,7 +625,7 @@ export function ReviewMode({
           <div className="mt-4 flex flex-wrap gap-2">
             <Link className="ghost-action" href={getReviewSessionHref(latestSession)}>
               <GraduationCap className="h-4 w-4" />
-              按这轮范围再来一轮
+              再刷这一轮
             </Link>
             {latestSession.laterSlugs.length > 0 ? (
               <Link
@@ -621,33 +633,58 @@ export function ReviewMode({
                 href={`/review?filter=smart&slugs=${encodeURIComponent(latestSession.laterSlugs.join(","))}`}
               >
                 <Clock3 className="h-4 w-4" />
-                优先收稍后题
+                继续收稍后题
               </Link>
             ) : null}
             <Link className="ghost-action" href="/me">
               <ArrowLeft className="h-4 w-4" />
-              回个人中心看整体进展
+              回到个人中心
             </Link>
           </div>
         </section>
       ) : null}
 
       <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Current</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">当前主刷题</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">当前主刷</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">当前主刷题</h2>
             </div>
             {active ? (
-              <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+              <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
                 第 {Math.max(activeIndex + 1, 1)} / {visibleQueue.length} 题
               </span>
             ) : null}
           </div>
 
           {active ? (
-            <div className="mt-5 rounded-[1.6rem] border border-ink/10 bg-smoke/55 p-5">
+            <div className="mt-5 rounded-[1.6rem] border border-white/75 bg-white/76 p-5">
+              <div className="grid gap-3 lg:grid-cols-3">
+                <div className="rounded-[1.1rem] border border-white/75 bg-white/84 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal">这轮进度</p>
+                  <p className="mt-2 text-2xl font-semibold text-ink">{completionPercent}%</p>
+                  <p className="mt-1 text-sm text-ink/56">已完成 {sessionCompleted} / {queueTotal} 题</p>
+                  <div className="profile-progress-track">
+                    <div className="profile-progress-fill" style={{ width: `${completionPercent}%` }} />
+                  </div>
+                </div>
+                <div className="rounded-[1.1rem] border border-white/75 bg-white/84 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal">剩余负担</p>
+                  <p className="mt-2 text-2xl font-semibold text-ink">{remainingMinutes} 分钟</p>
+                  <p className="mt-1 text-sm text-ink/56">其中 {quickWinCount} 道可以快刷收掉</p>
+                </div>
+                <div className="rounded-[1.1rem] border border-white/75 bg-white/84 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal">做完这一题后</p>
+                  <p className="mt-2 text-base font-semibold leading-6 text-ink">
+                    {nextEntry ? nextEntry.question.title : "这一轮会被你清空"}
+                  </p>
+                  <p className="mt-1 text-sm text-ink/56">
+                    {nextEntry ? `下一题约 ${nextEntry.question.readingTime} 分钟，继续保持不断档。` : "这轮可以顺势收尾，再接下一包。"}
+                  </p>
+                </div>
+              </div>
+
               <div className="flex flex-wrap gap-2">
                 <span className="status-chip">{active.question.category}</span>
                 {active.reasons.map((reason) => (
@@ -657,7 +694,7 @@ export function ReviewMode({
                 ))}
               </div>
 
-              <h3 className="mt-4 text-3xl font-black leading-tight text-ink">{active.question.title}</h3>
+              <h3 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink">{active.question.title}</h3>
               <p className="mt-4 text-base leading-8 text-ink/64">{active.question.summary}</p>
 
               <div className="mt-5 flex flex-wrap gap-2 text-xs font-black text-ink/56">
@@ -692,11 +729,18 @@ export function ReviewMode({
               </div>
 
               {currentUser && active.activity.notesByUser[currentUser]?.trim() ? (
-                <div className="mt-5 rounded-[1.2rem] bg-white px-4 py-4">
-                  <p className="text-sm font-black text-teal">你的笔记抓手</p>
+                <div className="mt-5 rounded-[1.2rem] border border-white/75 bg-white/84 px-4 py-4">
+                  <p className="text-sm font-semibold text-teal">你的笔记抓手</p>
                   <p className="mt-2 text-sm leading-7 text-ink/66">{active.activity.notesByUser[currentUser].trim()}</p>
                 </div>
               ) : null}
+
+              <div className="mt-5 rounded-[1.2rem] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(255,255,255,0.72))] px-4 py-4">
+                <p className="text-sm font-semibold text-ink">这一题刷完的最低目标</p>
+                <p className="mt-2 text-sm leading-7 text-ink/62">
+                  别追求一次背全。先确保你能用 30 到 60 秒讲清结论、核心原因，以及一个最常见追问。
+                </p>
+              </div>
 
               <div className="mt-5 flex flex-wrap gap-3">
                 <button
@@ -725,7 +769,7 @@ export function ReviewMode({
                   type="button"
                 >
                   <BookHeart className="h-4 w-4" />
-                  {active.activity.masteredBy.includes(currentUser) ? "已掌握" : "标记掌握"}
+                  {active.activity.masteredBy.includes(currentUser) ? "已掌握" : "记为掌握"}
                 </button>
                 <button
                   className="ghost-action"
@@ -733,7 +777,7 @@ export function ReviewMode({
                   type="button"
                 >
                   <CheckCircle2 className="h-4 w-4" />
-                  这题本轮先完成
+                  记为本轮完成
                 </button>
                 <button
                   className="ghost-action"
@@ -748,7 +792,7 @@ export function ReviewMode({
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link className="primary-action" href={`/questions/${active.question.slug}`}>
                   <Target className="h-4 w-4" />
-                  开始刷这道题
+                  开始这道题
                 </Link>
                 <button
                   className="ghost-action"
@@ -769,27 +813,37 @@ export function ReviewMode({
                   下一题
                 </button>
               </div>
+
+              <div className="mt-4 rounded-[1.1rem] border border-white/75 bg-white/82 px-4 py-3 text-sm text-ink/60">
+                {nextEntry
+                  ? `如果这题已经讲顺了，就直接切到下一题「${nextEntry.question.title}」，别在同一题上停太久把节奏拖散。`
+                  : "这题处理完，这一轮就会收口。顺势结束，比临时乱跳更容易留下完成感。"}
+              </div>
             </div>
           ) : (
             <div className="mt-5 rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
               {sessionCompleted > 0
-                ? "这一轮已经被你刷空了。你可以恢复本轮，或者换个筛选模式继续推进。"
+                ? "这一轮已经被你刷空了。可以恢复本轮，也可以切去别的模式继续往前推。"
                 : scopeLabel
                   ? `当前范围下还没有可刷题目。你可以清掉范围，或者先在这条线里留下收藏、笔记和浏览轨迹。`
-                  : "当前筛选下还没有复习队列。先去点几道收藏、写一条笔记或者标记掌握，队列就会开始自动长出来。"}
+                  : "当前筛选下还没有复习队列。先去收藏 3 道题、写 1 条笔记，或者标记几道掌握题，队列就会开始自动长出来。"}
             </div>
           )}
         </div>
 
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Queue</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">连续刷题列表</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">连续队列</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">连续刷题列表</h2>
             </div>
-            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+            <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
               {visibleQueue.length} 道
             </span>
+          </div>
+
+          <div className="mt-4 rounded-[1.15rem] border border-white/75 bg-white/76 px-4 py-3 text-sm text-ink/60">
+            已经处理 {completedMinutes} 分钟的内容，剩余约 {remainingMinutes} 分钟。{nextEntry ? "继续顺着当前节奏推，最不容易掉状态。" : "这一轮快收口了。"}
           </div>
 
           <div className="mt-5 space-y-3">
@@ -809,7 +863,7 @@ export function ReviewMode({
                         <p className="text-xs font-black uppercase tracking-[0.16em] text-teal">{entry.question.category}</p>
                         <p className="mt-2 text-base font-black leading-snug text-ink">{entry.question.title}</p>
                       </div>
-                      <span className="rounded-full bg-white px-2.5 py-1 text-xs font-black text-coral">
+                      <span className="rounded-full border border-white/75 bg-white/88 px-2.5 py-1 text-xs font-semibold text-teal">
                         {entry.priority}
                       </span>
                     </div>
@@ -831,7 +885,7 @@ export function ReviewMode({
               })
             ) : (
               <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
-                {sessionCompleted > 0 ? "这一轮已经完成，恢复队列或切换模式继续。" : "当前模式下没有可刷题目，换一个复习模式试试。"}
+                {sessionCompleted > 0 ? "这一轮已经完成，恢复队列或切换模式继续。" : "当前模式下还没有题可刷，换个复习模式，或者先去题目页留下一点学习痕迹。"}
                 {scopeLabel ? ` 当前还带着${scopeLabel}。` : ""}
               </div>
             )}
@@ -843,7 +897,7 @@ export function ReviewMode({
         <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Session</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">本轮进展</p>
               <h2 className="mt-2 text-2xl font-black text-ink">本轮复习完成情况</h2>
             </div>
             <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
@@ -878,7 +932,7 @@ export function ReviewMode({
         <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Completed</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">本轮完成</p>
               <h2 className="mt-2 text-2xl font-black text-ink">本轮已经刷过的题</h2>
             </div>
           </div>
@@ -905,20 +959,20 @@ export function ReviewMode({
               ))
             ) : (
               <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
-                你还没从本轮里划掉题目。做完一题就点“这题本轮先完成”，收尾感会明显好很多。
+                你还没从本轮里划掉题目。做完一题就点“记为本轮完成”，收尾感会明显好很多。
               </div>
             )}
           </div>
         </div>
       </section>
 
-      <section className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+      <section className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Later</p>
-            <h2 className="mt-2 text-2xl font-black text-ink">这一轮先放到后面的题</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">稍后处理</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">这一轮先放到后面的题</h2>
           </div>
-          <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+          <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
             {laterEntries.length} 道
           </span>
         </div>
@@ -951,10 +1005,10 @@ export function ReviewMode({
                       }}
                       type="button"
                     >
-                      重新加入当前轮
+                      放回当前轮
                     </button>
                     <Link className="primary-action" href={`/questions/${entry.question.slug}`}>
-                      开题回看
+                      去看这道题
                     </Link>
                   </div>
                 </div>
@@ -969,14 +1023,14 @@ export function ReviewMode({
       </section>
 
       {visibleQueue.length === 0 && sessionCompleted > 0 ? (
-        <section className="rounded-[1.9rem] border border-ink/10 bg-white p-6 shadow-soft sm:p-8">
+        <section className="rounded-[1.9rem] border border-white/75 bg-white/68 p-6 shadow-soft backdrop-blur-2xl sm:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-mint/70 px-3 py-1.5 text-sm font-black text-ink">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/80 px-3 py-1.5 text-sm font-semibold text-ink">
                 <CheckCircle2 className="h-4 w-4 text-teal" />
                 本轮复习已完成
               </div>
-              <h2 className="mt-4 text-3xl font-black text-ink">这一轮先收住，你已经把队列刷空了。</h2>
+              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-ink">这一轮先收住，你已经把队列刷空了。</h2>
               <p className="mt-3 max-w-3xl text-sm leading-8 text-ink/62">
                 {initialBundleName
                   ? `这一轮你已经把「${initialBundleName}」刷空了，一共处理了 ${sessionCompleted} 道题。最好的下一步不是乱跳，而是顺着当前任务感继续接一包。`
@@ -987,7 +1041,7 @@ export function ReviewMode({
             <div className="flex flex-wrap gap-3">
               <Link className="primary-action" href="/me">
                 <GraduationCap className="h-4 w-4" />
-                回个人中心
+                回到个人中心
               </Link>
               <button
                 className="ghost-action"
@@ -1000,8 +1054,31 @@ export function ReviewMode({
                 type="button"
               >
                 <RotateCcw className="h-4 w-4" />
-                再来一轮
+                重新开始本轮
               </button>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 lg:grid-cols-4">
+            <div className="profile-stat-card">
+              <CheckCircle2 className="h-5 w-5 text-teal" />
+              <strong>{sessionCompleted}</strong>
+              <span>本轮处理题数</span>
+            </div>
+            <div className="profile-stat-card">
+              <Clock3 className="h-5 w-5 text-[#3478f6]" />
+              <strong>{completedMinutes}</strong>
+              <span>累计刷题分钟</span>
+            </div>
+            <div className="profile-stat-card">
+              <BookMarked className="h-5 w-5 text-teal" />
+              <strong>{completedEntries.filter((entry) => entry.activity.masteredBy.includes(currentUser)).length}</strong>
+              <span>本轮转成掌握</span>
+            </div>
+            <div className="profile-stat-card">
+              <RotateCcw className="h-5 w-5 text-ink" />
+              <strong>{laterEntries.length}</strong>
+              <span>留到稍后处理</span>
             </div>
           </div>
 

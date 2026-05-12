@@ -100,14 +100,17 @@ export function QuestionEngagement({ slug, title, route, totalQuestions }: Quest
 
   return (
     <section className="mt-6 space-y-6">
-      <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+      <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-coral">Engagement</p>
-            <h2 className="mt-2 text-2xl font-black text-ink">这道题别只是看过</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-teal">学习动作</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">这道题别只是看过</h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-ink/60">
-              点赞、收藏、掌握、评论、笔记、浏览都会保存到 PostgreSQL。你现在打开的就是：
-              <span className="font-black text-ink"> {title}</span>
+              点赞、收藏、掌握、评论、笔记和浏览都会自动记下来。你现在打开的就是：
+              <span className="font-semibold text-ink"> {title}</span>
+            </p>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-ink/56">
+              最好的用法不是“看完就走”，而是至少留下一种痕迹：收藏、写一句笔记，或者直接标成掌握。
             </p>
           </div>
 
@@ -118,7 +121,7 @@ export function QuestionEngagement({ slug, title, route, totalQuestions }: Quest
               <span>浏览</span>
             </div>
             <div className="engagement-stat">
-              <Heart className="h-4 w-4 text-coral" />
+              <Heart className="h-4 w-4 text-[#3478f6]" />
               <strong>{activity.likedBy.length}</strong>
               <span>点赞</span>
             </div>
@@ -158,30 +161,33 @@ export function QuestionEngagement({ slug, title, route, totalQuestions }: Quest
             type="button"
           >
             <BookHeart className="h-4 w-4" />
-            {status.mastered ? "已掌握" : "标记掌握"}
+            {status.mastered ? "已掌握" : "记为掌握"}
           </button>
         </div>
 
         {message ? (
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-smoke px-4 py-2 text-sm font-bold text-ink/68">
-            <Sparkles className="h-4 w-4 text-coral" />
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/76 px-4 py-2 text-sm font-medium text-ink/68">
+            <Sparkles className="h-4 w-4 text-teal" />
             {message}
           </div>
         ) : null}
       </div>
 
-      <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+      <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-coral">Next Step</p>
-            <h2 className="mt-2 text-2xl font-black text-ink">学完这一题，别断在这里</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-teal">下一步</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">学完这一题，别断在这里</h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-ink/60">
-              这题属于 <span className="font-black text-ink">{route}</span> 路线。
+              这题属于 <span className="font-semibold text-ink">{route}</span> 路线。
               {status.mastered
                 ? " 既然你已经标成掌握，更适合回个人中心看整体推进。"
                 : status.favorited
                   ? " 你已经收藏了它，下一步可以直接回复习模式把这一条线继续刷下去。"
                   : " 如果觉得值得回看，先收藏；然后回复习模式继续把同类题串起来。"}
+            </p>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-ink/56">
+              理想状态是：这题你至少能用 1 分钟讲清结论、原理和一个常见追问，然后再继续往下推。
             </p>
           </div>
 
@@ -192,7 +198,7 @@ export function QuestionEngagement({ slug, title, route, totalQuestions }: Quest
                   <LayoutDashboard className="h-5 w-5" />
                 </div>
                 <div>
-                  <strong>回个人中心</strong>
+                  <strong>回到个人中心</strong>
                   <p>看掌握进度、目标和最近学习节奏。</p>
                 </div>
               </div>
@@ -212,19 +218,19 @@ export function QuestionEngagement({ slug, title, route, totalQuestions }: Quest
         </div>
 
         <div className="mt-5 flex flex-wrap gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full bg-smoke px-4 py-2 text-sm font-bold text-ink/68">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/76 px-4 py-2 text-sm font-medium text-ink/68">
             <Route className="h-4 w-4 text-teal" />
             当前路线：{route}
           </div>
           {status.mastered ? (
-            <div className="inline-flex items-center gap-2 rounded-full bg-smoke px-4 py-2 text-sm font-bold text-ink/68">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/76 px-4 py-2 text-sm font-medium text-ink/68">
               <BookHeart className="h-4 w-4 text-teal" />
               这题已经进入你的掌握清单
             </div>
           ) : null}
           {status.favorited ? (
-            <div className="inline-flex items-center gap-2 rounded-full bg-smoke px-4 py-2 text-sm font-bold text-ink/68">
-              <Bookmark className="h-4 w-4 text-amber-strong" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/76 px-4 py-2 text-sm font-medium text-ink/68">
+              <Bookmark className="h-4 w-4 text-[#3478f6]" />
               已放进你的回刷清单
             </div>
           ) : null}
@@ -232,14 +238,14 @@ export function QuestionEngagement({ slug, title, route, totalQuestions }: Quest
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <section className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-mint text-ink">
+            <div className="grid h-11 w-11 place-items-center rounded-[1.2rem] border border-white/80 bg-white/82 text-teal shadow-[0_10px_28px_rgba(15,23,40,0.08)]">
               <NotebookPen className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-xl font-black text-ink">我的笔记</h3>
-              <p className="text-sm text-ink/55">登录后每题都能单独记录。</p>
+              <h3 className="text-xl font-semibold text-ink">我的笔记</h3>
+              <p className="text-sm text-ink/55">记“你会忘什么”，比抄整段答案更有用。</p>
             </div>
           </div>
 
@@ -276,14 +282,14 @@ export function QuestionEngagement({ slug, title, route, totalQuestions }: Quest
           </div>
         </section>
 
-        <section className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <section className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-smoke text-ink">
+            <div className="grid h-11 w-11 place-items-center rounded-[1.2rem] border border-white/80 bg-white/82 text-teal shadow-[0_10px_28px_rgba(15,23,40,0.08)]">
               <MessageSquare className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-xl font-black text-ink">讨论区</h3>
-              <p className="text-sm text-ink/55">把追问、反例、记忆口诀都丢在这里。</p>
+              <h3 className="text-xl font-semibold text-ink">讨论区</h3>
+              <p className="text-sm text-ink/55">把追问、反例、混淆点和记忆口诀都丢在这里。</p>
             </div>
           </div>
 
@@ -322,7 +328,7 @@ export function QuestionEngagement({ slug, title, route, totalQuestions }: Quest
                 </article>
               ))
             ) : (
-              <div className="rounded-[1.2rem] bg-smoke px-4 py-5 text-sm font-bold text-ink/52">
+              <div className="rounded-[1.2rem] border border-white/75 bg-white/76 px-4 py-5 text-sm font-medium text-ink/52">
                 还没有评论，你可以先把第一条追问丢进来。
               </div>
             )}

@@ -41,21 +41,21 @@ export function QuestionCard({ question, compact = false }: QuestionCardProps) {
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-mint px-2.5 py-1 text-xs font-black text-ink">
+            <span className="rounded-full border border-white/80 bg-white/82 px-2.5 py-1 text-xs font-semibold text-teal shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
               {question.category}
             </span>
-            <span className="rounded-full bg-smoke px-2.5 py-1 text-xs font-black text-ink/55">
+            <span className="rounded-full border border-white/70 bg-[#f3f7ff] px-2.5 py-1 text-xs font-semibold text-ink/55">
               {difficultyText[question.difficulty]}
             </span>
             {isMastered ? <span className="status-chip is-mastered">已掌握</span> : null}
             {isFavorited ? <span className="status-chip is-favorited">已收藏</span> : null}
             {needsReview ? <span className="status-chip is-review">待回刷</span> : null}
           </div>
-          <h3 className="mt-4 text-xl font-black leading-snug text-ink group-hover:text-coral">
+          <h3 className="mt-4 text-xl font-semibold leading-snug tracking-[-0.02em] text-ink group-hover:text-teal">
             {question.title}
           </h3>
         </div>
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-ink text-white transition group-hover:-translate-y-1 group-hover:bg-coral">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[1.1rem] border border-white/80 bg-white/82 text-teal shadow-[0_10px_28px_rgba(15,23,40,0.08)] transition group-hover:-translate-y-1 group-hover:bg-[#0a84ff] group-hover:text-white">
           <ArrowUpRight className="h-4 w-4" />
         </span>
       </div>
@@ -67,7 +67,7 @@ export function QuestionCard({ question, compact = false }: QuestionCardProps) {
           <Clock3 className="h-4 w-4" />
           {question.readingTime} 分钟
         </span>
-        <span>{question.scene}</span>
+        <span>适合场景：{question.scene}</span>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-ink/58">

@@ -38,8 +38,11 @@ export function QuestionExplorer({ questions, categories, routes }: QuestionExpl
     <div className="study-board rounded-[2rem] border border-ink/10 bg-white p-4 shadow-soft sm:p-6 lg:p-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.22em] text-coral">Question Bank</p>
+          <p className="text-sm font-black uppercase tracking-[0.22em] text-coral">题库</p>
           <h2 className="mt-2 text-3xl font-black text-ink sm:text-4xl">先把高频题答稳</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/58">
+            可以按关键词、分类和路线一起缩小范围。先找到你最容易卡壳的那一批题，再集中吃透。
+          </p>
         </div>
 
         <div className="relative w-full lg:max-w-md">
@@ -95,7 +98,7 @@ export function QuestionExplorer({ questions, categories, routes }: QuestionExpl
             <p className="text-sm font-bold text-ink/55">
               当前显示 <span className="font-black text-ink">{filteredQuestions.length}</span> 道题
             </p>
-            <p className="hidden text-sm font-bold text-ink/42 sm:block">内容文件来自 content/questions</p>
+            <p className="hidden text-sm font-bold text-ink/42 sm:block">先看高频题，再沿着同一条路线往下刷</p>
           </div>
 
           {filteredQuestions.length > 0 ? (
@@ -107,7 +110,7 @@ export function QuestionExplorer({ questions, categories, routes }: QuestionExpl
           ) : (
             <div className="rounded-[1.5rem] border border-dashed border-ink/18 bg-smoke px-6 py-12 text-center">
               <p className="text-xl font-black text-ink">暂时没有匹配题目</p>
-              <p className="mt-2 text-ink/55">换一个关键词，或者先清空筛选。</p>
+              <p className="mt-2 text-ink/55">试试清空筛选，或者直接搜 Redis、MySQL、Spring、TCP 这些高频关键词。</p>
             </div>
           )}
         </div>

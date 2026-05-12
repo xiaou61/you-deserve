@@ -528,6 +528,8 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
   const lightBundleStarts = Object.entries(bundleStartCounts)
     .filter(([name]) => lightBundleNames.has(name))
     .reduce((sum, [, count]) => sum + count, 0);
+  const currentStreak = personal?.currentStreak ?? 0;
+  const thisWeekViews = personal?.thisWeekViews ?? 0;
   const bundleLifecycleOverview = {
     active: bundlesWithTransitions.filter((bundle) => bundle.lifecycle.label === "值得接手").length,
     fresh: bundlesWithTransitions.filter((bundle) => bundle.lifecycle.label === "新出现").length,
@@ -575,18 +577,18 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
   );
   const intensityRecommendation =
     bundleLifecycleOverview.trailing > 0
-      ? {
-          level: "先降一点强度",
-          tone: "text-coral",
-          description: "现在最值钱的不是继续加题，而是先把尾巴收掉，别让稍后题越滚越多。",
+        ? {
+            level: "先降一点强度",
+            tone: "text-coral",
+            description: "现在最值钱的不是继续加题，而是先把尾巴收掉，别让稍后题越滚越多。",
           action:
             nextBundleSuggestions.find((bundle) => bundle.title === "笔记回捞包") ??
             nextBundleSuggestions.find((bundle) => bundle.title === "本轮稍后题回收") ??
             nextBundleSuggestions[0] ??
             null
         }
-      : personal.currentStreak >= 3 &&
-          personal.thisWeekViews >= 8 &&
+      : currentStreak >= 3 &&
+          thisWeekViews >= 8 &&
           heavyBundleStarts <= lightBundleStarts &&
           nextBundleSuggestions.some((bundle) => heavyBundleNames.has(bundle.title))
         ? {
@@ -595,7 +597,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
             description: "你的连续性已经起来了，说明现在有余力把轻量包往更硬的题包推进一格。",
             action: nextBundleSuggestions.find((bundle) => heavyBundleNames.has(bundle.title)) ?? null
           }
-        : personal.currentStreak >= 2 || personal.thisWeekViews >= 5
+        : currentStreak >= 2 || thisWeekViews >= 5
           ? {
               level: "先稳住当前强度",
               tone: "text-ink",
@@ -618,8 +620,8 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
 
   if (!ready) {
     return (
-      <section className="rounded-[2rem] border border-ink/10 bg-white p-8 shadow-soft">
-        <p className="text-lg font-black text-ink">正在整理你的学习轨迹...</p>
+      <section className="rounded-[2rem] border border-white/75 bg-white/68 p-8 shadow-soft backdrop-blur-2xl">
+        <p className="text-lg font-semibold text-ink">正在整理你的学习轨迹...</p>
       </section>
     );
   }
@@ -628,11 +630,11 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
     return (
       <section className="profile-hero rounded-[2rem] border border-ink/10 p-6 shadow-soft sm:p-8 lg:p-10">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-[1.6rem] bg-ink text-mint shadow-soft">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-[1.6rem] border border-white/80 bg-white/82 text-teal shadow-soft">
             <UserRound className="h-7 w-7" />
           </div>
-          <p className="mt-6 text-sm font-black uppercase tracking-[0.24em] text-coral">Personal Center</p>
-          <h1 className="mt-3 text-4xl font-black text-ink sm:text-5xl">把你的学习轨迹收回来。</h1>
+          <p className="mt-6 text-sm font-semibold uppercase tracking-[0.24em] text-teal">Personal Center</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">把你的学习轨迹收回来。</h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-ink/64 sm:text-lg">
             登录后，这里会自动汇总你的浏览记录、收藏、点赞、掌握题目、笔记和评论。
             不是单纯摆个头像，而是给你一个能继续复盘和接着学的个人工作台。
@@ -666,28 +668,38 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
     personal.reviewQueue[0]
       ? {
           title: "先清最该回刷的题",
-          description: `优先把「${personal.reviewQueue[0].question.title}」过一遍，它现在排在你的复习队列最前面。`
+          description: `优先把「${personal.reviewQueue[0].question.title}」过一遍，它现在排在你的复习队列最前面。`,
+          href: `/questions/${personal.reviewQueue[0].question.slug}`,
+          cta: "先看这道题"
         }
       : null,
     overview.noteCount < Math.max(2, overview.totalFavorites)
       ? {
           title: "收藏不少，笔记还偏少",
-          description: "下一轮不要只收藏，至少给最容易忘的两道题各写一句自己的话。"
+          description: "下一轮不要只收藏，至少给最容易忘的两道题各写一句自己的话。",
+          href: "/review?filter=favorites",
+          cta: "先收旧收藏"
         }
       : {
           title: "笔记沉淀已经开始起作用",
-          description: "你已经不只是点收藏了，接下来适合把有笔记但未掌握的题重点回刷。"
+          description: "你已经不只是点收藏了，接下来适合把有笔记但未掌握的题重点回刷。",
+          href: "/review?filter=notes",
+          cta: "先刷笔记题"
         },
     personal.currentStreak >= 3
       ? {
           title: "别断掉这波连学",
-          description: `你已经连续学了 ${personal.currentStreak} 天，今天哪怕只过一题，也比断档值钱。`
+          description: `你已经连续学了 ${personal.currentStreak} 天，今天哪怕只过一题，也比断档值钱。`,
+          href: "/review",
+          cta: "续上今天这一轮"
         }
       : {
           title: "把节奏先连起来",
-          description: "连续 3 天哪怕每天只看 1 题，个人中心的数据就会开始明显变得有判断力。"
+          description: "连续 3 天哪怕每天只看 1 题，个人中心的数据就会开始明显变得有判断力。",
+          href: personal.nextContinue ? `/questions/${personal.nextContinue.question.slug}` : "/review",
+          cta: "先开今天第一题"
         }
-  ].filter((item): item is { title: string; description: string } => !!item);
+  ].filter((item): item is { title: string; description: string; href: string; cta: string } => !!item);
   const goals = [
     {
       title: "今日目标",
@@ -730,23 +742,59 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
       description: personal.activeDays >= 7 ? `累计活跃 ${personal.activeDays} 天` : "累计活跃 7 天解锁"
     }
   ];
+  const immediateActionCards = [
+    personal.nextContinue
+      ? {
+          title: "先续上刚停下来的题",
+          detail: `从「${personal.nextContinue.question.title}」接着往下最省脑力，别让刚有的手感冷掉。`,
+          href: `/questions/${personal.nextContinue.question.slug}`,
+          cta: "继续这道题"
+        }
+      : null,
+    cramBundle.length > 0
+      ? {
+          title: "开一轮临考冲刺包",
+          detail: `这 ${cramBundle.length} 道已经是当前最值得优先回刷的题，适合马上进入状态。`,
+          href: getNamedSlugScopedReviewHref(cramBundle.map((entry) => entry.question.slug), "临考冲刺包"),
+          cta: "开始冲刺包"
+        }
+      : null,
+    weeklyFocusBundle.length > 0
+      ? {
+          title: "先救本周最拖后腿的分类",
+          detail: `优先处理「${weeklyFocusBundle[0].question.category}」这类，最容易把整周节奏拉回来。`,
+          href: getNamedSlugScopedReviewHref(weeklyFocusBundle.map((entry) => entry.question.slug), "本周重点包"),
+          cta: "先补这类"
+        }
+      : null,
+    latestHardLaterEntries.length > 0
+      ? {
+          title: "收掉上轮留下的卡点",
+          detail: `你上轮还有 ${latestHardLaterEntries.length} 道明显卡壳题没收，先清这批最划算。`,
+          href: getSlugScopedReviewHref(latestHardLaterEntries.map((entry) => entry.question.slug)),
+          cta: "回收卡壳题"
+        }
+      : null
+  ].filter(
+    (item): item is { title: string; detail: string; href: string; cta: string } => Boolean(item)
+  );
 
   return (
     <div className="space-y-6">
       <section className="profile-hero rounded-[2rem] border border-ink/10 p-6 shadow-soft sm:p-8 lg:p-10">
         <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/75 px-3 py-1 text-sm font-black text-ink">
-              <Sparkles className="h-4 w-4 text-coral" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/75 bg-white/68 px-3 py-1 text-sm font-semibold text-ink backdrop-blur-xl">
+              <Sparkles className="h-4 w-4 text-teal" />
               个人中心 · 数据库学习工作台
             </div>
             <div className="mt-6 flex items-center gap-4">
-              <div className="grid h-16 w-16 place-items-center rounded-[1.6rem] bg-ink text-2xl font-black text-mint shadow-soft">
+              <div className="grid h-16 w-16 place-items-center rounded-[1.6rem] border border-white/80 bg-white/82 text-2xl font-semibold text-teal shadow-soft">
                 {currentUser.slice(0, 1).toUpperCase()}
               </div>
               <div>
-                <p className="text-sm font-black uppercase tracking-[0.22em] text-teal">Welcome Back</p>
-                <h1 className="mt-1 text-4xl font-black text-ink sm:text-5xl">{currentUser}</h1>
+                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-teal">Welcome Back</p>
+                <h1 className="mt-1 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">{currentUser}</h1>
                 <p className="mt-2 text-sm font-bold text-ink/54">
                   {user ? `加入于 ${formatDateOnly(user.createdAt)}` : "用户账号"} ·{" "}
                   {personal.latestVisit ? `最近学习 ${formatDate(personal.latestVisit)}` : "刚刚开始建立学习轨迹"}
@@ -760,23 +808,23 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
             </p>
           </div>
 
-          <div className="rounded-[1.6rem] border border-ink/10 bg-white/78 p-5 shadow-soft">
-            <p className="text-sm font-black text-ink/55">当前学习状态</p>
+          <div className="rounded-[1.6rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl">
+            <p className="text-sm font-medium text-ink/55">当前学习状态</p>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-teal">{overview.masteredCount}</p>
+              <div className="rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-teal">{overview.masteredCount}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">已掌握</p>
               </div>
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-coral">{questions.length - overview.masteredCount}</p>
+              <div className="rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-[#3478f6]">{questions.length - overview.masteredCount}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">待补</p>
               </div>
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-amber-strong">{overview.totalViews}</p>
+              <div className="rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-ink">{overview.totalViews}</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">累计浏览</p>
               </div>
-              <div className="rounded-2xl bg-smoke p-4">
-                <p className="text-3xl font-black text-ink">{progress}%</p>
+              <div className="rounded-[1.15rem] border border-white/75 bg-white/76 p-4">
+                <p className="text-3xl font-semibold text-ink">{progress}%</p>
                 <p className="mt-1 text-sm font-bold text-ink/55">掌握进度</p>
               </div>
             </div>
@@ -832,14 +880,44 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
         </div>
       </section>
 
+      <section className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Today Plan</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">今天先做这些，最容易进入状态</h2>
+            <p className="mt-2 text-sm leading-7 text-ink/58">
+              别先自己想半天学什么。直接从这里挑一个动作开始，个人中心会比你自己硬排更快把人带进学习状态。
+            </p>
+          </div>
+          <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
+            推荐 {Math.min(immediateActionCards.length, 4)} 个动作
+          </span>
+        </div>
+
+        <div className="mt-5 grid gap-3 lg:grid-cols-2 xl:grid-cols-4">
+          {immediateActionCards.map((item) => (
+            <div className="profile-summary-card" key={item.title}>
+              <strong>{item.title}</strong>
+              <p>{item.detail}</p>
+              <div className="mt-4">
+                <Link className="ghost-action" href={item.href}>
+                  <ArrowRight className="h-4 w-4" />
+                  {item.cta}
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Continue</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">继续学下去</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Continue</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">继续学下去</h2>
             </div>
-            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+            <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
               已跟踪 {personal.totalTracked} 道
             </span>
           </div>
@@ -848,8 +926,8 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
             <Link className="profile-continue-card mt-5 block" href={`/questions/${personal.nextContinue.question.slug}`}>
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-sm font-black text-teal">{personal.nextContinue.question.category}</p>
-                  <h3 className="mt-2 text-2xl font-black leading-snug text-ink">
+                  <p className="text-sm font-semibold text-teal">{personal.nextContinue.question.category}</p>
+                  <h3 className="mt-2 text-2xl font-semibold leading-snug tracking-[-0.03em] text-ink">
                     {personal.nextContinue.question.title}
                   </h3>
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/62">
@@ -858,7 +936,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                       : "这是你最近碰过但还没掌握的题，直接从这里续上最顺手。"}
                   </p>
                 </div>
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-ink text-white">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[1.15rem] border border-white/80 bg-white/84 text-teal shadow-[0_10px_28px_rgba(15,23,40,0.08)]">
                   <ArrowRight className="h-5 w-5" />
                 </span>
               </div>
@@ -996,11 +1074,11 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
           </div>
         </div>
 
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Next Moves</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">下一轮怎么刷更划算</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Next Moves</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">下一轮怎么刷更划算</h2>
             </div>
           </div>
 
@@ -1031,6 +1109,12 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                   ? "你当前收藏比笔记多，下一轮更适合优先处理旧收藏，把其中最重要的题补一句自己的话。"
                   : "你已经开始用笔记沉淀，不要只继续加题，优先把有笔记但未掌握的题刷成稳定掌握。"}
               </p>
+              <div className="mt-3">
+                <Link className="ghost-action" href={personal.favorites.length > personal.notes.length ? "/review?filter=favorites" : "/review?filter=notes"}>
+                  <ArrowRight className="h-4 w-4" />
+                  {personal.favorites.length > personal.notes.length ? "先收收藏题" : "先刷笔记题"}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -1078,10 +1162,10 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
           </div>
         </div>
 
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Coach</p>
-            <h2 className="mt-2 text-2xl font-black text-ink">现在最值得做的三件事</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Coach</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">现在最值得做的三件事</h2>
           </div>
 
           <div className="mt-5 grid gap-3">
@@ -1089,6 +1173,12 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
               <div className="profile-summary-card" key={item.title}>
                 <strong>{item.title}</strong>
                 <p>{item.description}</p>
+                <div className="mt-3">
+                  <Link className="ghost-action" href={item.href}>
+                    <ArrowRight className="h-4 w-4" />
+                    {item.cta}
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -1133,7 +1223,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
         <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Routes</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">路线推进</p>
               <h2 className="mt-2 text-2xl font-black text-ink">推进最快的路线</h2>
             </div>
             <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
@@ -1265,7 +1355,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
         <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Later Pickup</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">稍后回收</p>
               <h2 className="mt-2 text-2xl font-black text-ink">上轮稍后题清单</h2>
             </div>
             <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
@@ -1498,13 +1588,13 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Review Recap</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">最近完成的复习轮次</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Review Recap</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">最近完成的复习轮次</h2>
             </div>
-            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+            <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
               最近 {Math.min(reviewSessions.length, 3)} 轮
             </span>
           </div>
@@ -1559,13 +1649,13 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
           </div>
         </div>
 
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Goals</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">今日 / 本周目标</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Goals</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">今日 / 本周目标</h2>
             </div>
-            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+            <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
               完成 {goals.filter((item) => item.done).length} / {goals.length}
             </span>
           </div>
@@ -1615,13 +1705,13 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Review Queue</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">现在最值得回刷的题</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">回刷队列</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">现在最值得回刷的题</h2>
             </div>
-            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+            <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
               自动按优先级排序
             </span>
           </div>
@@ -1643,9 +1733,9 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                       <h3 className="mt-3 text-xl font-black leading-snug text-ink">{entry.question.title}</h3>
                       <p className="mt-2 text-sm leading-7 text-ink/60">{entry.question.summary}</p>
                     </div>
-                    <div className="rounded-2xl bg-smoke px-3 py-2 text-right">
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-ink/45">优先级</p>
-                      <p className="mt-1 text-2xl font-black text-coral">{entry.priority}</p>
+                    <div className="rounded-[1rem] border border-white/75 bg-white/82 px-3 py-2 text-right">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink/45">优先级</p>
+                      <p className="mt-1 text-2xl font-semibold text-teal">{entry.priority}</p>
                     </div>
                   </div>
 
@@ -1678,10 +1768,10 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
           </div>
         </div>
 
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Snapshot</p>
-            <h2 className="mt-2 text-2xl font-black text-ink">这一段学习像什么</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Snapshot</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">这一段学习像什么</h2>
           </div>
 
           <div className="mt-5 grid gap-3">
@@ -1714,15 +1804,19 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">History</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">浏览记录</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">History</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">浏览记录</h2>
             </div>
-            <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
+            <span className="rounded-full border border-white/75 bg-white/76 px-3 py-1 text-sm font-medium text-ink/55">
               最近 {Math.min(personal.history.length, 8)} 条
             </span>
+          </div>
+
+          <div className="mt-4 rounded-[1.15rem] border border-white/75 bg-white/76 px-4 py-3 text-sm text-ink/60">
+            最近看过的题最适合拿来续手感。别从零重新选，直接从这里接着往下看通常最快进入状态。
           </div>
 
           <div className="mt-5 space-y-3">
@@ -1749,13 +1843,26 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
               </div>
             )}
           </div>
+
+          {personal.history.length > 0 ? (
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link className="ghost-action" href={`/questions/${personal.history[0].question.slug}`}>
+                <ArrowRight className="h-4 w-4" />
+                继续最近那题
+              </Link>
+              <Link className="ghost-action" href="/review?filter=recent">
+                <Clock3 className="h-4 w-4" />
+                按最近浏览开刷
+              </Link>
+            </div>
+          ) : null}
         </div>
 
-        <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+        <div className="rounded-[1.8rem] border border-white/75 bg-white/68 p-5 shadow-soft backdrop-blur-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Collection</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">收藏 / 点赞 / 掌握</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal">Collection</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-ink">收藏 / 点赞 / 掌握</h2>
             </div>
           </div>
 
@@ -1805,6 +1912,27 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
               </div>
             </div>
           </div>
+
+          <div className="mt-5 flex flex-wrap gap-2">
+            {personal.favorites.length > 0 ? (
+              <Link className="ghost-action" href="/review?filter=favorites">
+                <Bookmark className="h-4 w-4" />
+                先收收藏题
+              </Link>
+            ) : null}
+            {personal.mastered.length > 0 ? (
+              <Link className="ghost-action" href={`/questions/${personal.mastered[0].question.slug}`}>
+                <BookMarked className="h-4 w-4" />
+                回看一题掌握题
+              </Link>
+            ) : null}
+            {personal.likes.length > 0 ? (
+              <Link className="ghost-action" href={`/questions/${personal.likes[0].question.slug}`}>
+                <Heart className="h-4 w-4" />
+                回到点赞最多的入口
+              </Link>
+            ) : null}
+          </div>
         </div>
       </section>
 
@@ -1845,12 +1973,12 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
               <div className="flex flex-wrap gap-2">
                 <Link className="ghost-action" href={getReviewSessionHref(latestBundleSession)}>
                   <RotateCcw className="h-4 w-4" />
-                  再开这一包
+                  再刷这一包
                 </Link>
                 {latestBundleSession.laterSlugs.length > 0 ? (
                   <Link className="ghost-action" href={getReviewSessionLaterHref(latestBundleSession)}>
                     <Clock3 className="h-4 w-4" />
-                    先收稍后题
+                    继续收稍后题
                   </Link>
                 ) : null}
               </div>
@@ -1874,7 +2002,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                         )}
                       >
                         <Sparkles className="h-4 w-4" />
-                        接这一包
+                        开始这一包
                       </Link>
                     </div>
                   </div>
@@ -1894,13 +2022,14 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
           <div className="mt-4 rounded-[1.4rem] border border-ink/10 bg-white p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">Path Replay</p>
-                <h3 className="mt-2 text-lg font-black text-ink">最近几次你是怎么接包的</h3>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">最近节奏</p>
+                <h3 className="mt-2 text-lg font-black text-ink">最近几次你是怎么接着刷的</h3>
               </div>
               <span className="rounded-full bg-smoke px-3 py-1 text-xs font-black text-ink/55">
                 最近 {recentBundleTransitions.length} 次
               </span>
             </div>
+            <p className="mt-4 text-sm leading-7 text-ink/60">这块会帮你看清自己最近最常从哪一类题包起手，又会顺着什么节奏往下推。</p>
 
             {(mostCommonBundlePath || mostUsedBundle) ? (
               <div className="mt-4 grid gap-3 lg:grid-cols-2">
@@ -1940,13 +2069,14 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
           <div className="mt-4 rounded-[1.4rem] border border-ink/10 bg-white p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">Course Correction</p>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">纠偏提醒</p>
                 <h3 className="mt-2 text-lg font-black text-ink">系统觉得你现在该稍微纠偏一下</h3>
               </div>
               <span className="rounded-full bg-smoke px-3 py-1 text-xs font-black text-ink/55">
                 {correctionNudges.length} 条提醒
               </span>
             </div>
+            <p className="mt-4 text-sm leading-7 text-ink/60">如果某一类题开始堆积，或者你最近总在绕路，这里会直接提醒你先救哪里最划算。</p>
 
             <div className="mt-4 grid gap-3 lg:grid-cols-2">
               {correctionNudges.map((item) => (
@@ -1957,7 +2087,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                     <div className="mt-4">
                       <Link className="ghost-action" href={item.action.href}>
                         <Target className="h-4 w-4" />
-                        去刷 {item.action.title}
+                        开始 {item.action.title}
                       </Link>
                     </div>
                   ) : null}
@@ -1970,8 +2100,8 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
         <div className="mt-4 rounded-[1.4rem] border border-ink/10 bg-white p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">Intensity</p>
-              <h3 className="mt-2 text-lg font-black text-ink">系统觉得你现在该怎么控强度</h3>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-coral">强度建议</p>
+              <h3 className="mt-2 text-lg font-black text-ink">系统觉得你这周该怎么控强度</h3>
             </div>
             <span className={`rounded-full bg-smoke px-3 py-1 text-xs font-black ${intensityRecommendation.tone}`}>
               {intensityRecommendation.level}
@@ -1984,7 +2114,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
             <div className="mt-4">
               <Link className="ghost-action" href={intensityRecommendation.action.href}>
                 <Sparkles className="h-4 w-4" />
-                按这个强度去刷 {intensityRecommendation.action.title}
+                按这个强度开始 {intensityRecommendation.action.title}
               </Link>
             </div>
           ) : null}
@@ -2039,7 +2169,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                       key={`${bundle.title}-to-${nextBundle.title}`}
                     >
                       <ArrowRight className="h-4 w-4" />
-                      接 {nextBundle.title}
+                      开始 {nextBundle.title}
                     </Link>
                   ))}
                 </div>
@@ -2057,11 +2187,11 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Link className="primary-action" href={bundle.href}>
                       <ArrowRight className="h-4 w-4" />
-                      直接开这一包
+                      开始这一包
                     </Link>
                     <Link className="ghost-action" href={`/questions/${bundle.entries[0].question.slug}`}>
                       <Eye className="h-4 w-4" />
-                      先看第一题
+                      先看这道题
                     </Link>
                   </div>
                 </>
@@ -2078,7 +2208,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
       <section className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Assets</p>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">学习资产</p>
             <h2 className="mt-2 text-2xl font-black text-ink">我的学习资产</h2>
             <p className="mt-2 text-sm leading-7 text-ink/58">
               把浏览、收藏、掌握、笔记这些散落动作合成一张可筛选的清单，后面复盘会轻松很多。
@@ -2178,7 +2308,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
         <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Notes</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">笔记沉淀</p>
               <h2 className="mt-2 text-2xl font-black text-ink">我的笔记</h2>
             </div>
             <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
@@ -2202,7 +2332,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
               ))
             ) : (
               <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
-                你还没写笔记。等你把真正容易忘的点记下来，这里会变成你的复习捷径。
+                你还没写笔记。建议先从最容易讲混的题开始，每题只记一句“我真正会忘什么”，这里很快就会变成你的复习捷径。
               </div>
             )}
           </div>
@@ -2211,7 +2341,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
         <div className="rounded-[1.8rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">Comments</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-coral">讨论记录</p>
               <h2 className="mt-2 text-2xl font-black text-ink">我的评论</h2>
             </div>
             <span className="rounded-full bg-smoke px-3 py-1 text-sm font-bold text-ink/55">
@@ -2232,7 +2362,7 @@ export function PersonalCenter({ questions }: PersonalCenterProps) {
               ))
             ) : (
               <div className="rounded-[1.4rem] bg-smoke px-5 py-8 text-sm font-bold leading-7 text-ink/55">
-                讨论区还没留下你的痕迹。后面碰到卡壳的题，可以直接把问题丢进去。
+                讨论区还没留下你的痕迹。后面碰到卡壳的题，可以直接把“我总和哪个知识点混”“这题还能怎么追问”这种问题丢进去。
               </div>
             )}
           </div>

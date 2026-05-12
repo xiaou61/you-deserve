@@ -1,0 +1,11 @@
+⨯ TypeError: Cannot read properties of null (reading 'currentStreak')
+    at PersonalCenter (src\components\personal-center.tsx:588:18)
+  586 |             null
+  587 |         }
+> 588 |       : personal.currentStreak >= 3 &&
+      |                  ^
+  589 |           personal.thisWeekViews >= 8 &&
+  590 |           heavyBundleStarts <= lightBundleStarts &&
+  591 |           nextBundleSuggestions.some((bundle) => heavyBundleNames.has(bundle.title)) {
+  digest: '2754222358'
+}

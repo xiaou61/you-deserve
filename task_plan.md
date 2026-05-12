@@ -14,6 +14,7 @@
 - [complete] 8. 第四轮题目质检：按排序每 10 道一批精查事实准确性、理解难度、表达深度和可改进点，只先记录问题与建议
 - [complete] 9. 第五轮内容修复：按审计 P1 优先级每 10 道一批修正文、常见追问、图解提示和 visual 节点
 - [complete] 10. 后台/API 收尾加固：修复管理端假成功、客户端上报 slug、无效对象删除等边界
+- [pending] 11. 第六轮定向提质：从“已完成覆盖”转向“提升可读性、差异化和实战表达”，按优先级批量优化 400 篇内容
 
 ## Detail Batch Progress
 - Batch size: 10
@@ -22,6 +23,13 @@
 - Next batch: 41
 - Next range: none
 - Status: verified through batch 40; all question batches completed
+
+## Round 6 Batch Progress
+- Batch size: 20
+- Completed batches: 1
+- Completed range: Batch 1 / Java 基础与并发高频 20 篇
+- Current scope: `hashmap-thread-unsafe`, `hashmap-resize`, `hashmap-load-factor`, `arraylist-linkedlist`, `arraylist-fail-fast`, `concurrenthashmap`, `copyonwritearraylist`, `thread-pool-core-parameters`, `thread-pool-rejection-policy`, `threadlocal`, `threadlocal-inheritable`, `completablefuture`, `completablefuture-exception`, `blockingqueue`, `aqs`, `synchronized-reentrantlock`, `reentrantreadwritelock`, `atomic-classes-cas`, `volatile-visibility`, `cas-aba`
+- Next batch: 2 / Spring 基础、AOP、事务高频 20 篇
 
 ## Decisions
 - 优先做可运行的批量增强脚本，避免手工改几道题导致覆盖不完整。
@@ -93,6 +101,10 @@
 - 后台管理 API 已补齐存在性校验：用户、管理员、评论、笔记、用户行为、题目行为的无效目标不再返回假成功；PATCH 空字段和非法状态类型会提前拒绝。
 - 数据巡检修复接口改为服务端读取 `getQuestionMetas()` 生成有效 slug 列表，不再信任前端传入的 `validSlugs`；前端一键修复按钮也不再提交题库 slug。
 - Markdown 页面继续使用 `dangerouslySetInnerHTML` 承接 unified 输出，但输出前必须经过 `rehype-sanitize`；标题锚点和代码高亮放在 sanitize 之后由本地可信插件生成。
+- 第六轮不再做“400 篇统一重写”，而是做“定向提质”：优先清理机械模板感、增强专题差异、补真实命令/指标/状态流和项目表达，让内容从“能看”升级到“更像面试辅导材料”。
+- 第六轮的独立执行方案记录在 `docs/plans/2026-05-11-content-optimization-round6-plan.md`，建议按“高频基础题 -> 中间件/数据库 -> 项目设计题 -> 长尾专题”的顺序推进，每批 20 篇。
+- 第六轮 Batch 1 已完成：通过 `scripts/optimize-round6-batch1.py` 批量更新 20 篇 Java 高频题的 `一句话结论`、`面试回答`、`常见追问`、`图解提示`，重点去掉追问模板味并补监控、容量、边界、排障抓手。
+- 第六轮 Batch 1 校验已完成：`npm run validate:content` 通过。`npm run build` 失败，但失败点位于既有 TypeScript 问题 `src/components/personal-center.tsx:588`，与本次内容改动无关。
 
 ## Errors Encountered
 - `Get-Content src\app\questions\[slug]\page.tsx` 被 PowerShell 当作通配符路径解析，改用 `-LiteralPath`。
